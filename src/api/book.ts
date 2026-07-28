@@ -1,0 +1,63 @@
+import apiFetch from '../utils/request'
+import type { Book } from '../types'
+import { getCatalog } from './catalog'
+import moment from 'moment'
+
+export function mappingCreationStatus(status: string): string {
+    switch (status) {
+        case '0':
+            return '完结'
+        case '1':
+            return '连载'
+        case '4':
+            return '断更'
+        default:
+            return '未知'
+    }
+}
+
+export async function getBookInfoRaw(bookId: string): Promise<any> {
+    const response = await apiFetch(`https://api5-sinfonlinec.jxbhmy.com/reading/bookapi/multi-detail/v?book_id=${bookId}&aid=13`)
+    const j: any = await response.json()
+    if (
+        typeof j === 'object' &&
+        j !== null &&
+        'data' in j &&
+        Array.isArray(j.data) &&
+        j.data.length > 0
+    ) return j.data[0]
+    return null
+}
+
+export async function getBookInfo(bookId: string): Promise<Book> {
+    const bookInfo = await getBookInfoRaw(bookId)
+    if (!bookInfo) {
+        throw new Error('Book not found')
+    }
+    return {
+        book_id: bookInfo.book_id,
+        title: bookInfo.book_name || bookInfo.original_book_name,
+        author: bookInfo.author,
+        cover_url: bookInfo.thumb_url,
+        summary: bookInfo.abstract,
+        // volume_list: bookInfo.volume_list,
+        update_time: moment(bookInfo.last_chapter_first_pass_time).format('YYYY-MM-DD HH:mm:ss'),
+        status: mappingCreationStatus(bookInfo.creation_status),
+        // chapter_count: bookInfo.chapter_count,
+    } as Book
+}
+
+export async function getBookInfoAndCatalog(book: Book | string): Promise<Book> {
+    if (typeof book !== 'string') {
+        book = book.book_id
+    }
+    const bookInfo = await getBookInfo(book)
+    if (!bookInfo) {
+        throw new Error('Book not found')
+    }
+    const catalog = await getCatalog(bookInfo.book_id)
+    console.log('Catalog:', catalog)
+    bookInfo.volume_list = catalog.volume_list
+    bookInfo.chapter_list = catalog.chapter_list
+    return bookInfo
+}

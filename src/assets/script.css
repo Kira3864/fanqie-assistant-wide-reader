@@ -1,0 +1,25 @@
+/* 移除章节锁定图标 */
+.muyeicon-lock {
+	display: none;
+}
+/* 移除APP推广图标 */
+.muye-to-fanqie {
+	display: none!important;
+}
+.reader-toolbar-item-download {
+	display: none!important;
+}
+.download-btn {
+	display: none!important;
+}
+.download-icon {
+	display: none!important;
+}
+
+/* 移除默认阅读器div，让脚本接管。.muye-reader-content且不带fqa标签的div */
+.muye-reader-content:not(.fqa) {
+	display: none!important;
+}
+.no-content {
+	display: none!important;
+}
