@@ -15,6 +15,7 @@ export default defineConfig({
       userscript: {
         name: '番茄小说助手',
         namespace: 'https://github.com/naiyQAQ/fanqie-assistant',
+		license: "GPLv3",
         version,
         description: '番茄小说助手，去广告、去推广、解锁章节、优化体验。',
         icon: iconUrl,
