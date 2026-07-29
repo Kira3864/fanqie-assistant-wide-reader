@@ -29,7 +29,7 @@ export interface EncryptionContext {
     encrypted?: ArrayBuffer;
     plaintext?: ArrayBuffer;
 }
-    */
+*/
 
 // b64decode("rCXGfd2POMGzeiNIgo4iLg==") = 172, 37, 198, 125, 221, 143, 56, 193, 179, 122, 35, 72, 130, 142, 34, 46
 export const shared_key: ArrayBuffer = new Uint8Array([172, 37, 198, 125, 221, 143, 56, 193, 179, 122, 35, 72, 130, 142, 34, 46]).buffer;

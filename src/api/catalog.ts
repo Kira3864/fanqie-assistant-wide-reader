@@ -24,8 +24,8 @@ export async function getCatalog(bookId: string): Promise<CatalogResult> {
             item_id: item.itemId,
             title: item.title,
             // YYYY-MM-DD HH:mm:ss
-            update_time: moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss') as string,
-            char_count: item.charCount,
+            update_time: moment(item.firstPassTime * 1000).format('YYYY-MM-DD HH:mm:ss') as string,
+            char_count: item.charCount || 0,
             volume_title: item.volume_name,
         } as ChapterItem
         chapters.push(chapterItem)

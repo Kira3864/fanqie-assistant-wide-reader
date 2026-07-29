@@ -170,7 +170,7 @@ export async function decryptKeyinfoResponse(encrypted: string): Promise<ArrayBu
     );
 }
 
-export async function decryptMangaImage(image: ArrayBuffer, key: string /* hex */): Promise<ArrayBuffer> {
+export async function decryptComicImage(image: ArrayBuffer, key: string /* hex */): Promise<ArrayBuffer> {
     const subtle = getSubtle();
     // AESGCM
     const cryptoKey = await subtle.importKey(

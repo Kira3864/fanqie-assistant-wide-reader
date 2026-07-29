@@ -17,8 +17,9 @@ export function mappingCreationStatus(status: string): string {
 }
 
 export async function getBookInfoRaw(bookId: string): Promise<any> {
-    const response = await apiFetch(`https://api5-sinfonlinec.jxbhmy.com/reading/bookapi/multi-detail/v?book_id=${bookId}&aid=13`)
-    const j: any = await response.json()
+    const response = await apiFetch(`https://api5-sinfonlinec.jxbhmy.com/reading/bookapi/multi-detail/v?book_id=${bookId}&aid=1967`)
+    const j: any = response.json()
+    console.log('Book Info:', j)
     if (
         typeof j === 'object' &&
         j !== null &&
@@ -41,7 +42,7 @@ export async function getBookInfo(bookId: string): Promise<Book> {
         cover_url: bookInfo.thumb_url,
         summary: bookInfo.abstract,
         // volume_list: bookInfo.volume_list,
-        update_time: moment(bookInfo.last_chapter_first_pass_time).format('YYYY-MM-DD HH:mm:ss'),
+        update_time: moment(bookInfo.last_chapter_first_pass_time * 1000).format('YYYY-MM-DD HH:mm:ss'),
         status: mappingCreationStatus(bookInfo.creation_status),
         // chapter_count: bookInfo.chapter_count,
     } as Book

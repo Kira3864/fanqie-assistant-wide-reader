@@ -1,21 +1,32 @@
 import { type HookConfig } from '../config'
 import { getChapter } from '../api/content'
 import { getBookInfoAndCatalog } from '../api/book'
+import { decryptComicImage } from '../utils/crypto'
+import { fetch } from '../config'
 // import defaultcss from '../assets/default.css?raw';
 import { cloneElement } from '../utils';
 import { type Book } from '../types'
-import moment from 'moment'
+// import moment from 'moment'
 
 let currentBook: Book | null = null
+
+let latestItemId: string | null = null
+
 async function insertContent() {
     const itemId = window.location.pathname.split('/').pop()?.substring(0, 19) || ''
     if (!itemId) {
         console.warn('No item_id found in URL')
         return
     }
+    latestItemId = itemId
     const chapter = await getChapter(itemId)
     if (!chapter) {
         console.warn('No chapter found for item_id:', itemId)
+        return
+    }
+
+    if (latestItemId !== itemId) {
+        console.debug('Stale chapter response discarded:', itemId)
         return
     }
     console.log('Chapter:', chapter)
@@ -38,20 +49,136 @@ async function insertContent() {
                 toProcess.removeChild(toProcess.childNodes[i] as HTMLElement)
             }
         }
-        const readerContainer = document.querySelector("div.muye-reader-content")
-        let scriptContainer: HTMLDivElement | null = null
+
+        const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)")
         if (readerContainer) {
-            scriptContainer = cloneElement(readerContainer) as HTMLDivElement
-            scriptContainer.classList.add('fqa')
-            scriptContainer.classList.remove('noselect') // allow text selection
-            // readerContainer应该已经被注入的内容CSS隐藏掉了
+            // 防止插入多次
+            let scriptContainer = document.getElementById('fqa-reader-content') as HTMLDivElement | null
+            if (!scriptContainer) {
+                scriptContainer = cloneElement(readerContainer) as HTMLDivElement
+                scriptContainer.id = 'fqa-reader-content'
+                scriptContainer.classList.add('fqa')
+                scriptContainer.classList.remove('noselect') // allow text selection
+                readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
+            }
             scriptContainer.innerHTML = ''
+            // 隐藏原来的内容div
+            readerContainer.classList.add('fqa-hide')
             scriptContainer.appendChild(toProcess)
-            readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
+        }
+    } else if (chapter.content.picInfos) { // comic
+        if (chapter.content.encrypt) {
+            // 加密漫画图片：懒加载解密
+            const imgs: HTMLImageElement[] = []
+            for (let i = 0; i < chapter.content.picInfos.length; i++) {
+                const picInfo = chapter.content.picInfos[i]
+                const img = document.createElement('img')
+                img.className = 'fqa-comic-img fqa-comic-encrypted'
+                img.alt = `第${i + 1}页`
+                img.dataset.encryptedUrl = picInfo.picUrl
+                img.dataset.encryptKey = chapter.content.encrypt_key
+                img.dataset.pageIndex = i.toString()
+                // 占位符：加载中
+                img.style.minHeight = '500px'
+                img.style.backgroundColor = '#f0f0f0'
+                imgs.push(img)
+            }
+
+            const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)")
+            if (readerContainer) {
+                let scriptContainer = document.getElementById('fqa-comic-content') as HTMLDivElement | null
+                if (!scriptContainer) {
+                    scriptContainer = cloneElement(readerContainer) as HTMLDivElement
+                    scriptContainer.id = 'fqa-reader-content'
+                    scriptContainer.classList.add('fqa')
+                    scriptContainer.classList.add('fqa-comic-reader')
+                    scriptContainer.classList.remove('noselect')
+                    readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
+                }
+                scriptContainer.innerHTML = ''
+                readerContainer.classList.add('fqa-hide')
+                imgs.forEach(img => scriptContainer.appendChild(img))
+
+                const observer = new IntersectionObserver(
+                    async (entries) => {
+                        for (const entry of entries) {
+                            if (entry.isIntersecting) {
+                                const img = entry.target as HTMLImageElement
+                                if (img.dataset.encryptedUrl && img.dataset.encryptKey && !img.src) {
+                                    observer.unobserve(img) // 只解密一次
+                                    try {
+                                        const response = await fetch(img.dataset.encryptedUrl)
+                                        const encryptedBuffer = await response.arrayBuffer()
+                                        const decryptedBuffer = await decryptComicImage(
+                                            encryptedBuffer,
+                                            img.dataset.encryptKey
+                                        )
+                                        const blob = new Blob([decryptedBuffer], { type: 'image/jpeg' })
+                                        const blobUrl = URL.createObjectURL(blob)
+                                        img.src = blobUrl
+                                        img.style.minHeight = ''
+                                        img.style.backgroundColor = ''
+                                        img.onload = () => {
+                                            URL.revokeObjectURL(blobUrl)
+                                        }
+                                    } catch (error) {
+                                        console.error(`解密图片失败 (页 ${img.dataset.pageIndex}):`, error)
+                                        img.alt = `第${Number(img.dataset.pageIndex) + 1}页 - 解密失败`
+                                        img.style.backgroundColor = '#ffebee'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        rootMargin: '200px'
+                    }
+                )
+
+                imgs.forEach(img => observer.observe(img))
+            }
+        } else {
+            const imgs: HTMLImageElement[] = []
+            for (let i = 0; i < chapter.content.picInfos.length; i++) {
+                const picInfo = chapter.content.picInfos[i]
+                const img = document.createElement('img')
+                img.className = 'fqa-comic-img'
+                img.alt = `第${i + 1}页`
+                img.src = picInfo.picUrl
+                imgs.push(img)
+            }
+            const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)")
+            if (readerContainer) {
+                // 防止插入多次
+                let scriptContainer = document.getElementById('fqa-comic-content') as HTMLDivElement | null
+                if (!scriptContainer) {
+                    scriptContainer = cloneElement(readerContainer) as HTMLDivElement
+                    scriptContainer.id = 'fqa-reader-content'
+                    scriptContainer.classList.add('fqa')
+                    scriptContainer.classList.add('fqa-comic-reader')
+                    scriptContainer.classList.remove('noselect')
+                    readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
+                }
+                scriptContainer.innerHTML = ''
+                // 隐藏原来的内容div
+                readerContainer.classList.add('fqa-hide')
+                imgs.forEach(img => scriptContainer.appendChild(img))
+            }
         }
     }
     const muyeReaderTitle = document.querySelector("h1.muye-reader-title")
-    const muyeReaderSubtitle = document.querySelector("div.muye-reader-subtitle")
+    let muyeReaderSubtitle = document.querySelector("div.muye-reader-subtitle")
+    document.querySelector('#fqa-subtitle')?.remove() // prevent duplicate subtitle
+    if (muyeReaderSubtitle) {
+        // 脱离原页面 Vue tree ，防止被二次修改
+        let _cloned = cloneElement(muyeReaderSubtitle)
+        muyeReaderSubtitle.classList.add('fqa-hide')
+        _cloned.id = 'fqa-subtitle'
+        muyeReaderSubtitle.insertAdjacentElement('afterend', _cloned)
+        muyeReaderSubtitle = _cloned
+        _cloned.classList.remove('fqa-hide')
+        console.log('clone subtitle: ', _cloned)
+    }
     if (muyeReaderTitle) {
         muyeReaderTitle.textContent = chapterTitle
     }
@@ -79,7 +206,8 @@ async function insertContent() {
     }
         */
 
-    if (muyeReaderSubtitle && pageState?.reader?.chapterData?.itemId === itemId) {
+    /*
+    if (muyeReaderSubtitle) {
         // 写入更精确的更新时间
         let updateTimeSpan = muyeReaderSubtitle.querySelectorAll('span.desc-item')[1]
         if (updateTimeSpan) {
@@ -90,6 +218,7 @@ async function insertContent() {
                 moment(pageState?.reader?.chapterData?.firstPassTime * 1000).format('YYYY-MM-DD HH:mm:ss')
         }
     }
+        */
     /*
     for (let i = 0; i < 10; i++) {
         if (readerContainer) {
@@ -110,6 +239,9 @@ async function insertContent() {
         const currentChapterItem = currentBook.chapter_list.find(c => c.item_id === itemId)
         if (currentChapterItem) {
             console.log('Current chapter:', currentChapterItem)
+            document.title = currentChapterItem.title + ' - ' + currentBook.title + 
+                ' - 番茄小说'
+            // 防止插入多次
             if (document.getElementById('fqa-current-chapter-volume')) {
                 const c = document.getElementById('fqa-current-chapter-volume')
                 if (c) {
@@ -125,6 +257,25 @@ async function insertContent() {
                 if (c) {
                     c.insertAdjacentElement('beforebegin', volSpan)
                 }
+            }
+            // 写入更精确的更新时间
+            let updateTimeSpans = muyeReaderSubtitle?.querySelectorAll('span.desc-item') || []
+            if (updateTimeSpans.length >= 2 /* 应该是始终为3 */) {
+                /* 最后一个一般是更新时间 */
+                let updateTimeSpan = updateTimeSpans[updateTimeSpans.length - 1] as HTMLSpanElement
+                let uttspan = updateTimeSpan.firstChild as HTMLSpanElement
+                // console.log(uttspan)
+                uttspan?.remove()
+                // seconds
+                updateTimeSpan.innerHTML =
+                    '更新时间：' +
+                    currentChapterItem.update_time
+            } else {
+                // 网页端屏蔽章节。只有一个本章字数 + 前面插入的卷名
+                let updateTimeSpan = document.createElement('span')
+                // let updateTimeSubSpan = document.createElement('span')
+                updateTimeSpan.className = 'desc-item'
+                updateTimeSpan.textContent = `更新时间：${currentChapterItem.update_time}`
             }
         }
     }
@@ -170,23 +321,25 @@ function readerFilter(path: string, _query: URLSearchParams, _hash: string) {
     return path.startsWith('/reader') || path.startsWith('reader')
 }
 
-export default [
+const _exports: HookConfig[] = [
     {
         id: 'readerHook_load',
         event: 'load',
         handler: onLoad,
         filter: readerFilter
-    } as HookConfig,
+    },
     {
         id: 'readerHook_urlChange',
         event: 'onUrlChange',
         handler: onUrlChange,
         filter: readerFilter
-    } as HookConfig,
+    },
     {
         id: 'readerHook_hashChange',
         event: 'onHashChange',
         handler: onHashChange,
         filter: readerFilter
-    } as HookConfig
-] as HookConfig[]
+    }
+]
+
+export default _exports

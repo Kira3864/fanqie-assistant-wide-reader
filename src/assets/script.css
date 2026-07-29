@@ -16,10 +16,30 @@
 	display: none!important;
 }
 
-/* 移除默认阅读器div，让脚本接管。.muye-reader-content且不带fqa标签的div */
-.muye-reader-content:not(.fqa) {
+.fqa-hide {
 	display: none!important;
 }
+/* 404 */
 .no-content {
 	display: none!important;
+}
+
+.fqa-comic-img {
+	width: 100%!important;
+	height: 100%!important;
+	max-width: 100%!important;
+	max-height: 100%!important;
+	padding-top: 0!important;
+	padding-bottom: 0!important;
+	margin-top: 0!important;
+	margin-bottom: 0!important;
+}
+
+.fqa-comic-reader {
+	line-height: 0!important;
+}
+
+.fqa-menu-item,
+.arco-menu-item {
+	width: 100%!important;
 }

@@ -80,3 +80,10 @@ export async function getChapter(itemId: string, _retry?: number): Promise<any> 
     j.content = await decryptChapter(j?.content, config.currentConfig)
     return j
 }
+
+export async function getChapterInfo(itemId: string): Promise<unknown> {
+    // use page fetch (includes bytedance security sdk. we reuse it)
+    // same origin
+    const res = await fetch('https://fanqienovel.com/api/reader/full?itemId=' + itemId)
+    return await res.json()
+}
