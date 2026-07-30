@@ -2,11 +2,13 @@ import type { HookConfig, HookEvent } from "../config";
 import readerHook from "./readerHook";
 import fetchHook from "./fetchHook";
 import userHook from "./userHook";
+import bookshelfHook from "./bookshelfHook";
 
 const hooks: HookConfig[] = [
     ...readerHook,
     ...fetchHook,
     ...userHook,
+    ...bookshelfHook,
 ];
 
 async function onEvent(event: HookEvent, previous?: string) {

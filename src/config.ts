@@ -20,7 +20,7 @@ export interface HookConfig {
     query: URLSearchParams,
     hash: string
   ) => boolean;
-  handler: Function;
+  handler: (previous?: string) => Promise<void>;
 }
 
 /*

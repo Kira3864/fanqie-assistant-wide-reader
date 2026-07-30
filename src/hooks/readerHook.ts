@@ -282,11 +282,11 @@ async function insertContent() {
 }
 
 // let currentBook: Book | null = null
-async function onUrlChange(_previous: string): Promise<void> {
+async function onUrlChange(_previous?: string): Promise<void> {
     // TODO: 记录并上报阅读历史和记录
     await insertContent()
 }
-async function onHashChange(_previous: string): Promise<void> {
+async function onHashChange(_previous?: string): Promise<void> {
     // TODO: 支持从hash里解析并跳转到指定行
 }
 async function onLoad(): Promise<void> {
