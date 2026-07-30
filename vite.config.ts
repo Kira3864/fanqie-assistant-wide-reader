@@ -4,6 +4,19 @@ import vue from '@vitejs/plugin-vue';
 import { version } from './package.json';
 import { readFileSync } from 'node:fs';
 
+/**
+ * Zstatic 是 npm 全量镜像，路径与 jsdelivr 的 /npm/ 完全一致，
+ * 文件内容逐字节相同，但在大陆的连通性远好于 cdn.jsdelivr.net。
+ * 用法同 cdn.jsdelivr：zstatic(导出的全局变量名, 包内文件路径)
+ */
+const zstatic = (
+  exportVarName: string,
+  pathname: string,
+): [string, (version: string, name: string) => string] => [
+  exportVarName,
+  (version, name) => `https://s4.zstatic.net/npm/${name}@${version}/${pathname}`,
+];
+
 const icon = readFileSync('./src/assets/fanqie.svg', 'utf-8');
 const iconUrl = `data:image/svg+xml;base64,${Buffer.from(icon).toString('base64')}`;
 
@@ -27,6 +40,11 @@ export default defineConfig({
       },
       build: {
         fileName: 'fanqie-assistant.user.js',
+        // vue / moment 走 CDN @require，不打进脚本体积
+        externalGlobals: {
+          vue: zstatic('Vue', 'dist/vue.global.prod.js'),
+          moment: zstatic('moment', 'min/moment.min.js'),
+        },
       },
     }),
   ],
