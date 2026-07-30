@@ -1,5 +1,6 @@
 import { getDetailedUserInfo, userState } from '../api/user'
 import type { HookConfig } from '../config'
+import bookshelf from '../assets/bookshelf.svg?raw'
 
 function formatReadingTime(readBookTime: bigint): string {
     let minutes = readBookTime / 60_000n
@@ -8,7 +9,7 @@ function formatReadingTime(readBookTime: bigint): string {
     return `${hours} 时 ${minutes} 分`
 }
 
-function createMenuItem(text: string): HTMLDivElement {
+function createMenuItem(text: string, icon?: string, onclick?: () => void): HTMLDivElement {
     // <div tabindex="0"
     //     role="menuitem"
     //     class="arco-menu-item serial-menu-item slogin-user-avatar__menu-item-wrapper"
@@ -22,11 +23,20 @@ function createMenuItem(text: string): HTMLDivElement {
     item.classList.add('fqa-menu-item', 'arco-menu-item', 'serial-menu-item', 'slogin-user-avatar__menu-item-wrapper')
     const inner1 = document.createElement('div')
     inner1.classList.add('slogin-user-avatar__menu-item')
+    if (icon) {
+        const iconDiv = document.createElement('div')
+        iconDiv.classList.add('slogin-user-avatar__menu-item__icon')
+        iconDiv.innerHTML = icon
+        inner1.appendChild(iconDiv)
+    }
     const inner2 = document.createElement('div')
     inner2.classList.add('slogin-user-avatar__menu-item__content')
     inner2.textContent = text
     inner1.appendChild(inner2)
     item.appendChild(inner1)
+    if (onclick) {
+        item.addEventListener('click', onclick)
+    }
     return item
 }
 
@@ -48,6 +58,10 @@ async function mainHook(_previous?: string): Promise<void> {
         menuInner.insertAdjacentElement('afterbegin', firstDiv)
         const secondDiv = createMenuItem(formatReadingTime(userInfo.read_book_time ?? 0n))
         firstDiv.insertAdjacentElement('afterend', secondDiv)
+        const thirdDiv = createMenuItem('我的书架', bookshelf, () => {
+            window.open('https://fanqienovel.com/bookshelf', '_blank')
+        })
+        secondDiv.insertAdjacentElement('afterend', thirdDiv)
     }
 
     const scan = (root: HTMLElement) => {
@@ -75,8 +89,8 @@ async function mainHook(_previous?: string): Promise<void> {
     scan(document.body)
 }
 
-function filter(_path: string, _query: URLSearchParams, _hash: string): boolean {
-    return userState.isLogin
+function filter(path: string, _query: URLSearchParams, _hash: string): boolean {
+    return userState.isLogin && !path.startsWith('/writer') && !path.startsWith('/welfare')
 }
 
 const _exports: HookConfig[] = [
