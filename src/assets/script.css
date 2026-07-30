@@ -43,3 +43,7 @@
 .arco-menu-item {
 	width: 100%!important;
 }
+
+#dynamic-el {
+	display: none!important;
+}
