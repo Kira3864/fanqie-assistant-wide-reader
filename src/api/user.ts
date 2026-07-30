@@ -1,32 +1,6 @@
 import { fetch } from '../config'
 import { del, read, write } from '../localStorage'
-
-export interface UserTitle {
-    title: string
-    desc: string
-}
-
-export interface UserInfo {
-    id: string
-    username: string
-    avatar: string
-    desc: string
-    age: number
-    // detailed
-    gender?: number // 0: 女 | 1: 男 | 2: 未知/没设置
-    recommend_gender?: number // 0: 女频 | 1: 男频 | 2: 我都爱看
-    fans_num?: number
-    following_num?: number
-    is_author?: boolean
-    author_desc?: string
-    read_book_num?: number
-    read_book_time?: bigint // ms
-}
-
-export interface UserState {
-    isLogin: boolean
-    userInfo: UserInfo | null
-}
+import type { UserInfo, UserState } from '../types'
 
 export let userState: UserState = {
     isLogin: false,
@@ -35,6 +9,7 @@ export let userState: UserState = {
 if (read('userState')) {
     userState = read('userState')
 }
+console.log('userState:', userState)
 
 export async function getDetailedUserInfo(): Promise<UserInfo | null> {
     if (!userState?.isLogin || !userState?.userInfo) {
@@ -66,6 +41,7 @@ export async function getDetailedUserInfo(): Promise<UserInfo | null> {
         // userState.userInfo.titles = data.titles
         return userState.userInfo
     }
+    write('userState', userState)
     return userState.userInfo
 }
 
