@@ -9,6 +9,7 @@ export interface DeviceConfig {
     install_id: string; // iid
     device_id: string;
     device_type?: string;
+    device_brand?: string;
     key_info?: KeyInfo;
 }
 

@@ -1,6 +1,8 @@
 import { getDetailedUserInfo, userState } from '../api/user'
 import type { HookConfig } from '../config'
 import bookshelf from '../assets/bookshelf.svg?raw'
+import { openSettings } from '../settingsPanel'
+import { cloneElement } from '../utils'
 
 function formatReadingTime(readBookTime: bigint): string {
     let minutes = readBookTime / 60_000n
@@ -26,6 +28,12 @@ function createMenuItem(text: string, icon?: string, onclick?: () => void): HTML
     if (icon) {
         const iconDiv = document.createElement('div')
         iconDiv.classList.add('slogin-user-avatar__menu-item__icon')
+        if (document.querySelector('div.muye-reader-dark')) {
+            console.log('isdark')
+            iconDiv.classList.add('fqa-icon-dark')
+        } else {
+            console.log('islight')
+        }
         iconDiv.innerHTML = icon
         inner1.appendChild(iconDiv)
     }
@@ -62,6 +70,8 @@ async function mainHook(_previous?: string): Promise<void> {
             window.open('https://fanqienovel.com/bookshelf', '_blank')
         })
         secondDiv.insertAdjacentElement('afterend', thirdDiv)
+        // 助手设置固定放在菜单最后
+        menuInner.appendChild(createMenuItem('助手设置', undefined, openSettings))
     }
 
     const scan = (root: HTMLElement) => {
@@ -89,8 +99,55 @@ async function mainHook(_previous?: string): Promise<void> {
     scan(document.body)
 }
 
+/**
+ * 未登录时没有用户菜单，改为复制「注册」按钮做一个「助手设置」入口。
+ */
+async function guestHook(_previous?: string): Promise<void> {
+    const injected = new WeakSet<HTMLElement>()
+
+    const inject = (registerBtn: HTMLElement) => {
+        const parent = registerBtn.parentElement
+        if (!parent || injected.has(parent)) return
+        if (parent.querySelector('.fqa-settings-entry')) return
+        injected.add(parent)
+
+        const entry = cloneElement(registerBtn)
+        entry.classList.add('fqa-settings-entry')
+        entry.textContent = '助手设置'
+        entry.addEventListener('click', event => {
+            // 原按钮带跳转逻辑，别让它继续冒泡
+            event.preventDefault()
+            event.stopPropagation()
+            openSettings()
+        })
+        registerBtn.insertAdjacentElement('afterend', entry)
+    }
+
+    const scan = (root: ParentNode) => {
+        root.querySelectorAll<HTMLElement>('.slogin-user-avatar__buttons__item').forEach(el => {
+            if (el.classList.contains('fqa-settings-entry')) return
+            if (el.textContent?.trim() === '注册') inject(el)
+        })
+    }
+
+    const observer = new MutationObserver(mutations => {
+        for (const mutation of mutations) {
+            for (const node of mutation.addedNodes) {
+                if (node instanceof HTMLElement) scan(node)
+            }
+        }
+    })
+    observer.observe(document.body, { childList: true, subtree: true })
+
+    scan(document)
+}
+
 function filter(path: string, _query: URLSearchParams, _hash: string): boolean {
     return userState.isLogin && !path.startsWith('/writer') && !path.startsWith('/welfare')
+}
+
+function guestFilter(path: string, _query: URLSearchParams, _hash: string): boolean {
+    return !userState.isLogin && !path.startsWith('/writer') && !path.startsWith('/welfare')
 }
 
 const _exports: HookConfig[] = [
@@ -99,6 +156,12 @@ const _exports: HookConfig[] = [
         event: 'load',
         filter,
         handler: mainHook
+    },
+    {
+        id: 'userHook_guest',
+        event: 'load',
+        filter: guestFilter,
+        handler: guestHook
     }
 ]
 

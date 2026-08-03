@@ -47,3 +47,72 @@
 #dynamic-el {
 	display: none!important;
 }
+
+.fqa-footnote-ref {
+	display: inline-block;
+	margin: 0 0.15em;
+	padding: 0 0.25em;
+	font-size: 0.7em;
+	line-height: 1.4;
+	vertical-align: super;
+	color: var(--web-brand_normal, #f14646);
+	cursor: pointer;
+	user-select: none;
+	border-radius: 3px;
+	text-indent: 0;
+}
+
+.fqa-footnote-ref:hover,
+.fqa-footnote-ref:focus-visible {
+	background: var(--web-brand_light, rgba(241, 70, 70, 0.12));
+	outline: none;
+}
+
+
+.fqa-footnote {
+	margin-top: 2em;
+	padding-top: 1em;
+	border-top: 1px solid var(--web-gray_20, rgba(128, 128, 128, 0.25));
+	font-size: var(--fqa-body-size, 1.6rem);
+}
+
+.muye-reader-content-16 .fqa-footnote { font-size: var(--fqa-body-size, 1.6rem); }
+.muye-reader-content-20 .fqa-footnote { font-size: var(--fqa-body-size, 2rem); }
+.muye-reader-content-24 .fqa-footnote { font-size: var(--fqa-body-size, 2.4rem); }
+.muye-reader-content-28 .fqa-footnote { font-size: var(--fqa-body-size, 2.8rem); }
+.muye-reader-content-32 .fqa-footnote { font-size: var(--fqa-body-size, 3.2rem); }
+
+.fqa-footnote-title {
+	margin-bottom: 0.6em;
+	font-size: 0.85em;
+	font-weight: 600;
+	color: var(--web-gray_40, #8a8a8a);
+	text-indent: 0;
+}
+
+.fqa-footnote-list {
+	margin: 0;
+	padding-left: 1.6em;
+	font-size: 0.85em;
+	line-height: 1.7;
+	color: var(--web-gray_40, #8a8a8a);
+}
+
+.fqa-footnote-list li {
+	margin-bottom: 0.5em;
+	text-indent: 0;
+	transition: background-color 0.3s ease;
+}
+
+.fqa-footnote-list li.fqa-footnote-active {
+	background: var(--web-brand_light, rgba(241, 70, 70, 0.12));
+	border-radius: 4px;
+}
+
+.muye-reader-content > body {
+	background-color: var(--web-bg)!important;
+}
+
+.fqa-icon-dark {
+	color: #B3B3B3
+}

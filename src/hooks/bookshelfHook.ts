@@ -3,6 +3,7 @@ import type { HookConfig } from '../config'
 import BookshelfView from '../views/BookshelfView.vue'
 import bookshelfcss from '../assets/bookshelf.css?raw'
 import { waitForElement } from '../utils'
+import { userState } from '../api/user'
 
 const CONTAINER_ID = 'fqa-bookshelf-root'
 const STYLE_ID = 'fqa-bookshelf-style'
@@ -102,7 +103,7 @@ async function mainHook(_previous?: string): Promise<void> {
 }
 
 function filter(path: string, _query: URLSearchParams, _hash: string) {
-    return isBookshelfPath(path) || !!app
+    return (isBookshelfPath(path) || !!app) && userState.isLogin
 }
 
 const _exports: HookConfig[] = [

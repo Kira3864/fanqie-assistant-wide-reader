@@ -1,4 +1,5 @@
 import type { HookConfig } from "../config"
+import { settings } from "../settings"
 
 // disable report
 const blackList = [
@@ -16,6 +17,8 @@ const BLOCKED_BODY = JSON.stringify({
 })
 
 function checkBlack(url: string): boolean {
+    // 设置里关掉后即时放行，无需刷新页面
+    if (!settings.blockReport) return false
     return blackList.some(black => url.includes(black))
 }
 

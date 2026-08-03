@@ -1,9 +1,11 @@
 import { fetch } from '../config'
 import type { BookShelfBookInfo, BookShelfItem } from '../types'
 
+const SHELF_BASE = 'https://fanqienovel.com/reading/bookapi/bookshelf'
+
 export async function getBookshelf(): Promise<BookShelfItem[]> {
     const responses = await Promise.all([
-        fetch('https://fanqienovel.com/reading/bookapi/bookshelf/info/v:version/?aid=1967&iid=0&version_code=57700&update_version_code=57700'),
+        fetch(SHELF_BASE + '/info/v:version/?aid=1967&iid=0&version_code=57700&update_version_code=57700'),
         fetch('https://fanqienovel.com/api/reader/book/progress')
     ])
     const response = responses[0]
@@ -82,4 +84,67 @@ export async function multidetail(books: BookShelfItem[]): Promise<BookShelfBook
         results.push(item)
     }
     return results
+}
+
+
+interface ShelfIdentify {
+    asterisked: boolean
+    book_id: string
+    book_type: number
+    modify_time: number
+}
+
+function identify(bookId: string, modifyTime = 0): ShelfIdentify {
+    return {
+        asterisked: false,
+        book_id: bookId,
+        book_type: 0,
+        modify_time: modifyTime,
+    }
+}
+
+async function shelfPost(path: string, body: unknown): Promise<any> {
+    const res = await fetch(`${SHELF_BASE}${path}/v?aid=1967`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body),
+    })
+    const json = await res.json().catch(() => null)
+    if (!res.ok || (json && json.code !== 0 && json.code !== undefined)) {
+        throw new Error(`书架操作失败(${path}): ${json?.message ?? res.status}`)
+    }
+    return json
+}
+
+/** 加入书架 */
+export async function addToBookshelf(bookId: string): Promise<void> {
+    await shelfPost('/add', {
+        add_book_source: 0,
+        identify_data: [identify(bookId)],
+    })
+}
+
+/** 从书架移除 */
+export async function removeFromBookshelf(bookId: string): Promise<void> {
+    await shelfPost('/delete', {
+        identify_data: [identify(bookId, Date.now())],
+    })
+}
+
+/** 分组间移动 */
+export async function moveToGroup(bookId: string, groupName: string): Promise<void> {
+    await shelfPost('/update', {
+        book_data: [
+            {
+                asterisked: false,
+                book_id: bookId,
+                book_type: 0,
+                group_name: groupName,
+                has_shown: false,
+                is_pin: false,
+                modify_time: Date.now(),
+            },
+        ],
+    })
 }

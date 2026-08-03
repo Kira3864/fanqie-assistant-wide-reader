@@ -1,11 +1,14 @@
 import { type HookConfig } from '../config'
 import { getChapter } from '../api/content'
 import { getBookInfoAndCatalog } from '../api/book'
-import { decryptComicImage } from '../utils/crypto'
+import { applyBookCss } from '../api/bookcss'
+import { processFootnotes, bindFootnoteInteraction } from '../utils/footnote'
+import { settings } from '../settings'
 import { fetch } from '../config'
 // import defaultcss from '../assets/default.css?raw';
 import { cloneElement } from '../utils';
 import { type Book } from '../types'
+import { decryptComicImage } from '../crypto/content';
 // import moment from 'moment'
 
 let currentBook: Book | null = null
@@ -36,18 +39,32 @@ async function insertContent() {
     }).__INITIAL_STATE__
     const chapterTitle = chapter.novel_data?.title || pageState?.reader?.chapterData?.title
     if (typeof chapter.content === 'string') {
-        // TODO: 支持部分书籍的CSS内容
+        // 书籍自带的排版样式（css_map），作用域限定在正文容器内后注入
+        void applyBookCss(chapter.novel_data?.css_map, '#fqa-reader-content')
         const dp = new DOMParser()
         const doc = dp.parseFromString(chapter.content, 'text/html')
         const body = doc.body
-        const article = body.querySelector('article')
-        const toProcess = article || body
+        // XHTML 里的 <link href="Styles/xxx.css"> 是 EPUB 相对路径，页面里解析不到，
+        // 留着只会产生 404 请求，样式已由 applyBookCss 处理
+        body.querySelectorAll('link[rel="stylesheet"]').forEach((el) => el.remove())
+        let article = body.querySelector('article')
+        let toProcess = article || body
+        // 章内注释：把裂图标记换成可点的上标序号，并重排文末注释列表
+        processFootnotes(toProcess)
 
         for (let i = 0; i < toProcess.childNodes.length; i++) {
-            if (i < 1 && (toProcess.childNodes[i] as HTMLElement)?.innerHTML.includes(chapterTitle)) {
+            // console.log('Child node:', toProcess.childNodes[i] as HTMLElement)
+            if (i < 2 && (toProcess.childNodes[i] as HTMLElement)?.innerHTML?.includes(chapterTitle)) {
                 // remove duplicate title
                 toProcess.removeChild(toProcess.childNodes[i] as HTMLElement)
+                break
             }
+        }
+
+        if (!article) {
+            article = document.createElement('article')
+            article.innerHTML = toProcess.innerHTML
+            toProcess = article
         }
 
         const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)")
@@ -58,13 +75,14 @@ async function insertContent() {
                 scriptContainer = cloneElement(readerContainer) as HTMLDivElement
                 scriptContainer.id = 'fqa-reader-content'
                 scriptContainer.classList.add('fqa')
-                scriptContainer.classList.remove('noselect') // allow text selection
+                if (settings.allowCopy) scriptContainer.classList.remove('noselect')
                 readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
             }
             scriptContainer.innerHTML = ''
             // 隐藏原来的内容div
             readerContainer.classList.add('fqa-hide')
             scriptContainer.appendChild(toProcess)
+            bindFootnoteInteraction(scriptContainer)
         }
     } else if (chapter.content.picInfos) { // comic
         if (chapter.content.encrypt) {
@@ -92,7 +110,7 @@ async function insertContent() {
                     scriptContainer.id = 'fqa-reader-content'
                     scriptContainer.classList.add('fqa')
                     scriptContainer.classList.add('fqa-comic-reader')
-                    scriptContainer.classList.remove('noselect')
+                    if (settings.allowCopy) scriptContainer.classList.remove('noselect')
                     readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
                 }
                 scriptContainer.innerHTML = ''
@@ -156,7 +174,7 @@ async function insertContent() {
                     scriptContainer.id = 'fqa-reader-content'
                     scriptContainer.classList.add('fqa')
                     scriptContainer.classList.add('fqa-comic-reader')
-                    scriptContainer.classList.remove('noselect')
+                    if (settings.allowCopy) scriptContainer.classList.remove('noselect')
                     readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
                 }
                 scriptContainer.innerHTML = ''
@@ -170,7 +188,7 @@ async function insertContent() {
     let muyeReaderSubtitle = document.querySelector("div.muye-reader-subtitle")
     document.querySelector('#fqa-subtitle')?.remove() // prevent duplicate subtitle
     if (muyeReaderSubtitle) {
-        // 脱离原页面 Vue tree ，防止被二次修改
+        // 脱离原页面防止被二次修改
         let _cloned = cloneElement(muyeReaderSubtitle)
         muyeReaderSubtitle.classList.add('fqa-hide')
         _cloned.id = 'fqa-subtitle'

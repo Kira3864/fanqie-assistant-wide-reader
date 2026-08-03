@@ -48,3 +48,14 @@ export function chunk<T>(list: T[], size: number): T[][] {
     }
     return result;
 }
+
+export function concatArrayBuffers(...buffers: ArrayBuffer[]): ArrayBuffer {
+    const totalLength = buffers.reduce((sum, buf) => sum + buf.byteLength, 0)
+    const result = new Uint8Array(totalLength)
+    let offset = 0
+    for (const buf of buffers) {
+        result.set(new Uint8Array(buf), offset)
+        offset += buf.byteLength
+    }
+    return result.buffer
+}

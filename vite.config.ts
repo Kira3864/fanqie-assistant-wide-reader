@@ -31,7 +31,7 @@ export default defineConfig({
         'run-at': 'document-start',
         match: ['*://*.fanqienovel.com/*'],
         grant: ['GM_addStyle', 'GM_getValue', 'GM_setValue', 'GM_deleteValue', 'GM_xmlhttpRequest', 'unsafeWindow'],
-        connect: ['fanqienovel.com', 'api5-sinfonlinec.jxbhmy.com', 'api3-sinfonlinec.jxbhmy.com', 'reading.snssdk.com'],
+        connect: ['fanqienovel.com', 'api5-sinfonlinec.jxbhmy.com', 'api3-sinfonlinec.jxbhmy.com', 'reading.snssdk.com', 'i.snssdk.com'],
       },
       build: {
         fileName: 'fanqie-assistant.user.js',

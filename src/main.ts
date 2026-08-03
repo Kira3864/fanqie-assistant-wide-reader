@@ -1,9 +1,11 @@
 import _config from './config'
 import injectCSS from './cssInject'
 import initFontDecrypt from './fontDecrypt'
+import initUserStyle from './userStyle'
 import { onLoad, onUrlChange, onHashChange } from './hooks'
 import { version, name } from '../package.json'
 import initUser from './api/user'
+import { ensureDevice } from './api/provision'
 
 const win = unsafeWindow
 
@@ -46,6 +48,12 @@ async function mainInit() {
     initFontDecrypt()
 
     await injectCSS()
+
+    // 用户自定义样式（阅读器字体 / 自定义 CSS）
+    initUserStyle()
+
+    // APP 接口需要已注册的设备（首次会注册并激活会员，之后走本地缓存）
+    await ensureDevice()
 
     await initUser()
 

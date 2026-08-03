@@ -1,5 +1,5 @@
-import apiFetch from '../utils/request'
 import type { Book } from '../types'
+import { appGet } from './app'
 import { getCatalog } from './catalog'
 import moment from 'moment'
 
@@ -16,8 +16,12 @@ export function mappingCreationStatus(status: string): string {
     }
 }
 
+/**
+ * 书籍详情，对应 APP 的 /bookapi/multi-detail/v。
+ * 响应字段与红烛接口一致，签名通用。
+ */
 export async function getBookInfoRaw(bookId: string): Promise<any> {
-    const response = await apiFetch(`https://api5-sinfonlinec.jxbhmy.com/reading/bookapi/multi-detail/v?book_id=${bookId}&aid=1967`)
+    const response = await appGet('/bookapi/multi-detail/v', { book_id: bookId })
     const j: any = response.json()
     console.log('Book Info:', j)
     if (

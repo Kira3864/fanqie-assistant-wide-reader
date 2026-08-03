@@ -1,3 +1,6 @@
+import { watch } from 'vue'
+import { settings } from './settings'
+
 const enTag = '.font-DNMrHsV173Pd4pgy' // 这个目前从存在解密算法到现在没改过。暂且认为它在加解密算法不变时长时不变。
 const code_ed = 58715
 const code_st = 58344
@@ -58,6 +61,7 @@ export function decryptText(text: string): string {
  * @param element 要解密的 DOM 元素
  */
 export function decryptElement(element: Element) {
+    if (!settings.decryptFont) return
     const walker = document.createTreeWalker(
         element,
         NodeFilter.SHOW_TEXT,
@@ -124,4 +128,12 @@ export default function initFontDecrypt() {
 
     // observer 挂载前解析出的节点不会产生 mutation，需补扫一次。
     decryptPage(document);
+
+    // 设置里重新打开时，之前跳过的节点需要补解密一次
+    watch(
+        () => settings.decryptFont,
+        (on) => {
+            if (on) decryptPage(document);
+        }
+    );
 }

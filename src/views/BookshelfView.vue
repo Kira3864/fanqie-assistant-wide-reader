@@ -3,8 +3,10 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import BookCard from './BookCard.vue'
 import BookGroupCard from './BookGroupCard.vue'
 import BookHoverCard from './BookHoverCard.vue'
+import ContextMenu from './ContextMenu.vue'
 import { TABS, useBookshelf } from './useBookshelf'
-import type { BookShelfEntry, BookShelfGroup, BookShelfTabKey } from '../types'
+import { moveToGroup, removeFromBookshelf } from '../api/bookshelf'
+import type { BookShelfEntry, BookShelfGroup, BookShelfTabKey, MenuItem } from '../types'
 
 /** 持续悬停多久后展示详情 */
 const HOVER_DELAY = 300
@@ -14,7 +16,7 @@ const HOVER_WIDTH = 280
 const HOVER_GAP = 12
 const VIEWPORT_MARGIN = 8
 
-const { loading, detailLoading, error, counts, load, ensureDetails, cellsOf, findGroup, PAGE_SIZE } =
+const { loading, detailLoading, error, counts, groups, load, ensureDetails, cellsOf, findGroup, PAGE_SIZE } =
     useBookshelf()
 
 const activeTab = ref<BookShelfTabKey>('all')
@@ -244,6 +246,97 @@ function openGroup(group: BookShelfGroup) {
     openedGroupName.value = group.name
 }
 
+/* ------------------------------ 右键菜单 ------------------------------ */
+
+const menuVisible = ref(false)
+const menuPos = ref({ x: 0, y: 0 })
+const menuEntry = ref<BookShelfEntry | null>(null)
+/** 操作结果提示，几秒后自动消失 */
+const toast = ref<string | null>(null)
+let toastTimer: ReturnType<typeof setTimeout> | undefined
+
+function showToast(msg: string) {
+    toast.value = msg
+    if (toastTimer) clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => {
+        toast.value = null
+        toastTimer = undefined
+    }, 2600)
+}
+
+const MOVE_PREFIX = 'move:'
+const NO_GROUP_KEY = `${MOVE_PREFIX}`
+
+const menuItems = computed<MenuItem[]>(() => {
+    const entry = menuEntry.value
+    if (!entry) return []
+    const current = entry.item.group_name ?? ''
+
+    // 目标分组：所有分组去掉当前所在的那个
+    const targets: MenuItem[] = groups.value
+        .filter(g => g.name !== current)
+        .map(g => ({ key: `${MOVE_PREFIX}${g.name}`, label: g.name }))
+    // 已经在某个分组里时，额外给一个移出分组的选项
+    if (current) targets.push({ key: NO_GROUP_KEY, label: '无分组' })
+
+    return [
+        { key: 'open', label: '打开' },
+        { key: 'detail', label: '查看详情' },
+        {
+            key: 'move',
+            label: '移动到分组',
+            disabled: targets.length === 0,
+            children: targets
+        },
+        { key: 'remove', label: '从书架删除', danger: true }
+    ]
+})
+
+function onCardContextMenu({ entry, x, y }: { entry: BookShelfEntry; x: number; y: number }) {
+    hideHover(true)
+    menuEntry.value = entry
+    menuPos.value = { x, y }
+    menuVisible.value = true
+}
+
+async function onMenuSelect(key: string) {
+    const entry = menuEntry.value
+    if (!entry) return
+    const bookId = entry.item.book_id
+
+    if (key === 'open') {
+        openBook(entry)
+        return
+    }
+    if (key === 'detail') {
+        unsafeWindow.location.href = `https://fanqienovel.com/page/${bookId}`
+        return
+    }
+    if (key === 'remove') {
+        if (!unsafeWindow.confirm(`确定要把《${entry.detail?.title ?? bookId}》从书架删除吗？`)) return
+        try {
+            await removeFromBookshelf(bookId)
+            showToast('已从书架删除')
+            await refresh()
+        } catch (err) {
+            console.error('[fqa:bookshelf] 删除失败:', err)
+            showToast(err instanceof Error ? err.message : '删除失败')
+        }
+        return
+    }
+    if (key.startsWith(MOVE_PREFIX)) {
+        const groupName = key.slice(MOVE_PREFIX.length)
+        try {
+            await moveToGroup(bookId, groupName)
+            showToast(groupName ? `已移动到「${groupName}」` : '已移出分组')
+            await refresh()
+        } catch (err) {
+            console.error('[fqa:bookshelf] 移动分组失败:', err)
+            showToast(err instanceof Error ? err.message : '移动分组失败')
+        }
+    }
+}
+
 function backToList() {
     openedGroupName.value = null
     hideHover(true)
@@ -363,6 +456,7 @@ onBeforeUnmount(() => {
                         @leave="scheduleHide"
                         @open="openBook"
                         @visible="onCardVisible"
+                        @contextmenu="onCardContextMenu"
                     />
                     <BookGroupCard v-else :group="cell.group" @open="openGroup" @visible="onGroupVisible" />
                 </template>
@@ -382,6 +476,15 @@ onBeforeUnmount(() => {
                 @panel-enter="onPanelEnter"
                 @panel-leave="onPanelLeave"
             />
+            <ContextMenu
+                :visible="menuVisible"
+                :x="menuPos.x"
+                :y="menuPos.y"
+                :items="menuItems"
+                @select="onMenuSelect"
+                @close="menuVisible = false"
+            />
+            <div v-if="toast" class="fqa-toast">{{ toast }}</div>
         </Teleport>
     </div>
 </template>

@@ -111,3 +111,12 @@ export type BookShelfTabKey = 'all' | 'group' | 'publish'
 export type BookShelfCell =
     | { kind: 'book'; key: string; entry: BookShelfEntry }
     | { kind: 'group'; key: string; group: BookShelfGroup }
+/** 右键菜单项。有 children 时展开二级面板 */
+export interface MenuItem {
+    key: string
+    label: string
+    /** 危险操作，标红 */
+    danger?: boolean
+    disabled?: boolean
+    children?: MenuItem[]
+}

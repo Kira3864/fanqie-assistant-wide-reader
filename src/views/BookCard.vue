@@ -9,6 +9,7 @@ const emit = defineEmits<{
     (e: 'leave'): void
     (e: 'open', entry: BookShelfEntry): void
     (e: 'visible', entry: BookShelfEntry): void
+    (e: 'contextmenu', payload: { entry: BookShelfEntry; x: number; y: number }): void
 }>()
 
 const detail = computed(() => props.entry.detail)
@@ -48,6 +49,11 @@ const progressPercent = computed(() => {
 
 function onEnter(event: MouseEvent) {
     emit('hover', { entry: props.entry, el: event.currentTarget as HTMLElement })
+}
+
+function onContextMenu(event: MouseEvent) {
+    event.preventDefault()
+    emit('contextmenu', { entry: props.entry, x: event.clientX, y: event.clientY })
 }
 
 /** 封面淡入。用状态而非直接改 class，避免重渲染后卡在透明态 */
@@ -94,6 +100,7 @@ onBeforeUnmount(() => {
         :aria-label="title"
         @mouseenter="onEnter"
         @mouseleave="emit('leave')"
+        @contextmenu="onContextMenu"
         @click="emit('open', entry)"
         @keydown.enter.prevent="emit('open', entry)"
         @keydown.space.prevent="emit('open', entry)"

@@ -645,3 +645,110 @@
         border-left-color: rgba(255, 255, 255, 0.1);
     }
 }
+
+/* ----------------------------- 右键菜单 ----------------------------- */
+
+/*
+ * 菜单 Teleport 到 body，拿不到 #fqa-bookshelf 上的变量，
+ * 这里重新声明一份（与书架同色板），并给出深色模式回退。
+ */
+.fqa-menu {
+    --fqa-menu-bg: #fff;
+    --fqa-menu-text: #1f2329;
+    --fqa-menu-sub: #8f959e;
+    --fqa-menu-hover: rgba(31, 35, 41, 0.06);
+    --fqa-menu-danger: #f5222d;
+
+    position: fixed;
+    z-index: 2147483001;
+    min-width: 132px;
+    max-width: 240px;
+    padding: 4px;
+    box-sizing: border-box;
+    background: var(--fqa-menu-bg);
+    border: 1px solid rgba(31, 35, 41, 0.08);
+    border-radius: 8px;
+    box-shadow: 0 6px 24px rgba(31, 35, 41, 0.16);
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,
+        sans-serif;
+    font-size: 13px;
+    color: var(--fqa-menu-text);
+    user-select: none;
+}
+
+/* 二级面板：分组数量多时可滚动 */
+.fqa-menu-sub {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.fqa-menu-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 10px;
+    border-radius: 5px;
+    line-height: 1.4;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.fqa-menu-row > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fqa-menu-row:hover,
+.fqa-menu-row.fqa-menu-open {
+    background: var(--fqa-menu-hover);
+}
+
+.fqa-menu-arrow {
+    color: var(--fqa-menu-sub);
+    font-size: 15px;
+    line-height: 1;
+}
+
+.fqa-menu-danger {
+    color: var(--fqa-menu-danger);
+}
+
+.fqa-menu-disabled {
+    color: var(--fqa-menu-sub);
+    cursor: not-allowed;
+}
+
+.fqa-menu-disabled:hover {
+    background: transparent;
+}
+
+/* 操作结果提示 */
+.fqa-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 48px;
+    transform: translateX(-50%);
+    z-index: 2147483002;
+    max-width: 80vw;
+    padding: 10px 18px;
+    box-sizing: border-box;
+    background: rgba(31, 35, 41, 0.88);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    box-shadow: 0 6px 24px rgba(31, 35, 41, 0.24);
+    pointer-events: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .fqa-menu {
+        --fqa-menu-bg: #23272e;
+        --fqa-menu-text: #e5e6eb;
+        --fqa-menu-sub: #8f959e;
+        --fqa-menu-hover: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+}
