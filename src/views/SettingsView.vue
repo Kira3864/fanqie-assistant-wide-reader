@@ -7,11 +7,12 @@ import { version } from '../../package.json'
 
 const emit = defineEmits<{ (e: 'close'): void }>()
 
-type SectionKey = 'general' | 'ui' | 'protocol' | 'about'
+type SectionKey = 'general' | 'ui' | 'search' | 'protocol' | 'about'
 
 const SECTIONS: Array<{ key: SectionKey; label: string }> = [
     { key: 'general', label: '常规' },
     { key: 'ui', label: '界面' },
+    { key: 'search', label: '搜索' },
     { key: 'protocol', label: '协议' },
     { key: 'about', label: '关于' },
 ]
@@ -140,6 +141,31 @@ const GITHUB = 'https://github.com/naiyQAQ/fanqie-assistant'
                             placeholder="/* 自定义 CSS */"
                         ></textarea>
                         <p class="fqa-set-note">关闭开关后内容会保留，只是不再应用。</p>
+                    </div>
+                </template>
+
+                <!-- 搜索 -->
+                <template v-else-if="active === 'search'">
+                    <h3 class="fqa-set-h">搜索</h3>
+
+                    <label class="fqa-set-row">
+                        <span class="fqa-set-label">接管搜索界面</span>
+                        <input v-model="settings.enhanceSearch" type="checkbox" class="fqa-set-switch" />
+                    </label>
+
+                    <div class="fqa-set-row fqa-set-row-col">
+                        <label class="fqa-set-row" style="padding-top: 0; border-bottom: none">
+                            <span class="fqa-set-label">个人化推荐</span>
+                            <input
+                                v-model="settings.searchPersonalized"
+                                type="checkbox"
+                                class="fqa-set-switch"
+                            />
+                        </label>
+                        <p class="fqa-set-note">
+                            开启后搜索走同源请求，由浏览器自动带上你的登录 Cookie，番茄据此按阅读偏好排序。
+                            凭据不经过脚本，也不会发往番茄以外的任何地方。关闭时走匿名请求。
+                        </p>
                     </div>
                 </template>
 

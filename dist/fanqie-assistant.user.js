@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         番茄小说助手
 // @namespace    https://github.com/naiyQAQ/fanqie-assistant
-// @version      0.0.4
+// @version      0.0.5
 // @author       naiyQAQ
 // @description  番茄小说助手，去广告、去推广、解锁章节、优化体验。
 // @license      GPLv3
@@ -10,10 +10,11 @@
 // @require      https://registry.npmmirror.com/vue/3.5.40/files/dist/vue.global.prod.js
 // @require      https://registry.npmmirror.com/moment/2.30.1/files/min/moment.min.js
 // @connect      fanqienovel.com
-// @connect      api5-sinfonlinec.jxbhmy.com
-// @connect      api3-sinfonlinec.jxbhmy.com
-// @connect      reading.snssdk.com
-// @connect      i.snssdk.com
+// @connect      jxbhmy.com
+// @connect      snssdk.com
+// @connect      byteimg.com
+// @connect      fqnovelpic.com
+// @connect      bytecdn.cn
 // @grant        GM_addStyle
 // @grant        GM_deleteValue
 // @grant        GM_getValue
@@ -40,7 +41,7 @@
   const _config = {
     currentConfig: defaultConfig
   };
-  const scriptcss = "/* 移除章节锁定图标 */\n.muyeicon-lock {\n	display: none;\n}\n/* 移除APP推广图标 */\n.muye-to-fanqie {\n	display: none!important;\n}\n.reader-toolbar-item-download {\n	display: none!important;\n}\n.download-btn {\n	display: none!important;\n}\n.download-icon {\n	display: none!important;\n}\n\n.fqa-hide {\n	display: none!important;\n}\n/* 404 */\n.no-content {\n	display: none!important;\n}\n\n.fqa-comic-img {\n	width: 100%!important;\n	height: 100%!important;\n	max-width: 100%!important;\n	max-height: 100%!important;\n	padding-top: 0!important;\n	padding-bottom: 0!important;\n	margin-top: 0!important;\n	margin-bottom: 0!important;\n}\n\n.fqa-comic-reader {\n	line-height: 0!important;\n}\n\n.fqa-menu-item,\n.arco-menu-item {\n	width: 100%!important;\n}\n\n#dynamic-el {\n	display: none!important;\n}\n\n.fqa-footnote-ref {\n	display: inline-block;\n	margin: 0 0.15em;\n	padding: 0 0.25em;\n	font-size: 0.7em;\n	line-height: 1.4;\n	vertical-align: super;\n	color: var(--web-brand_normal, #f14646);\n	cursor: pointer;\n	user-select: none;\n	border-radius: 3px;\n	text-indent: 0;\n}\n\n.fqa-footnote-ref:hover,\n.fqa-footnote-ref:focus-visible {\n	background: var(--web-brand_light, rgba(241, 70, 70, 0.12));\n	outline: none;\n}\n\n\n.fqa-footnote {\n	margin-top: 2em;\n	padding-top: 1em;\n	border-top: 1px solid var(--web-gray_20, rgba(128, 128, 128, 0.25));\n	font-size: var(--fqa-body-size, 1.6rem);\n}\n\n.muye-reader-content-16 .fqa-footnote { font-size: var(--fqa-body-size, 1.6rem); }\n.muye-reader-content-20 .fqa-footnote { font-size: var(--fqa-body-size, 2rem); }\n.muye-reader-content-24 .fqa-footnote { font-size: var(--fqa-body-size, 2.4rem); }\n.muye-reader-content-28 .fqa-footnote { font-size: var(--fqa-body-size, 2.8rem); }\n.muye-reader-content-32 .fqa-footnote { font-size: var(--fqa-body-size, 3.2rem); }\n\n.fqa-footnote-title {\n	margin-bottom: 0.6em;\n	font-size: 0.85em;\n	font-weight: 600;\n	color: var(--web-gray_40, #8a8a8a);\n	text-indent: 0;\n}\n\n.fqa-footnote-list {\n	margin: 0;\n	padding-left: 1.6em;\n	font-size: 0.85em;\n	line-height: 1.7;\n	color: var(--web-gray_40, #8a8a8a);\n}\n\n.fqa-footnote-list li {\n	margin-bottom: 0.5em;\n	text-indent: 0;\n	transition: background-color 0.3s ease;\n}\n\n.fqa-footnote-list li.fqa-footnote-active {\n	background: var(--web-brand_light, rgba(241, 70, 70, 0.12));\n	border-radius: 4px;\n}\n\n.muye-reader-content > body {\n	background-color: var(--web-bg)!important;\n}\n\n.fqa-icon-dark {\n	color: #B3B3B3\n}";
+  const scriptcss = "/* 移除章节锁定图标 */\n.muyeicon-lock {\n	display: none;\n}\n/* 移除APP推广图标 */\n.muye-to-fanqie {\n	display: none!important;\n}\n.reader-toolbar-item-download {\n	display: none!important;\n}\n.download-btn {\n	display: none!important;\n}\n.download-icon {\n	display: none!important;\n}\n\n.fqa-hide {\n	display: none!important;\n}\n/* 404 */\n.no-content {\n	display: none!important;\n}\n\n.fqa-comic-img {\n	width: 100%!important;\n	height: 100%!important;\n	max-width: 100%!important;\n	max-height: 100%!important;\n	padding-top: 0!important;\n	padding-bottom: 0!important;\n	margin-top: 0!important;\n	margin-bottom: 0!important;\n}\n\n.fqa-comic-reader {\n	line-height: 0!important;\n}\n\n.fqa-menu-item,\n.arco-menu-item {\n	width: 100%!important;\n}\n\n#dynamic-el {\n	display: none!important;\n}\n\n.fqa-footnote-ref {\n	display: inline-block;\n	margin: 0 0.15em;\n	padding: 0 0.25em;\n	font-size: 0.7em;\n	line-height: 1.4;\n	vertical-align: super;\n	color: var(--web-brand_normal, #f14646);\n	cursor: pointer;\n	user-select: none;\n	border-radius: 3px;\n	text-indent: 0;\n}\n\n.fqa-footnote-ref:hover,\n.fqa-footnote-ref:focus-visible {\n	background: var(--web-brand_light, rgba(241, 70, 70, 0.12));\n	outline: none;\n}\n\n\n.fqa-footnote {\n	margin-top: 2em;\n	padding-top: 1em;\n	border-top: 1px solid var(--web-gray_20, rgba(128, 128, 128, 0.25));\n	font-size: var(--fqa-body-size, 1.6rem);\n}\n\n.muye-reader-content-16 .fqa-footnote { font-size: var(--fqa-body-size, 1.6rem); }\n.muye-reader-content-20 .fqa-footnote { font-size: var(--fqa-body-size, 2rem); }\n.muye-reader-content-24 .fqa-footnote { font-size: var(--fqa-body-size, 2.4rem); }\n.muye-reader-content-28 .fqa-footnote { font-size: var(--fqa-body-size, 2.8rem); }\n.muye-reader-content-32 .fqa-footnote { font-size: var(--fqa-body-size, 3.2rem); }\n\n.fqa-footnote-title {\n	margin-bottom: 0.6em;\n	font-size: 0.85em;\n	font-weight: 600;\n	color: var(--web-gray_40, #8a8a8a);\n	text-indent: 0;\n}\n\n.fqa-footnote-list {\n	margin: 0;\n	padding-left: 1.6em;\n	font-size: 0.85em;\n	line-height: 1.7;\n	color: var(--web-gray_40, #8a8a8a);\n}\n\n.fqa-footnote-list li {\n	margin-bottom: 0.5em;\n	text-indent: 0;\n	transition: background-color 0.3s ease;\n}\n\n.fqa-footnote-list li.fqa-footnote-active {\n	background: var(--web-brand_light, rgba(241, 70, 70, 0.12));\n	border-radius: 4px;\n}\n\n.muye-reader-content > body {\n	background-color: var(--web-bg)!important;\n}\n\n.fqa-icon-dark {\n	color: #B3B3B3\n}\n\n/* ----------------------------- 右键菜单 / Toast ----------------------------- */\n\n/*\n * 书架与搜索共用。两者都把菜单 Teleport 到 body，\n * 拿不到各自根节点上的变量，所以在这里声明一份全局色板。\n */\n.fqa-menu {\n	--fqa-menu-bg: #fff;\n	--fqa-menu-text: #1f2329;\n	--fqa-menu-sub: #8f959e;\n	--fqa-menu-hover: rgba(31, 35, 41, 0.06);\n	--fqa-menu-danger: #f5222d;\n\n	position: fixed;\n	z-index: 2147483001;\n	min-width: 132px;\n	max-width: 240px;\n	padding: 4px;\n	box-sizing: border-box;\n	background: var(--fqa-menu-bg);\n	border: 1px solid rgba(31, 35, 41, 0.08);\n	border-radius: 8px;\n	box-shadow: 0 6px 24px rgba(31, 35, 41, 0.16);\n	font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\n		sans-serif;\n	font-size: 13px;\n	color: var(--fqa-menu-text);\n	user-select: none;\n}\n\n/* 二级面板：分组数量多时可滚动 */\n.fqa-menu-sub {\n	max-height: 320px;\n	overflow-y: auto;\n}\n\n.fqa-menu-row {\n	display: flex;\n	align-items: center;\n	justify-content: space-between;\n	gap: 12px;\n	padding: 7px 10px;\n	border-radius: 5px;\n	line-height: 1.4;\n	cursor: pointer;\n	white-space: nowrap;\n	overflow: hidden;\n}\n\n.fqa-menu-row > span:first-child {\n	overflow: hidden;\n	text-overflow: ellipsis;\n}\n\n.fqa-menu-row:hover,\n.fqa-menu-row.fqa-menu-open {\n	background: var(--fqa-menu-hover);\n}\n\n.fqa-menu-arrow {\n	color: var(--fqa-menu-sub);\n	font-size: 15px;\n	line-height: 1;\n}\n\n.fqa-menu-danger {\n	color: var(--fqa-menu-danger);\n}\n\n.fqa-menu-disabled {\n	color: var(--fqa-menu-sub);\n	cursor: not-allowed;\n}\n\n.fqa-menu-disabled:hover {\n	background: transparent;\n}\n\n/* 操作结果提示 */\n.fqa-toast {\n	position: fixed;\n	left: 50%;\n	bottom: 48px;\n	transform: translateX(-50%);\n	z-index: 2147483002;\n	max-width: 80vw;\n	padding: 10px 18px;\n	box-sizing: border-box;\n	background: rgba(31, 35, 41, 0.88);\n	color: #fff;\n	border-radius: 8px;\n	font-size: 13px;\n	line-height: 1.4;\n	box-shadow: 0 6px 24px rgba(31, 35, 41, 0.24);\n	pointer-events: none;\n}\n\n/* 骨架屏微光。书架与搜索共用同一个动画名 */\n@keyframes fqa-shimmer {\n	100% {\n		transform: translateX(100%);\n	}\n}\n\n@media (prefers-color-scheme: dark) {\n	.fqa-menu {\n		--fqa-menu-bg: #23272e;\n		--fqa-menu-text: #e5e6eb;\n		--fqa-menu-sub: #8f959e;\n		--fqa-menu-hover: rgba(255, 255, 255, 0.08);\n		border-color: rgba(255, 255, 255, 0.1);\n	}\n}";
   async function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -117,6 +118,9 @@
     readerFont: "",
     customCssEnabled: false,
     customCss: "",
+    enhanceSearch: true,
+    // 默认关：携带登录态属于额外的隐私暴露，交给用户显式开启
+    searchPersonalized: false,
     apiPreference: "app",
     deviceId: "",
     installId: "",
@@ -138,15 +142,15 @@
     }
     return s;
   }
-  const settings = vue.reactive(normalize(read(STORE_KEY$1)));
+  const settings$1 = vue.reactive(normalize(read(STORE_KEY$1)));
   let saveTimer;
   vue.watch(
-    settings,
+    settings$1,
     () => {
       if (saveTimer) clearTimeout(saveTimer);
       saveTimer = setTimeout(() => {
         saveTimer = void 0;
-        write(STORE_KEY$1, { ...settings });
+        write(STORE_KEY$1, { ...settings$1 });
       }, 200);
     },
     { deep: true }
@@ -156,7 +160,7 @@
       clearTimeout(saveTimer);
       saveTimer = void 0;
     }
-    write(STORE_KEY$1, { ...settings });
+    write(STORE_KEY$1, { ...settings$1 });
   }
   const enTag = ".font-DNMrHsV173Pd4pgy";
   const code_ed = 58715;
@@ -558,7 +562,7 @@
     return changed ? result : text;
   }
   function decryptElement(element) {
-    if (!settings.decryptFont) return;
+    if (!settings$1.decryptFont) return;
     const walker = document.createTreeWalker(
       element,
       NodeFilter.SHOW_TEXT
@@ -617,36 +621,36 @@
     });
     decryptPage(document);
     vue.watch(
-      () => settings.decryptFont,
+      () => settings$1.decryptFont,
       (on) => {
         if (on) decryptPage(document);
       }
     );
   }
-  const STYLE_ID$2 = "fqa-user-style";
+  const STYLE_ID$3 = "fqa-user-style";
   const READER_SCOPE = "#fqa-reader-content, .muye-reader-content";
   function buildCss() {
     const parts = [];
-    const font = settings.readerFont.trim();
+    const font = settings$1.readerFont.trim();
     if (font) {
       const family = /^["']|,/.test(font) ? font : `"${font}"`;
       parts.push(`${READER_SCOPE}, ${READER_SCOPE} p { font-family: ${family}, inherit !important; }`);
     }
-    if (settings.customCssEnabled && settings.customCss.trim()) {
-      parts.push(settings.customCss);
+    if (settings$1.customCssEnabled && settings$1.customCss.trim()) {
+      parts.push(settings$1.customCss);
     }
     return parts.join("\n");
   }
   function apply() {
     const css = buildCss();
-    let el = document.getElementById(STYLE_ID$2);
+    let el = document.getElementById(STYLE_ID$3);
     if (!css) {
       el == null ? void 0 : el.remove();
       return;
     }
     if (!el) {
       el = document.createElement("style");
-      el.id = STYLE_ID$2;
+      el.id = STYLE_ID$3;
       document.head.appendChild(el);
     }
     el.textContent = css;
@@ -654,7 +658,7 @@
   function initUserStyle() {
     apply();
     vue.watch(
-      () => [settings.readerFont, settings.customCssEnabled, settings.customCss],
+      () => [settings$1.readerFont, settings$1.customCssEnabled, settings$1.customCss],
       apply
     );
   }
@@ -719,6 +723,36 @@
         }
       });
       signal == null ? void 0 : signal.addEventListener("abort", abort, { once: true });
+    });
+  }
+  function fetchArrayBuffer(url) {
+    return fetch$1(url, { referrerPolicy: "no-referrer" }).then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.arrayBuffer();
+    }).catch((err) => {
+      console.debug("[fqa:img] 页面 fetch 失败，改用 GM_xmlhttpRequest:", url, err);
+      return gmArrayBuffer(url);
+    });
+  }
+  function gmArrayBuffer(url) {
+    return new Promise((resolve, reject) => {
+      GM_xmlhttpRequest({
+        url,
+        method: "GET",
+        responseType: "arraybuffer",
+        onload(response) {
+          const buf = response.response;
+          if (response.status >= 200 && response.status < 300 && (buf == null ? void 0 : buf.byteLength)) {
+            resolve(buf);
+          } else {
+            reject(new Error(`GM 请求失败(${response.status})`));
+          }
+        },
+        onerror() {
+          reject(new Error(`GM 请求出错，检查 @connect 是否覆盖该域名: ${url}`));
+        },
+        ontimeout: () => reject(new Error("GM 请求超时"))
+      });
     });
   }
   function normalizeHeaders(headers) {
@@ -1367,6 +1401,7 @@
   }
   const appBaseUrl = "https://reading.snssdk.com/reading";
   const redcandleBaseUrl = "https://api5-sinfonlinec.jxbhmy.com/reading";
+  const webBaseUrl = "https://fanqienovel.com/reading";
   const appUserAgent = "com.dragon.read";
   function buildAppQuery(extra) {
     const c = _config.currentConfig;
@@ -1385,8 +1420,21 @@
       os_version: "10",
       device_type: c.device_type || "P30",
       device_brand: c.device_brand || "realme",
+      // 不带 update_version_code 时服务端按旧版本下发，
+      // 搜索的筛选器、完整 tab 列表都会缺失
+      update_version_code: "70132",
+      manifest_version_code: "70132",
       ...extra
     });
+  }
+  async function webGet(path, query, credentials2 = "omit") {
+    const url = `${webBaseUrl}${path}?${buildAppQuery(query).toString()}`;
+    const signed = await signRequest(url);
+    const res = await fetch$1(url, { headers: signed, credentials: credentials2 });
+    if (!res.ok) {
+      throw new Error(`请求失败(${res.status})`);
+    }
+    return res.json();
   }
   function isUsable(res) {
     if (!res || res.status !== 200) return false;
@@ -1413,7 +1461,7 @@
     });
   }
   async function appGet(path, query, headers) {
-    if (settings.apiPreference === "redcandle") {
+    if (settings$1.apiPreference === "redcandle") {
       try {
         const res = await requestRedcandle(path, query, headers);
         if (isUsable(res)) return res;
@@ -1441,7 +1489,22 @@
     console.log("---complete--- APP POST ", url, res);
     return res;
   }
-  async function decryptChapter(encrypted, config = defaultConfig) {
+  async function gzip(data) {
+    if (typeof data === "string") {
+      data = new TextEncoder().encode(data).buffer;
+    }
+    const encoder = new CompressionStream("gzip");
+    const stream = new Blob([data]).stream().pipeThrough(encoder);
+    const compressed = new Response(stream).arrayBuffer();
+    return compressed;
+  }
+  async function gunzip(data) {
+    const decoder = new DecompressionStream("gzip");
+    const stream = new Blob([data]).stream().pipeThrough(decoder);
+    const decompressed = new Response(stream).arrayBuffer();
+    return decompressed;
+  }
+  async function decryptChapter(encrypted, rawData, config = defaultConfig) {
     var _a;
     if (!encrypted) {
       throw new Error("Invalid encrypted chapter");
@@ -1465,7 +1528,10 @@
       { name: "AES-CBC", iv },
       cryptoKey,
       data
-    ).then((decrypted) => {
+    ).then(async (decrypted) => {
+      if (rawData && (rawData == null ? void 0 : rawData.compress_status) === 1) {
+        decrypted = await gunzip(decrypted);
+      }
       const decoder = new TextDecoder();
       const plain = decoder.decode(decrypted);
       if (plain.trim().startsWith("<")) {
@@ -1608,7 +1674,7 @@
       await ensureKeyinfo(parseInt(j == null ? void 0 : j.key_version));
       return await getChapter(itemId, _retry + 1);
     }
-    j.content = await decryptChapter(j == null ? void 0 : j.content, _config.currentConfig);
+    j.content = await decryptChapter(j == null ? void 0 : j.content, j, _config.currentConfig);
     return j;
   }
   async function getCatalogRaw(bookId) {
@@ -1860,10 +1926,10 @@
     const ordered = [];
     const numberOf = /* @__PURE__ */ new Map();
     let counter = 0;
-    const makeSup = (num, text) => {
+    const makeSup = (num2, text) => {
       const sup = document.createElement("sup");
       sup.className = FOOTNOTE_REF_CLASS;
-      sup.textContent = String(num);
+      sup.textContent = String(num2);
       sup.setAttribute("role", "button");
       sup.setAttribute("tabindex", "0");
       sup.title = stripTags(text);
@@ -1889,9 +1955,9 @@
     if (ordered.length > 0) {
       const list = document.createElement("ol");
       list.className = FOOTNOTE_LIST_CLASS;
-      for (const { num, text } of ordered) {
+      for (const { num: num2, text } of ordered) {
         const li = document.createElement("li");
-        li.id = `fqa-fn-${num}`;
+        li.id = `fqa-fn-${num2}`;
         li.innerHTML = text;
         for (const inner of collectRefs(li)) {
           const innerId = (inner.getAttribute("href") ?? "").replace(/^#/, "");
@@ -1947,9 +2013,9 @@
     container2.dataset.fqaFootnoteBound = "1";
     const activate = (sup) => {
       var _a;
-      const num = (_a = sup.textContent) == null ? void 0 : _a.trim();
-      if (!num) return;
-      const target = container2.querySelector(`#fqa-fn-${num}`);
+      const num2 = (_a = sup.textContent) == null ? void 0 : _a.trim();
+      if (!num2) return;
+      const target = container2.querySelector(`#fqa-fn-${num2}`);
       if (!target) return;
       target.scrollIntoView({ behavior: "smooth", block: "center" });
       target.classList.add("fqa-footnote-active");
@@ -1976,6 +2042,24 @@
   }
   let currentBook = null;
   let latestItemId = null;
+  const SCRIPT_CONTAINER_ID = "fqa-reader-content";
+  let comicObserver = null;
+  function ensureScriptContainer(readerContainer, comic) {
+    let scriptContainer = document.getElementById(SCRIPT_CONTAINER_ID);
+    if (!scriptContainer) {
+      scriptContainer = cloneElement(readerContainer);
+      scriptContainer.id = SCRIPT_CONTAINER_ID;
+      scriptContainer.classList.add("fqa");
+      readerContainer.insertAdjacentElement("beforebegin", scriptContainer);
+    }
+    scriptContainer.classList.toggle("fqa-comic-reader", comic);
+    if (settings$1.allowCopy) scriptContainer.classList.remove("noselect");
+    comicObserver == null ? void 0 : comicObserver.disconnect();
+    comicObserver = null;
+    scriptContainer.innerHTML = "";
+    readerContainer.classList.add("fqa-hide");
+    return scriptContainer;
+  }
   async function insertContent() {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
     const itemId = ((_a = window.location.pathname.split("/").pop()) == null ? void 0 : _a.substring(0, 19)) || "";
@@ -2018,16 +2102,7 @@
       }
       const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)");
       if (readerContainer) {
-        let scriptContainer = document.getElementById("fqa-reader-content");
-        if (!scriptContainer) {
-          scriptContainer = cloneElement(readerContainer);
-          scriptContainer.id = "fqa-reader-content";
-          scriptContainer.classList.add("fqa");
-          if (settings.allowCopy) scriptContainer.classList.remove("noselect");
-          readerContainer.insertAdjacentElement("beforebegin", scriptContainer);
-        }
-        scriptContainer.innerHTML = "";
-        readerContainer.classList.add("fqa-hide");
+        const scriptContainer = ensureScriptContainer(readerContainer, false);
         scriptContainer.appendChild(toProcess);
         bindFootnoteInteraction(scriptContainer);
       }
@@ -2048,17 +2123,7 @@
         }
         const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)");
         if (readerContainer) {
-          let scriptContainer = document.getElementById("fqa-comic-content");
-          if (!scriptContainer) {
-            scriptContainer = cloneElement(readerContainer);
-            scriptContainer.id = "fqa-reader-content";
-            scriptContainer.classList.add("fqa");
-            scriptContainer.classList.add("fqa-comic-reader");
-            if (settings.allowCopy) scriptContainer.classList.remove("noselect");
-            readerContainer.insertAdjacentElement("beforebegin", scriptContainer);
-          }
-          scriptContainer.innerHTML = "";
-          readerContainer.classList.add("fqa-hide");
+          const scriptContainer = ensureScriptContainer(readerContainer, true);
           imgs.forEach((img) => scriptContainer.appendChild(img));
           const observer2 = new IntersectionObserver(
             async (entries) => {
@@ -2068,8 +2133,9 @@
                   if (img.dataset.encryptedUrl && img.dataset.encryptKey && !img.src) {
                     observer2.unobserve(img);
                     try {
-                      const response = await fetch$1(img.dataset.encryptedUrl);
-                      const encryptedBuffer = await response.arrayBuffer();
+                      const encryptedBuffer = await fetchArrayBuffer(
+                        img.dataset.encryptedUrl
+                      );
                       const decryptedBuffer = await decryptComicImage(
                         encryptedBuffer,
                         img.dataset.encryptKey
@@ -2095,6 +2161,7 @@
               rootMargin: "200px"
             }
           );
+          comicObserver = observer2;
           imgs.forEach((img) => observer2.observe(img));
         }
       } else {
@@ -2109,17 +2176,7 @@
         }
         const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)");
         if (readerContainer) {
-          let scriptContainer = document.getElementById("fqa-comic-content");
-          if (!scriptContainer) {
-            scriptContainer = cloneElement(readerContainer);
-            scriptContainer.id = "fqa-reader-content";
-            scriptContainer.classList.add("fqa");
-            scriptContainer.classList.add("fqa-comic-reader");
-            if (settings.allowCopy) scriptContainer.classList.remove("noselect");
-            readerContainer.insertAdjacentElement("beforebegin", scriptContainer);
-          }
-          scriptContainer.innerHTML = "";
-          readerContainer.classList.add("fqa-hide");
+          const scriptContainer = ensureScriptContainer(readerContainer, true);
           imgs.forEach((img) => scriptContainer.appendChild(img));
         }
       }
@@ -2190,7 +2247,7 @@
   function readerFilter(path, _query, _hash) {
     return path.startsWith("/reader") || path.startsWith("reader");
   }
-  const _exports$3 = [
+  const _exports$4 = [
     {
       id: "readerHook_load",
       event: "load",
@@ -2223,7 +2280,7 @@
     tc: 10
   });
   function checkBlack(url) {
-    if (!settings.blockReport) return false;
+    if (!settings$1.blockReport) return false;
     return blackList.some((black) => url.includes(black));
   }
   const originalFetch = unsafeWindow.fetch.bind(unsafeWindow);
@@ -2302,7 +2359,7 @@
       return super.getResponseHeader(name2);
     }
   };
-  const _exports$2 = [];
+  const _exports$3 = [];
   let userState = {
     isLogin: false,
     userInfo: null
@@ -2364,15 +2421,7 @@
     }
   }
   const bookshelf = '<svg xmlns="http://www.w3.org/2000/svg"\r\n     width="24"\r\n     height="24"\r\n     viewBox="0 0 24 24"\r\n     fill="none"\r\n     stroke="currentColor"\r\n     stroke-width="1.2"\r\n     stroke-linecap="round"\r\n     stroke-linejoin="round">\r\n  <path d="M3.5 20h17"/>\r\n  <rect x="5" y="7" width="3.5" height="13" rx="0.8"/>\r\n  <rect x="8.5" y="5" width="4" height="15" rx="0.8"/>\r\n  <path d="M15.1 6.2 18 5.5l3.1 13.6-2.9.7z"/>\r\n  <path d="M9.8 8h1.4M6.1 10h1.3M17 8.8l1.3-.3"/>\r\n</svg>';
-  async function gzip(data) {
-    if (typeof data === "string") {
-      data = new TextEncoder().encode(data).buffer;
-    }
-    const encoder = new CompressionStream("gzip");
-    const stream = new Blob([data]).stream().pipeThrough(encoder);
-    const compressed = new Response(stream).arrayBuffer();
-    return compressed;
-  }
+  const settings = '<?xml version="1.0" encoding="utf-8"?>\r\n<svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\r\n    <path fill-rule="evenodd" clip-rule="evenodd"\r\n        d="M12 8.25C9.92894 8.25 8.25 9.92893 8.25 12C8.25 14.0711 9.92894 15.75 12 15.75C14.0711 15.75 15.75 14.0711 15.75 12C15.75 9.92893 14.0711 8.25 12 8.25ZM9.75 12C9.75 10.7574 10.7574 9.75 12 9.75C13.2426 9.75 14.25 10.7574 14.25 12C14.25 13.2426 13.2426 14.25 12 14.25C10.7574 14.25 9.75 13.2426 9.75 12Z"\r\n        fill="#000000" />\r\n    <path fill-rule="evenodd" clip-rule="evenodd"\r\n        d="M11.9747 1.25C11.5303 1.24999 11.1592 1.24999 10.8546 1.27077C10.5375 1.29241 10.238 1.33905 9.94761 1.45933C9.27379 1.73844 8.73843 2.27379 8.45932 2.94762C8.31402 3.29842 8.27467 3.66812 8.25964 4.06996C8.24756 4.39299 8.08454 4.66251 7.84395 4.80141C7.60337 4.94031 7.28845 4.94673 7.00266 4.79568C6.64714 4.60777 6.30729 4.45699 5.93083 4.40743C5.20773 4.31223 4.47642 4.50819 3.89779 4.95219C3.64843 5.14353 3.45827 5.3796 3.28099 5.6434C3.11068 5.89681 2.92517 6.21815 2.70294 6.60307L2.67769 6.64681C2.45545 7.03172 2.26993 7.35304 2.13562 7.62723C1.99581 7.91267 1.88644 8.19539 1.84541 8.50701C1.75021 9.23012 1.94617 9.96142 2.39016 10.5401C2.62128 10.8412 2.92173 11.0602 3.26217 11.2741C3.53595 11.4461 3.68788 11.7221 3.68786 12C3.68785 12.2778 3.53592 12.5538 3.26217 12.7258C2.92169 12.9397 2.62121 13.1587 2.39007 13.4599C1.94607 14.0385 1.75012 14.7698 1.84531 15.4929C1.88634 15.8045 1.99571 16.0873 2.13552 16.3727C2.26983 16.6469 2.45535 16.9682 2.67758 17.3531L2.70284 17.3969C2.92507 17.7818 3.11058 18.1031 3.28089 18.3565C3.45817 18.6203 3.64833 18.8564 3.89769 19.0477C4.47632 19.4917 5.20763 19.6877 5.93073 19.5925C6.30717 19.5429 6.647 19.3922 7.0025 19.2043C7.28833 19.0532 7.60329 19.0596 7.8439 19.1986C8.08452 19.3375 8.24756 19.607 8.25964 19.9301C8.27467 20.3319 8.31403 20.7016 8.45932 21.0524C8.73843 21.7262 9.27379 22.2616 9.94761 22.5407C10.238 22.661 10.5375 22.7076 10.8546 22.7292C11.1592 22.75 11.5303 22.75 11.9747 22.75H12.0252C12.4697 22.75 12.8407 22.75 13.1454 22.7292C13.4625 22.7076 13.762 22.661 14.0524 22.5407C14.7262 22.2616 15.2616 21.7262 15.5407 21.0524C15.686 20.7016 15.7253 20.3319 15.7403 19.93C15.7524 19.607 15.9154 19.3375 16.156 19.1985C16.3966 19.0596 16.7116 19.0532 16.9974 19.2042C17.3529 19.3921 17.6927 19.5429 18.0692 19.5924C18.7923 19.6876 19.5236 19.4917 20.1022 19.0477C20.3516 18.8563 20.5417 18.6203 20.719 18.3565C20.8893 18.1031 21.0748 17.7818 21.297 17.3969L21.3223 17.3531C21.5445 16.9682 21.7301 16.6468 21.8644 16.3726C22.0042 16.0872 22.1135 15.8045 22.1546 15.4929C22.2498 14.7697 22.0538 14.0384 21.6098 13.4598C21.3787 13.1586 21.0782 12.9397 20.7378 12.7258C20.464 12.5538 20.3121 12.2778 20.3121 11.9999C20.3121 11.7221 20.464 11.4462 20.7377 11.2742C21.0783 11.0603 21.3788 10.8414 21.6099 10.5401C22.0539 9.96149 22.2499 9.23019 22.1547 8.50708C22.1136 8.19546 22.0043 7.91274 21.8645 7.6273C21.7302 7.35313 21.5447 7.03183 21.3224 6.64695L21.2972 6.60318C21.0749 6.21825 20.8894 5.89688 20.7191 5.64347C20.5418 5.37967 20.3517 5.1436 20.1023 4.95225C19.5237 4.50826 18.7924 4.3123 18.0692 4.4075C17.6928 4.45706 17.353 4.60782 16.9975 4.79572C16.7117 4.94679 16.3967 4.94036 16.1561 4.80144C15.9155 4.66253 15.7524 4.39297 15.7403 4.06991C15.7253 3.66808 15.686 3.2984 15.5407 2.94762C15.2616 2.27379 14.7262 1.73844 14.0524 1.45933C13.762 1.33905 13.4625 1.29241 13.1454 1.27077C12.8407 1.24999 12.4697 1.24999 12.0252 1.25H11.9747ZM10.5216 2.84515C10.5988 2.81319 10.716 2.78372 10.9567 2.76729C11.2042 2.75041 11.5238 2.75 12 2.75C12.4762 2.75 12.7958 2.75041 13.0432 2.76729C13.284 2.78372 13.4012 2.81319 13.4783 2.84515C13.7846 2.97202 14.028 3.21536 14.1548 3.52165C14.1949 3.61826 14.228 3.76887 14.2414 4.12597C14.271 4.91835 14.68 5.68129 15.4061 6.10048C16.1321 6.51968 16.9974 6.4924 17.6984 6.12188C18.0143 5.9549 18.1614 5.90832 18.265 5.89467C18.5937 5.8514 18.9261 5.94047 19.1891 6.14228C19.2554 6.19312 19.3395 6.27989 19.4741 6.48016C19.6125 6.68603 19.7726 6.9626 20.0107 7.375C20.2488 7.78741 20.4083 8.06438 20.5174 8.28713C20.6235 8.50382 20.6566 8.62007 20.6675 8.70287C20.7108 9.03155 20.6217 9.36397 20.4199 9.62698C20.3562 9.70995 20.2424 9.81399 19.9397 10.0041C19.2684 10.426 18.8122 11.1616 18.8121 11.9999C18.8121 12.8383 19.2683 13.574 19.9397 13.9959C20.2423 14.186 20.3561 14.29 20.4198 14.373C20.6216 14.636 20.7107 14.9684 20.6674 15.2971C20.6565 15.3799 20.6234 15.4961 20.5173 15.7128C20.4082 15.9355 20.2487 16.2125 20.0106 16.6249C19.7725 17.0373 19.6124 17.3139 19.474 17.5198C19.3394 17.72 19.2553 17.8068 19.189 17.8576C18.926 18.0595 18.5936 18.1485 18.2649 18.1053C18.1613 18.0916 18.0142 18.045 17.6983 17.8781C16.9973 17.5075 16.132 17.4803 15.4059 17.8995C14.68 18.3187 14.271 19.0816 14.2414 19.874C14.228 20.2311 14.1949 20.3817 14.1548 20.4784C14.028 20.7846 13.7846 21.028 13.4783 21.1549C13.4012 21.1868 13.284 21.2163 13.0432 21.2327C12.7958 21.2496 12.4762 21.25 12 21.25C11.5238 21.25 11.2042 21.2496 10.9567 21.2327C10.716 21.2163 10.5988 21.1868 10.5216 21.1549C10.2154 21.028 9.97201 20.7846 9.84514 20.4784C9.80512 20.3817 9.77195 20.2311 9.75859 19.874C9.72896 19.0817 9.31997 18.3187 8.5939 17.8995C7.86784 17.4803 7.00262 17.5076 6.30158 17.8781C5.98565 18.0451 5.83863 18.0917 5.73495 18.1053C5.40626 18.1486 5.07385 18.0595 4.81084 17.8577C4.74458 17.8069 4.66045 17.7201 4.52586 17.5198C4.38751 17.314 4.22736 17.0374 3.98926 16.625C3.75115 16.2126 3.59171 15.9356 3.4826 15.7129C3.37646 15.4962 3.34338 15.3799 3.33248 15.2971C3.28921 14.9684 3.37828 14.636 3.5801 14.373C3.64376 14.2901 3.75761 14.186 4.0602 13.9959C4.73158 13.5741 5.18782 12.8384 5.18786 12.0001C5.18791 11.1616 4.73165 10.4259 4.06021 10.004C3.75769 9.81389 3.64385 9.70987 3.58019 9.62691C3.37838 9.3639 3.28931 9.03149 3.33258 8.7028C3.34348 8.62001 3.37656 8.50375 3.4827 8.28707C3.59181 8.06431 3.75125 7.78734 3.98935 7.37493C4.22746 6.96253 4.3876 6.68596 4.52596 6.48009C4.66055 6.27983 4.74468 6.19305 4.81093 6.14222C5.07395 5.9404 5.40636 5.85133 5.73504 5.8946C5.83873 5.90825 5.98576 5.95483 6.30173 6.12184C7.00273 6.49235 7.86791 6.51962 8.59394 6.10045C9.31998 5.68128 9.72896 4.91837 9.75859 4.12602C9.77195 3.76889 9.80512 3.61827 9.84514 3.52165C9.97201 3.21536 10.2154 2.97202 10.5216 2.84515Z"\r\n        fill="#000000" />\r\n</svg>';
   const FIXED_STRING = b64decode(
     "TdTC5rgxYgkOUrPHpnM7pByyRiuCmrWKGWs521cXdST0m69/COjWjSanLjfBqVovHwWlGJKu8pSXMrYqOKrdWA=="
   );
@@ -2731,7 +2780,7 @@
     return c;
   }
   async function ensureDevice() {
-    const { deviceId, installId, deviceType } = settings;
+    const { deviceId, installId, deviceType } = settings$1;
     if (deviceId.trim() && installId.trim()) {
       const manual = {
         device_id: deviceId.trim(),
@@ -2759,47 +2808,53 @@
     }
   }
   const name = "fanqie-assistant";
-  const version = "0.0.4";
-  const _hoisted_1$5 = {
+  const version = "0.0.5";
+  const _hoisted_1$8 = {
     class: "fqa-set-dialog",
     role: "dialog",
     "aria-modal": "true",
     "aria-label": "助手设置"
   };
-  const _hoisted_2$5 = { class: "fqa-set-side" };
-  const _hoisted_3$5 = ["onClick", "onKeydown"];
-  const _hoisted_4$4 = { class: "fqa-set-main" };
-  const _hoisted_5$4 = { class: "fqa-set-row" };
-  const _hoisted_6$4 = { class: "fqa-set-row" };
-  const _hoisted_7$2 = { class: "fqa-set-row" };
-  const _hoisted_8$2 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_9$2 = { class: "fqa-set-row" };
-  const _hoisted_10$2 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_11$2 = ["disabled"];
-  const _hoisted_12$2 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_13$1 = { class: "fqa-set-radios" };
-  const _hoisted_14$1 = { class: "fqa-set-radio" };
-  const _hoisted_15$1 = { class: "fqa-set-radio" };
-  const _hoisted_16 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_17 = { class: "fqa-set-field" };
-  const _hoisted_18 = ["placeholder"];
-  const _hoisted_19 = { class: "fqa-set-field" };
-  const _hoisted_20 = ["placeholder"];
-  const _hoisted_21 = { class: "fqa-set-field" };
-  const _hoisted_22 = ["placeholder"];
-  const _hoisted_23 = { class: "fqa-set-actions" };
-  const _hoisted_24 = ["disabled"];
-  const _hoisted_25 = {
+  const _hoisted_2$8 = { class: "fqa-set-side" };
+  const _hoisted_3$8 = ["onClick", "onKeydown"];
+  const _hoisted_4$7 = { class: "fqa-set-main" };
+  const _hoisted_5$7 = { class: "fqa-set-row" };
+  const _hoisted_6$7 = { class: "fqa-set-row" };
+  const _hoisted_7$5 = { class: "fqa-set-row" };
+  const _hoisted_8$5 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_9$5 = { class: "fqa-set-row" };
+  const _hoisted_10$5 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_11$5 = ["disabled"];
+  const _hoisted_12$5 = { class: "fqa-set-row" };
+  const _hoisted_13$4 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_14$4 = {
+    class: "fqa-set-row",
+    style: { "padding-top": "0", "border-bottom": "none" }
+  };
+  const _hoisted_15$2 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_16$1 = { class: "fqa-set-radios" };
+  const _hoisted_17$1 = { class: "fqa-set-radio" };
+  const _hoisted_18$1 = { class: "fqa-set-radio" };
+  const _hoisted_19$1 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_20 = { class: "fqa-set-field" };
+  const _hoisted_21 = ["placeholder"];
+  const _hoisted_22 = { class: "fqa-set-field" };
+  const _hoisted_23 = ["placeholder"];
+  const _hoisted_24 = { class: "fqa-set-field" };
+  const _hoisted_25 = ["placeholder"];
+  const _hoisted_26 = { class: "fqa-set-actions" };
+  const _hoisted_27 = ["disabled"];
+  const _hoisted_28 = {
     key: 0,
     class: "fqa-set-note"
   };
-  const _hoisted_26 = { class: "fqa-set-note" };
-  const _hoisted_27 = { class: "fqa-set-links" };
-  const _hoisted_28 = { class: "fqa-set-link-row" };
-  const _hoisted_29 = ["href"];
+  const _hoisted_29 = { class: "fqa-set-note" };
+  const _hoisted_30 = { class: "fqa-set-links" };
+  const _hoisted_31 = { class: "fqa-set-link-row" };
+  const _hoisted_32 = ["href"];
   const GREASYFORK = "https://greasyfork.org/zh-CN/scripts/589115-%E7%95%AA%E8%8C%84%E5%B0%8F%E8%AF%B4%E5%8A%A9%E6%89%8B";
   const GITHUB = "https://github.com/naiyQAQ/fanqie-assistant";
-  const _sfc_main$5 = /* @__PURE__ */ vue.defineComponent({
+  const _sfc_main$8 = /* @__PURE__ */ vue.defineComponent({
     __name: "SettingsView",
     emits: ["close"],
     setup(__props, { emit: __emit }) {
@@ -2807,6 +2862,7 @@
       const SECTIONS = [
         { key: "general", label: "常规" },
         { key: "ui", label: "界面" },
+        { key: "search", label: "搜索" },
         { key: "protocol", label: "协议" },
         { key: "about", label: "关于" }
       ];
@@ -2819,9 +2875,9 @@
         registerMsg.value = "正在注册新设备…";
         try {
           const c = await provisionDevice();
-          settings.deviceId = "";
-          settings.installId = "";
-          settings.deviceType = "";
+          settings$1.deviceId = "";
+          settings$1.installId = "";
+          settings$1.deviceType = "";
           flushSettings();
           registerMsg.value = `注册成功：${c.device_id}`;
         } catch (err) {
@@ -2832,9 +2888,9 @@
         }
       }
       const currentDevice = vue.computed(() => ({
-        device_id: settings.deviceId || _config.currentConfig.device_id,
-        install_id: settings.installId || _config.currentConfig.install_id,
-        device_type: settings.deviceType || _config.currentConfig.device_type || ""
+        device_id: settings$1.deviceId || _config.currentConfig.device_id,
+        install_id: settings$1.installId || _config.currentConfig.install_id,
+        device_type: settings$1.deviceType || _config.currentConfig.device_type || ""
       }));
       function close() {
         flushSettings();
@@ -2851,14 +2907,14 @@
           class: "fqa-set-mask",
           onClick: vue.withModifiers(close, ["self"])
         }, [
-          vue.createElementVNode("div", _hoisted_1$5, [
+          vue.createElementVNode("div", _hoisted_1$8, [
             vue.createElementVNode("button", {
               class: "fqa-set-close",
               "aria-label": "关闭",
               onClick: close
             }, "✕"),
-            vue.createElementVNode("nav", _hoisted_2$5, [
-              _cache[11] || (_cache[11] = vue.createElementVNode("div", { class: "fqa-set-side-title" }, "助手设置", -1)),
+            vue.createElementVNode("nav", _hoisted_2$8, [
+              _cache[13] || (_cache[13] = vue.createElementVNode("div", { class: "fqa-set-side-title" }, "助手设置", -1)),
               (vue.openBlock(), vue.createElementBlock(vue.Fragment, null, vue.renderList(SECTIONS, (s) => {
                 return vue.createElementVNode("div", {
                   key: s.key,
@@ -2867,157 +2923,182 @@
                   tabindex: "0",
                   onClick: ($event) => active.value = s.key,
                   onKeydown: vue.withKeys(vue.withModifiers(($event) => active.value = s.key, ["prevent"]), ["enter"])
-                }, vue.toDisplayString(s.label), 43, _hoisted_3$5);
+                }, vue.toDisplayString(s.label), 43, _hoisted_3$8);
               }), 64))
             ]),
-            vue.createElementVNode("section", _hoisted_4$4, [
+            vue.createElementVNode("section", _hoisted_4$7, [
               active.value === "general" ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, [
-                _cache[15] || (_cache[15] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "常规", -1)),
-                vue.createElementVNode("label", _hoisted_5$4, [
-                  _cache[12] || (_cache[12] = vue.createElementVNode("span", { class: "fqa-set-label" }, "解密网页端混淆字体", -1)),
+                _cache[17] || (_cache[17] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "常规", -1)),
+                vue.createElementVNode("label", _hoisted_5$7, [
+                  _cache[14] || (_cache[14] = vue.createElementVNode("span", { class: "fqa-set-label" }, "解密网页端混淆字体", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => vue.unref(settings).decryptFont = $event),
+                    "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => vue.unref(settings$1).decryptFont = $event),
                     type: "checkbox",
                     class: "fqa-set-switch"
                   }, null, 512), [
-                    [vue.vModelCheckbox, vue.unref(settings).decryptFont]
+                    [vue.vModelCheckbox, vue.unref(settings$1).decryptFont]
                   ])
                 ]),
-                vue.createElementVNode("label", _hoisted_6$4, [
-                  _cache[13] || (_cache[13] = vue.createElementVNode("span", { class: "fqa-set-label" }, "拦截网页事件上报", -1)),
+                vue.createElementVNode("label", _hoisted_6$7, [
+                  _cache[15] || (_cache[15] = vue.createElementVNode("span", { class: "fqa-set-label" }, "拦截网页事件上报", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => vue.unref(settings).blockReport = $event),
+                    "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => vue.unref(settings$1).blockReport = $event),
                     type: "checkbox",
                     class: "fqa-set-switch"
                   }, null, 512), [
-                    [vue.vModelCheckbox, vue.unref(settings).blockReport]
+                    [vue.vModelCheckbox, vue.unref(settings$1).blockReport]
                   ])
                 ]),
-                vue.createElementVNode("label", _hoisted_7$2, [
-                  _cache[14] || (_cache[14] = vue.createElementVNode("span", { class: "fqa-set-label" }, "允许阅读器复制文本", -1)),
+                vue.createElementVNode("label", _hoisted_7$5, [
+                  _cache[16] || (_cache[16] = vue.createElementVNode("span", { class: "fqa-set-label" }, "允许阅读器复制文本", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => vue.unref(settings).allowCopy = $event),
+                    "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => vue.unref(settings$1).allowCopy = $event),
                     type: "checkbox",
                     class: "fqa-set-switch"
                   }, null, 512), [
-                    [vue.vModelCheckbox, vue.unref(settings).allowCopy]
+                    [vue.vModelCheckbox, vue.unref(settings$1).allowCopy]
                   ])
                 ])
               ], 64)) : active.value === "ui" ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 1 }, [
-                _cache[20] || (_cache[20] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "界面", -1)),
-                vue.createElementVNode("div", _hoisted_8$2, [
-                  _cache[16] || (_cache[16] = vue.createElementVNode("span", { class: "fqa-set-label" }, "阅读器字体", -1)),
+                _cache[22] || (_cache[22] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "界面", -1)),
+                vue.createElementVNode("div", _hoisted_8$5, [
+                  _cache[18] || (_cache[18] = vue.createElementVNode("span", { class: "fqa-set-label" }, "阅读器字体", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => vue.unref(settings).readerFont = $event),
+                    "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => vue.unref(settings$1).readerFont = $event),
                     class: "fqa-set-input",
                     type: "text",
                     placeholder: "留空表示使用默认字体"
                   }, null, 512), [
-                    [vue.vModelText, vue.unref(settings).readerFont]
+                    [vue.vModelText, vue.unref(settings$1).readerFont]
                   ]),
-                  _cache[17] || (_cache[17] = vue.createElementVNode("p", { class: "fqa-set-note" }, "填写字体名称，例如「思源宋体」。留空则跟随网页默认。", -1))
+                  _cache[19] || (_cache[19] = vue.createElementVNode("p", { class: "fqa-set-note" }, "填写字体名称，例如「思源宋体」。留空则跟随网页默认。", -1))
                 ]),
-                vue.createElementVNode("div", _hoisted_9$2, [
-                  _cache[18] || (_cache[18] = vue.createElementVNode("span", { class: "fqa-set-label" }, "自定义 CSS", -1)),
+                vue.createElementVNode("div", _hoisted_9$5, [
+                  _cache[20] || (_cache[20] = vue.createElementVNode("span", { class: "fqa-set-label" }, "自定义 CSS", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => vue.unref(settings).customCssEnabled = $event),
+                    "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => vue.unref(settings$1).customCssEnabled = $event),
                     type: "checkbox",
                     class: "fqa-set-switch"
                   }, null, 512), [
-                    [vue.vModelCheckbox, vue.unref(settings).customCssEnabled]
+                    [vue.vModelCheckbox, vue.unref(settings$1).customCssEnabled]
                   ])
                 ]),
-                vue.createElementVNode("div", _hoisted_10$2, [
+                vue.createElementVNode("div", _hoisted_10$5, [
                   vue.withDirectives(vue.createElementVNode("textarea", {
-                    "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => vue.unref(settings).customCss = $event),
+                    "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => vue.unref(settings$1).customCss = $event),
                     class: "fqa-set-textarea",
-                    disabled: !vue.unref(settings).customCssEnabled,
+                    disabled: !vue.unref(settings$1).customCssEnabled,
                     spellcheck: "false",
                     placeholder: "/* 自定义 CSS */"
-                  }, null, 8, _hoisted_11$2), [
-                    [vue.vModelText, vue.unref(settings).customCss]
+                  }, null, 8, _hoisted_11$5), [
+                    [vue.vModelText, vue.unref(settings$1).customCss]
                   ]),
-                  _cache[19] || (_cache[19] = vue.createElementVNode("p", { class: "fqa-set-note" }, "关闭开关后内容会保留，只是不再应用。", -1))
+                  _cache[21] || (_cache[21] = vue.createElementVNode("p", { class: "fqa-set-note" }, "关闭开关后内容会保留，只是不再应用。", -1))
                 ])
-              ], 64)) : active.value === "protocol" ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 2 }, [
-                _cache[30] || (_cache[30] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "协议", -1)),
-                vue.createElementVNode("div", _hoisted_12$2, [
-                  _cache[23] || (_cache[23] = vue.createElementVNode("span", { class: "fqa-set-label" }, "API 偏好", -1)),
-                  vue.createElementVNode("div", _hoisted_13$1, [
-                    vue.createElementVNode("label", _hoisted_14$1, [
+              ], 64)) : active.value === "search" ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 2 }, [
+                _cache[26] || (_cache[26] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "搜索", -1)),
+                vue.createElementVNode("label", _hoisted_12$5, [
+                  _cache[23] || (_cache[23] = vue.createElementVNode("span", { class: "fqa-set-label" }, "接管搜索界面", -1)),
+                  vue.withDirectives(vue.createElementVNode("input", {
+                    "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => vue.unref(settings$1).enhanceSearch = $event),
+                    type: "checkbox",
+                    class: "fqa-set-switch"
+                  }, null, 512), [
+                    [vue.vModelCheckbox, vue.unref(settings$1).enhanceSearch]
+                  ])
+                ]),
+                vue.createElementVNode("div", _hoisted_13$4, [
+                  vue.createElementVNode("label", _hoisted_14$4, [
+                    _cache[24] || (_cache[24] = vue.createElementVNode("span", { class: "fqa-set-label" }, "个人化推荐", -1)),
+                    vue.withDirectives(vue.createElementVNode("input", {
+                      "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => vue.unref(settings$1).searchPersonalized = $event),
+                      type: "checkbox",
+                      class: "fqa-set-switch"
+                    }, null, 512), [
+                      [vue.vModelCheckbox, vue.unref(settings$1).searchPersonalized]
+                    ])
+                  ]),
+                  _cache[25] || (_cache[25] = vue.createElementVNode("p", { class: "fqa-set-note" }, " 开启后搜索走同源请求，由浏览器自动带上你的登录 Cookie，番茄据此按阅读偏好排序。 凭据不经过脚本，也不会发往番茄以外的任何地方。关闭时走匿名请求。 ", -1))
+                ])
+              ], 64)) : active.value === "protocol" ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 3 }, [
+                _cache[36] || (_cache[36] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "协议", -1)),
+                vue.createElementVNode("div", _hoisted_15$2, [
+                  _cache[29] || (_cache[29] = vue.createElementVNode("span", { class: "fqa-set-label" }, "API 偏好", -1)),
+                  vue.createElementVNode("div", _hoisted_16$1, [
+                    vue.createElementVNode("label", _hoisted_17$1, [
                       vue.withDirectives(vue.createElementVNode("input", {
-                        "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => vue.unref(settings).apiPreference = $event),
+                        "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => vue.unref(settings$1).apiPreference = $event),
                         type: "radio",
                         value: "app"
                       }, null, 512), [
-                        [vue.vModelRadio, vue.unref(settings).apiPreference]
+                        [vue.vModelRadio, vue.unref(settings$1).apiPreference]
                       ]),
-                      _cache[21] || (_cache[21] = vue.createElementVNode("span", null, "番茄 APP", -1))
+                      _cache[27] || (_cache[27] = vue.createElementVNode("span", null, "番茄 APP", -1))
                     ]),
-                    vue.createElementVNode("label", _hoisted_15$1, [
+                    vue.createElementVNode("label", _hoisted_18$1, [
                       vue.withDirectives(vue.createElementVNode("input", {
-                        "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => vue.unref(settings).apiPreference = $event),
+                        "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => vue.unref(settings$1).apiPreference = $event),
                         type: "radio",
                         value: "redcandle"
                       }, null, 512), [
-                        [vue.vModelRadio, vue.unref(settings).apiPreference]
+                        [vue.vModelRadio, vue.unref(settings$1).apiPreference]
                       ]),
-                      _cache[22] || (_cache[22] = vue.createElementVNode("span", null, "红烛 APP", -1))
+                      _cache[28] || (_cache[28] = vue.createElementVNode("span", null, "红烛 APP", -1))
                     ])
                   ]),
-                  _cache[24] || (_cache[24] = vue.createElementVNode("p", { class: "fqa-set-note" }, "如果某协议数据不全，脚本可能会选择其他接口作为补充。", -1))
+                  _cache[30] || (_cache[30] = vue.createElementVNode("p", { class: "fqa-set-note" }, "如果某协议数据不全，脚本可能会选择其他接口作为补充。", -1))
                 ]),
-                vue.createElementVNode("div", _hoisted_16, [
-                  _cache[28] || (_cache[28] = vue.createElementVNode("span", { class: "fqa-set-label" }, "设备信息", -1)),
-                  _cache[29] || (_cache[29] = vue.createElementVNode("p", { class: "fqa-set-warn" }, " 如果不知道这是什么，请保持默认。乱填可能导致脚本功能异常。 ", -1)),
-                  vue.createElementVNode("label", _hoisted_17, [
-                    _cache[25] || (_cache[25] = vue.createElementVNode("span", null, "device_id", -1)),
+                vue.createElementVNode("div", _hoisted_19$1, [
+                  _cache[34] || (_cache[34] = vue.createElementVNode("span", { class: "fqa-set-label" }, "设备信息", -1)),
+                  _cache[35] || (_cache[35] = vue.createElementVNode("p", { class: "fqa-set-warn" }, " 如果不知道这是什么，请保持默认。乱填可能导致脚本功能异常。 ", -1)),
+                  vue.createElementVNode("label", _hoisted_20, [
+                    _cache[31] || (_cache[31] = vue.createElementVNode("span", null, "device_id", -1)),
                     vue.withDirectives(vue.createElementVNode("input", {
-                      "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => vue.unref(settings).deviceId = $event),
+                      "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => vue.unref(settings$1).deviceId = $event),
                       class: "fqa-set-input",
                       type: "text",
                       placeholder: currentDevice.value.device_id || "自动注册"
-                    }, null, 8, _hoisted_18), [
-                      [vue.vModelText, vue.unref(settings).deviceId]
+                    }, null, 8, _hoisted_21), [
+                      [vue.vModelText, vue.unref(settings$1).deviceId]
                     ])
                   ]),
-                  vue.createElementVNode("label", _hoisted_19, [
-                    _cache[26] || (_cache[26] = vue.createElementVNode("span", null, "install_id (iid)", -1)),
+                  vue.createElementVNode("label", _hoisted_22, [
+                    _cache[32] || (_cache[32] = vue.createElementVNode("span", null, "install_id (iid)", -1)),
                     vue.withDirectives(vue.createElementVNode("input", {
-                      "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => vue.unref(settings).installId = $event),
+                      "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => vue.unref(settings$1).installId = $event),
                       class: "fqa-set-input",
                       type: "text",
                       placeholder: currentDevice.value.install_id || "自动注册"
-                    }, null, 8, _hoisted_20), [
-                      [vue.vModelText, vue.unref(settings).installId]
+                    }, null, 8, _hoisted_23), [
+                      [vue.vModelText, vue.unref(settings$1).installId]
                     ])
                   ]),
-                  vue.createElementVNode("label", _hoisted_21, [
-                    _cache[27] || (_cache[27] = vue.createElementVNode("span", null, "device_type", -1)),
+                  vue.createElementVNode("label", _hoisted_24, [
+                    _cache[33] || (_cache[33] = vue.createElementVNode("span", null, "device_type", -1)),
                     vue.withDirectives(vue.createElementVNode("input", {
-                      "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => vue.unref(settings).deviceType = $event),
+                      "onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => vue.unref(settings$1).deviceType = $event),
                       class: "fqa-set-input",
                       type: "text",
                       placeholder: currentDevice.value.device_type || "自动注册"
-                    }, null, 8, _hoisted_22), [
-                      [vue.vModelText, vue.unref(settings).deviceType]
+                    }, null, 8, _hoisted_25), [
+                      [vue.vModelText, vue.unref(settings$1).deviceType]
                     ])
                   ]),
-                  vue.createElementVNode("div", _hoisted_23, [
+                  vue.createElementVNode("div", _hoisted_26, [
                     vue.createElementVNode("button", {
                       class: "fqa-set-btn",
                       disabled: registering.value,
                       onClick: reRegister
-                    }, vue.toDisplayString(registering.value ? "注册中…" : "重新注册"), 9, _hoisted_24),
-                    registerMsg.value ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_25, vue.toDisplayString(registerMsg.value), 1)) : vue.createCommentVNode("", true)
+                    }, vue.toDisplayString(registering.value ? "注册中…" : "重新注册"), 9, _hoisted_27),
+                    registerMsg.value ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_28, vue.toDisplayString(registerMsg.value), 1)) : vue.createCommentVNode("", true)
                   ])
                 ])
-              ], 64)) : (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 3 }, [
-                _cache[35] || (_cache[35] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "关于", -1)),
-                vue.createElementVNode("p", _hoisted_26, "番茄小说助手 v" + vue.toDisplayString(vue.unref(version)), 1),
-                vue.createElementVNode("div", _hoisted_27, [
+              ], 64)) : (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 4 }, [
+                _cache[41] || (_cache[41] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "关于", -1)),
+                vue.createElementVNode("p", _hoisted_29, "番茄小说助手 v" + vue.toDisplayString(vue.unref(version)), 1),
+                vue.createElementVNode("div", _hoisted_30, [
                   vue.createElementVNode("div", { class: "fqa-set-link-row" }, [
-                    _cache[31] || (_cache[31] = vue.createElementVNode("span", null, "GreasyFork 地址：", -1)),
+                    _cache[37] || (_cache[37] = vue.createElementVNode("span", null, "GreasyFork 地址：", -1)),
                     vue.createElementVNode("a", {
                       href: GREASYFORK,
                       target: "_blank",
@@ -3025,31 +3106,31 @@
                     }, "跳转")
                   ]),
                   vue.createElementVNode("div", { class: "fqa-set-link-row" }, [
-                    _cache[32] || (_cache[32] = vue.createElementVNode("span", null, "GitHub 地址：", -1)),
+                    _cache[38] || (_cache[38] = vue.createElementVNode("span", null, "GitHub 地址：", -1)),
                     vue.createElementVNode("a", {
                       href: GITHUB,
                       target: "_blank",
                       rel: "noreferrer noopener"
                     }, "跳转")
                   ]),
-                  vue.createElementVNode("div", _hoisted_28, [
-                    _cache[34] || (_cache[34] = vue.createElementVNode("span", null, "问题反馈：", -1)),
+                  vue.createElementVNode("div", _hoisted_31, [
+                    _cache[40] || (_cache[40] = vue.createElementVNode("span", null, "问题反馈：", -1)),
                     vue.createElementVNode("a", {
                       href: FEEDBACK,
                       target: "_blank",
                       rel: "noreferrer noopener"
                     }, "GreasyFork"),
                     vue.createElementVNode("span", null, [
-                      _cache[33] || (_cache[33] = vue.createTextVNode(" 或 ", -1)),
+                      _cache[39] || (_cache[39] = vue.createTextVNode(" 或 ", -1)),
                       vue.createElementVNode("a", {
                         href: `${GITHUB}/issues`,
                         target: "_blank",
                         rel: "noreferrer noopener"
-                      }, " GitHub Issues ", 8, _hoisted_29)
+                      }, " GitHub Issues ", 8, _hoisted_32)
                     ])
                   ])
                 ]),
-                _cache[36] || (_cache[36] = vue.createElementVNode("div", { class: "fqa-set-license" }, [
+                _cache[42] || (_cache[42] = vue.createElementVNode("div", { class: "fqa-set-license" }, [
                   vue.createElementVNode("p", null, " 本脚本基于 GNU General Public License 3.0 授权，完全开源且免费，修改/二次开发请注意遵守开源协议。 "),
                   vue.createElementVNode("p", null, "本脚本使用 TypeScript + Vue 开发，请避免直接修改编译产物。")
                 ], -1))
@@ -3061,36 +3142,36 @@
     }
   });
   const settingscss = "/* 助手设置面板 */\n\n.fqa-set-mask {\n    position: fixed;\n    inset: 0;\n    z-index: 2147483200;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background: rgba(0, 0, 0, 0.45);\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\n        sans-serif;\n    font-size: 14px;\n    line-height: 1.6;\n    color: var(--fqa-set-text, #1f2329);\n}\n\n.fqa-set-dialog {\n    --fqa-set-bg: #fff;\n    --fqa-set-side-bg: #f7f8fa;\n    --fqa-set-text: #1f2329;\n    --fqa-set-sub: #8f959e;\n    --fqa-set-border: rgba(31, 35, 41, 0.1);\n    --fqa-set-accent: #ff6f3d;\n    --fqa-set-hover: rgba(31, 35, 41, 0.05);\n\n    position: relative;\n    display: flex;\n    width: min(760px, 92vw);\n    height: min(520px, 84vh);\n    background: var(--fqa-set-bg);\n    color: var(--fqa-set-text);\n    border-radius: 12px;\n    overflow: hidden;\n    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.24);\n}\n\n.fqa-set-close {\n    position: absolute;\n    top: 10px;\n    right: 12px;\n    width: 28px;\n    height: 28px;\n    padding: 0;\n    border: none;\n    border-radius: 6px;\n    background: transparent;\n    color: var(--fqa-set-sub);\n    font-size: 15px;\n    line-height: 1;\n    cursor: pointer;\n}\n\n.fqa-set-close:hover {\n    background: var(--fqa-set-hover);\n    color: var(--fqa-set-text);\n}\n\n/* 左侧栏 */\n.fqa-set-side {\n    flex: 0 0 148px;\n    padding: 16px 8px;\n    box-sizing: border-box;\n    background: var(--fqa-set-side-bg);\n    border-right: 1px solid var(--fqa-set-border);\n    overflow-y: auto;\n}\n\n.fqa-set-side-title {\n    padding: 0 10px 12px;\n    font-size: 15px;\n    font-weight: 600;\n}\n\n.fqa-set-nav {\n    padding: 8px 10px;\n    margin-bottom: 2px;\n    border-radius: 6px;\n    cursor: pointer;\n    user-select: none;\n}\n\n.fqa-set-nav:hover {\n    background: var(--fqa-set-hover);\n}\n\n.fqa-set-nav-active {\n    background: var(--fqa-set-hover);\n    color: var(--fqa-set-accent);\n    font-weight: 600;\n}\n\n/* 右侧内容 */\n.fqa-set-main {\n    flex: 1 1 auto;\n    padding: 20px 24px;\n    box-sizing: border-box;\n    overflow-y: auto;\n}\n\n.fqa-set-h {\n    margin: 0 0 14px;\n    font-size: 16px;\n    font-weight: 600;\n}\n\n.fqa-set-row {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 16px;\n    padding: 10px 0;\n    border-bottom: 1px solid var(--fqa-set-border);\n}\n\n.fqa-set-row:last-child {\n    border-bottom: none;\n}\n\n.fqa-set-row-col {\n    display: block;\n}\n\n.fqa-set-label {\n    font-size: 14px;\n}\n\n.fqa-set-note {\n    margin: 6px 0 0;\n    font-size: 12px;\n    color: var(--fqa-set-sub);\n}\n\n.fqa-set-warn {\n    margin: 6px 0 10px;\n    padding: 8px 10px;\n    font-size: 12px;\n    color: #a8371f;\n    background: rgba(255, 111, 61, 0.1);\n    border-left: 3px solid var(--fqa-set-accent);\n    border-radius: 0 4px 4px 0;\n}\n\n/* 开关：用原生 checkbox 改造，避免额外依赖 */\n.fqa-set-switch {\n    appearance: none;\n    flex: 0 0 auto;\n    position: relative;\n    width: 38px;\n    height: 22px;\n    margin: 0;\n    border-radius: 11px;\n    background: rgba(31, 35, 41, 0.18);\n    cursor: pointer;\n    transition: background 0.18s ease;\n}\n\n.fqa-set-switch::after {\n    content: '';\n    position: absolute;\n    top: 2px;\n    left: 2px;\n    width: 18px;\n    height: 18px;\n    border-radius: 50%;\n    background: #fff;\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n    transition: transform 0.18s ease;\n}\n\n.fqa-set-switch:checked {\n    background: var(--fqa-set-accent);\n}\n\n.fqa-set-switch:checked::after {\n    transform: translateX(16px);\n}\n\n.fqa-set-input {\n    width: 100%;\n    margin-top: 8px;\n    padding: 7px 10px;\n    box-sizing: border-box;\n    border: 1px solid var(--fqa-set-border);\n    border-radius: 6px;\n    background: var(--fqa-set-bg);\n    color: var(--fqa-set-text);\n    font-size: 13px;\n    font-family: inherit;\n}\n\n.fqa-set-input:focus {\n    outline: none;\n    border-color: var(--fqa-set-accent);\n}\n\n.fqa-set-textarea {\n    width: 100%;\n    min-height: 150px;\n    margin-top: 10px;\n    padding: 10px;\n    box-sizing: border-box;\n    border: 1px solid var(--fqa-set-border);\n    border-radius: 6px;\n    background: var(--fqa-set-bg);\n    color: var(--fqa-set-text);\n    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;\n    font-size: 12px;\n    line-height: 1.6;\n    resize: vertical;\n}\n\n.fqa-set-textarea:disabled {\n    background: var(--fqa-set-side-bg);\n    color: var(--fqa-set-sub);\n    cursor: not-allowed;\n}\n\n.fqa-set-textarea:focus {\n    outline: none;\n    border-color: var(--fqa-set-accent);\n}\n\n.fqa-set-radios {\n    display: flex;\n    gap: 20px;\n    margin-top: 8px;\n}\n\n.fqa-set-radio {\n    display: flex;\n    align-items: center;\n    gap: 6px;\n    cursor: pointer;\n}\n\n.fqa-set-radio input {\n    accent-color: var(--fqa-set-accent);\n}\n\n.fqa-set-field {\n    display: block;\n    margin-top: 10px;\n    font-size: 12px;\n    color: var(--fqa-set-sub);\n}\n\n.fqa-set-actions {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    margin-top: 14px;\n}\n\n.fqa-set-btn {\n    padding: 7px 16px;\n    border: 1px solid var(--fqa-set-border);\n    border-radius: 6px;\n    background: var(--fqa-set-bg);\n    color: var(--fqa-set-text);\n    font-size: 13px;\n    font-family: inherit;\n    cursor: pointer;\n}\n\n.fqa-set-btn:hover:not(:disabled) {\n    border-color: var(--fqa-set-accent);\n    color: var(--fqa-set-accent);\n}\n\n.fqa-set-btn:disabled {\n    color: var(--fqa-set-sub);\n    cursor: not-allowed;\n}\n\n/* 关于 */\n.fqa-set-links {\n    margin-top: 12px;\n}\n\n.fqa-set-link-row {\n    margin-bottom: 10px;\n    font-size: 13px;\n    word-break: break-all;\n}\n\n.fqa-set-link-row a {\n    color: var(--fqa-set-accent);\n    text-decoration: none;\n}\n\n.fqa-set-link-row a:hover {\n    text-decoration: underline;\n}\n\n.fqa-set-license {\n    margin-top: 20px;\n    padding-top: 14px;\n    border-top: 1px solid var(--fqa-set-border);\n    font-size: 12px;\n    color: var(--fqa-set-sub);\n}\n\n.fqa-set-license p {\n    margin: 0 0 6px;\n}\n\n/* 深色 */\n@media (prefers-color-scheme: dark) {\n    .fqa-set-dialog {\n        --fqa-set-bg: #23272e;\n        --fqa-set-side-bg: #1c2026;\n        --fqa-set-text: #e5e6eb;\n        --fqa-set-sub: #8f959e;\n        --fqa-set-border: rgba(255, 255, 255, 0.12);\n        --fqa-set-hover: rgba(255, 255, 255, 0.08);\n    }\n\n    .fqa-set-switch {\n        background: rgba(255, 255, 255, 0.2);\n    }\n\n    .fqa-set-warn {\n        color: #ffb59b;\n    }\n}\n";
-  const CONTAINER_ID$1 = "fqa-settings-root";
-  const STYLE_ID$1 = "fqa-settings-style";
-  let app$1 = null;
-  let container$1 = null;
-  function injectStyle$1() {
-    if (document.getElementById(STYLE_ID$1)) return;
+  const CONTAINER_ID$2 = "fqa-settings-root";
+  const STYLE_ID$2 = "fqa-settings-style";
+  let app$2 = null;
+  let container$2 = null;
+  function injectStyle$2() {
+    if (document.getElementById(STYLE_ID$2)) return;
     const style = document.createElement("style");
-    style.id = STYLE_ID$1;
+    style.id = STYLE_ID$2;
     style.textContent = settingscss;
     document.head.appendChild(style);
   }
   function closeSettings() {
-    app$1 == null ? void 0 : app$1.unmount();
-    app$1 = null;
-    container$1 == null ? void 0 : container$1.remove();
-    container$1 = null;
+    app$2 == null ? void 0 : app$2.unmount();
+    app$2 = null;
+    container$2 == null ? void 0 : container$2.remove();
+    container$2 = null;
   }
   function openSettings() {
-    if (app$1) return;
-    injectStyle$1();
-    container$1 = document.createElement("div");
-    container$1.id = CONTAINER_ID$1;
-    document.body.appendChild(container$1);
-    app$1 = vue.createApp({
-      render: () => vue.h(_sfc_main$5, { onClose: closeSettings })
+    if (app$2) return;
+    injectStyle$2();
+    container$2 = document.createElement("div");
+    container$2.id = CONTAINER_ID$2;
+    document.body.appendChild(container$2);
+    app$2 = vue.createApp({
+      render: () => vue.h(_sfc_main$8, { onClose: closeSettings })
     });
-    app$1.config.errorHandler = (err, _instance, info) => {
+    app$2.config.errorHandler = (err, _instance, info) => {
       console.error(`[fqa:settings] Vue error (${info}):`, err);
     };
-    app$1.mount(container$1);
+    app$2.mount(container$2);
   }
   function formatReadingTime(readBookTime) {
     let minutes = readBookTime / 60000n;
@@ -3126,13 +3207,16 @@
     }
     return item;
   }
-  async function mainHook$1(_previous) {
+  async function mainHook$2(_previous) {
     const userInfo = await getDetailedUserInfo();
     if (!userInfo) {
       return;
     }
     const injected = /* @__PURE__ */ new WeakSet();
     const inject2 = (menuInner) => {
+      if (menuInner.querySelectorAll("div.arco-menu-inline").length > 0) {
+        return;
+      }
       if (injected.has(menuInner)) {
         return;
       }
@@ -3146,7 +3230,7 @@
         window.open("https://fanqienovel.com/bookshelf", "_blank");
       });
       secondDiv.insertAdjacentElement("afterend", thirdDiv);
-      menuInner.appendChild(createMenuItem("助手设置", void 0, openSettings));
+      menuInner.appendChild(createMenuItem("助手设置", settings, openSettings));
     };
     const scan = (root) => {
       if (root.classList.contains("arco-menu-inner")) {
@@ -3202,18 +3286,18 @@
     observer2.observe(document.body, { childList: true, subtree: true });
     scan(document);
   }
-  function filter$1(path, _query, _hash) {
+  function filter$2(path, _query, _hash) {
     return userState.isLogin && !path.startsWith("/writer") && !path.startsWith("/welfare");
   }
   function guestFilter(path, _query, _hash) {
     return !userState.isLogin && !path.startsWith("/writer") && !path.startsWith("/welfare");
   }
-  const _exports$1 = [
+  const _exports$2 = [
     {
       id: "userHook",
       event: "load",
-      filter: filter$1,
-      handler: mainHook$1
+      filter: filter$2,
+      handler: mainHook$2
     },
     {
       id: "userHook_guest",
@@ -3222,16 +3306,16 @@
       handler: guestHook
     }
   ];
-  const _hoisted_1$4 = ["aria-label"];
-  const _hoisted_2$4 = { class: "fqa-cover" };
-  const _hoisted_3$4 = ["src", "alt"];
-  const _hoisted_4$3 = {
+  const _hoisted_1$7 = ["aria-label"];
+  const _hoisted_2$7 = { class: "fqa-cover" };
+  const _hoisted_3$7 = ["src", "alt"];
+  const _hoisted_4$6 = {
     key: 1,
     class: "fqa-cover-progress"
   };
-  const _hoisted_5$3 = ["title"];
-  const _hoisted_6$3 = ["title"];
-  const _sfc_main$4 = /* @__PURE__ */ vue.defineComponent({
+  const _hoisted_5$6 = ["title"];
+  const _hoisted_6$6 = ["title"];
+  const _sfc_main$7 = /* @__PURE__ */ vue.defineComponent({
     __name: "BookCard",
     props: {
       entry: {}
@@ -3268,7 +3352,7 @@
         const ratio = (d.current_chapter_order || 0) / d.total_chapter_count;
         return Math.max(0, Math.min(1, ratio)) * 100;
       });
-      function onEnter(event) {
+      function onEnter2(event) {
         emit("hover", { entry: props.entry, el: event.currentTarget });
       }
       function onContextMenu(event) {
@@ -3314,7 +3398,7 @@
           role: "link",
           tabindex: "0",
           "aria-label": title.value,
-          onMouseenter: onEnter,
+          onMouseenter: onEnter2,
           onMouseleave: _cache[2] || (_cache[2] = ($event) => emit("leave")),
           onContextmenu: onContextMenu,
           onClick: _cache[3] || (_cache[3] = ($event) => emit("open", __props.entry)),
@@ -3334,7 +3418,7 @@
               style: { "width": "55%" }
             }, null, -1))
           ], 64)) : (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 1 }, [
-            vue.createElementVNode("div", _hoisted_2$4, [
+            vue.createElementVNode("div", _hoisted_2$7, [
               vue.createElementVNode("img", {
                 class: vue.normalizeClass(["fqa-cover-img", { "fqa-cover-img-loading": !imgLoaded.value }]),
                 crossorigin: "anonymous",
@@ -3344,12 +3428,12 @@
                 alt: title.value,
                 onLoad: _cache[0] || (_cache[0] = ($event) => imgLoaded.value = true),
                 onError: _cache[1] || (_cache[1] = ($event) => imgLoaded.value = true)
-              }, null, 42, _hoisted_3$4),
+              }, null, 42, _hoisted_3$7),
               tag.value ? (vue.openBlock(), vue.createElementBlock("span", {
                 key: 0,
                 class: vue.normalizeClass(["fqa-cover-tag", tag.value.cls])
               }, vue.toDisplayString(tag.value.text), 3)) : vue.createCommentVNode("", true),
-              progressPercent.value > 0 ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_4$3, [
+              progressPercent.value > 0 ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_4$6, [
                 vue.createElementVNode("span", {
                   class: "fqa-cover-progress-bar",
                   style: vue.normalizeStyle({ width: progressPercent.value + "%" })
@@ -3359,23 +3443,23 @@
             vue.createElementVNode("div", {
               class: "fqa-card-title",
               title: title.value
-            }, vue.toDisplayString(title.value), 9, _hoisted_5$3),
+            }, vue.toDisplayString(title.value), 9, _hoisted_5$6),
             vue.createElementVNode("div", {
               class: "fqa-card-sub",
               title: detail.value.current_chapter_title
-            }, vue.toDisplayString(progressText.value), 9, _hoisted_6$3)
+            }, vue.toDisplayString(progressText.value), 9, _hoisted_6$6)
           ], 64))
-        ], 40, _hoisted_1$4);
+        ], 40, _hoisted_1$7);
       };
     }
   });
-  const _hoisted_1$3 = ["aria-label"];
-  const _hoisted_2$3 = { class: "fqa-group-cover" };
-  const _hoisted_3$3 = { class: "fqa-group-grid" };
-  const _hoisted_4$2 = ["src", "alt"];
-  const _hoisted_5$2 = ["title"];
-  const _hoisted_6$2 = { class: "fqa-card-sub" };
-  const _sfc_main$3 = /* @__PURE__ */ vue.defineComponent({
+  const _hoisted_1$6 = ["aria-label"];
+  const _hoisted_2$6 = { class: "fqa-group-cover" };
+  const _hoisted_3$6 = { class: "fqa-group-grid" };
+  const _hoisted_4$5 = ["src", "alt"];
+  const _hoisted_5$5 = ["title"];
+  const _hoisted_6$5 = { class: "fqa-card-sub" };
+  const _sfc_main$6 = /* @__PURE__ */ vue.defineComponent({
     __name: "BookGroupCard",
     props: {
       group: {}
@@ -3425,8 +3509,8 @@
             _cache[2] || (_cache[2] = vue.withKeys(vue.withModifiers(($event) => emit("open", __props.group), ["prevent"]), ["space"]))
           ]
         }, [
-          vue.createElementVNode("div", _hoisted_2$3, [
-            vue.createElementVNode("div", _hoisted_3$3, [
+          vue.createElementVNode("div", _hoisted_2$6, [
+            vue.createElementVNode("div", _hoisted_3$6, [
               (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(covers.value, (detail) => {
                 return vue.openBlock(), vue.createElementBlock("div", {
                   key: detail.book_id,
@@ -3438,7 +3522,7 @@
                     referrerpolicy: "no-referrer",
                     src: detail.cover_url,
                     alt: detail.title
-                  }, null, 8, _hoisted_4$2)
+                  }, null, 8, _hoisted_4$5)
                 ]);
               }), 128))
             ])
@@ -3446,9 +3530,9 @@
           vue.createElementVNode("div", {
             class: "fqa-card-title",
             title: __props.group.name
-          }, vue.toDisplayString(__props.group.name), 9, _hoisted_5$2),
-          vue.createElementVNode("div", _hoisted_6$2, "共" + vue.toDisplayString(__props.group.books.length) + "本书", 1)
-        ], 40, _hoisted_1$3);
+          }, vue.toDisplayString(__props.group.name), 9, _hoisted_5$5),
+          vue.createElementVNode("div", _hoisted_6$5, "共" + vue.toDisplayString(__props.group.books.length) + "本书", 1)
+        ], 40, _hoisted_1$6);
       };
     }
   });
@@ -3480,25 +3564,25 @@
     const pad = (n) => String(n).padStart(2, "0");
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
-  const _hoisted_1$2 = ["title"];
-  const _hoisted_2$2 = {
+  const _hoisted_1$5 = ["title"];
+  const _hoisted_2$5 = {
     key: 0,
     class: "fqa-hover-author"
   };
-  const _hoisted_3$2 = { class: "fqa-hover-stats" };
-  const _hoisted_4$1 = ["title"];
-  const _hoisted_5$1 = { class: "fqa-hover-stat-k" };
-  const _hoisted_6$1 = { class: "fqa-hover-stat" };
-  const _hoisted_7$1 = { class: "fqa-hover-stat-v" };
-  const _hoisted_8$1 = { class: "fqa-hover-stat" };
-  const _hoisted_9$1 = { class: "fqa-hover-stat-v" };
-  const _hoisted_10$1 = { class: "fqa-hover-seg" };
-  const _hoisted_11$1 = { class: "fqa-hover-abstract" };
-  const _hoisted_12$1 = {
+  const _hoisted_3$5 = { class: "fqa-hover-stats" };
+  const _hoisted_4$4 = ["title"];
+  const _hoisted_5$4 = { class: "fqa-hover-stat-k" };
+  const _hoisted_6$4 = { class: "fqa-hover-stat" };
+  const _hoisted_7$4 = { class: "fqa-hover-stat-v" };
+  const _hoisted_8$4 = { class: "fqa-hover-stat" };
+  const _hoisted_9$4 = { class: "fqa-hover-stat-v" };
+  const _hoisted_10$4 = { class: "fqa-hover-seg" };
+  const _hoisted_11$4 = { class: "fqa-hover-abstract" };
+  const _hoisted_12$4 = {
     key: 0,
     class: "fqa-hover-chapter"
   };
-  const _sfc_main$2 = /* @__PURE__ */ vue.defineComponent({
+  const _sfc_main$5 = /* @__PURE__ */ vue.defineComponent({
     __name: "BookHoverCard",
     props: {
       entry: {},
@@ -3601,9 +3685,9 @@
             vue.createElementVNode("div", {
               class: "fqa-hover-title",
               title: detail.value.title
-            }, vue.toDisplayString(detail.value.title), 9, _hoisted_1$2),
-            detail.value.author ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_2$2, vue.toDisplayString(detail.value.author), 1)) : vue.createCommentVNode("", true),
-            vue.createElementVNode("div", _hoisted_3$2, [
+            }, vue.toDisplayString(detail.value.title), 9, _hoisted_1$5),
+            detail.value.author ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_2$5, vue.toDisplayString(detail.value.author), 1)) : vue.createCommentVNode("", true),
+            vue.createElementVNode("div", _hoisted_3$5, [
               vue.createElementVNode("div", {
                 class: "fqa-hover-stat",
                 onMouseenter: _cache[0] || (_cache[0] = ($event) => showUpdateTime.value = true),
@@ -3612,19 +3696,19 @@
                 vue.createElementVNode("div", {
                   class: "fqa-hover-stat-v",
                   title: updatedAtFull.value
-                }, vue.toDisplayString(showUpdateTime.value ? updatedAt.value : latestChapter.value), 9, _hoisted_4$1),
-                vue.createElementVNode("div", _hoisted_5$1, vue.toDisplayString(showUpdateTime.value ? "更新于" : "最新章"), 1)
+                }, vue.toDisplayString(showUpdateTime.value ? updatedAt.value : latestChapter.value), 9, _hoisted_4$4),
+                vue.createElementVNode("div", _hoisted_5$4, vue.toDisplayString(showUpdateTime.value ? "更新于" : "最新章"), 1)
               ], 32),
-              vue.createElementVNode("div", _hoisted_6$1, [
-                vue.createElementVNode("div", _hoisted_7$1, vue.toDisplayString(readAt.value), 1),
+              vue.createElementVNode("div", _hoisted_6$4, [
+                vue.createElementVNode("div", _hoisted_7$4, vue.toDisplayString(readAt.value), 1),
                 _cache[6] || (_cache[6] = vue.createElementVNode("div", { class: "fqa-hover-stat-k" }, "阅读过", -1))
               ]),
-              vue.createElementVNode("div", _hoisted_8$1, [
-                vue.createElementVNode("div", _hoisted_9$1, vue.toDisplayString(addedAt.value), 1),
+              vue.createElementVNode("div", _hoisted_8$4, [
+                vue.createElementVNode("div", _hoisted_9$4, vue.toDisplayString(addedAt.value), 1),
                 _cache[7] || (_cache[7] = vue.createElementVNode("div", { class: "fqa-hover-stat-k" }, "已加入书架", -1))
               ])
             ]),
-            vue.createElementVNode("div", _hoisted_10$1, [
+            vue.createElementVNode("div", _hoisted_10$4, [
               vue.createElementVNode("button", {
                 class: vue.normalizeClass(["fqa-hover-seg-btn", { "fqa-hover-seg-active": activeTab.value === "chapter" }]),
                 onClick: _cache[2] || (_cache[2] = ($event) => pickedTab.value = "chapter")
@@ -3634,8 +3718,8 @@
                 onClick: _cache[3] || (_cache[3] = ($event) => pickedTab.value = "book")
               }, " 全书简介 ", 2)
             ]),
-            vue.createElementVNode("div", _hoisted_11$1, [
-              activeTab.value === "chapter" && detail.value.current_chapter_title ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_12$1, vue.toDisplayString(detail.value.current_chapter_title), 1)) : vue.createCommentVNode("", true),
+            vue.createElementVNode("div", _hoisted_11$4, [
+              activeTab.value === "chapter" && detail.value.current_chapter_title ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_12$4, vue.toDisplayString(detail.value.current_chapter_title), 1)) : vue.createCommentVNode("", true),
               vue.createTextVNode(" " + vue.toDisplayString(abstractText.value), 1)
             ])
           ], 4)) : vue.createCommentVNode("", true)
@@ -3643,14 +3727,14 @@
       };
     }
   });
-  const _hoisted_1$1 = ["aria-disabled", "onMouseenter", "onClick"];
-  const _hoisted_2$1 = {
+  const _hoisted_1$4 = ["aria-disabled", "onMouseenter", "onClick"];
+  const _hoisted_2$4 = {
     key: 0,
     class: "fqa-menu-arrow"
   };
-  const _hoisted_3$1 = ["onClick"];
+  const _hoisted_3$4 = ["onClick"];
   const MARGIN = 8;
-  const _sfc_main$1 = /* @__PURE__ */ vue.defineComponent({
+  const _sfc_main$4 = /* @__PURE__ */ vue.defineComponent({
     __name: "ContextMenu",
     props: {
       visible: { type: Boolean },
@@ -3766,8 +3850,8 @@
                 onClick: ($event) => choose(item)
               }, [
                 vue.createElementVNode("span", null, vue.toDisplayString(item.label), 1),
-                ((_a = item.children) == null ? void 0 : _a.length) ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_2$1, "›")) : vue.createCommentVNode("", true)
-              ], 42, _hoisted_1$1);
+                ((_a = item.children) == null ? void 0 : _a.length) ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_2$4, "›")) : vue.createCommentVNode("", true)
+              ], 42, _hoisted_1$4);
             }), 128))
           ], 4)) : vue.createCommentVNode("", true),
           __props.visible && activeChildren.value.length ? (vue.openBlock(), vue.createElementBlock("div", {
@@ -3786,7 +3870,7 @@
                 onClick: ($event) => choose(child)
               }, [
                 vue.createElementVNode("span", null, vue.toDisplayString(child.label), 1)
-              ], 10, _hoisted_3$1);
+              ], 10, _hoisted_3$4);
             }), 128))
           ], 4)) : vue.createCommentVNode("", true)
         ], 64);
@@ -3894,6 +3978,12 @@
       throw new Error(`书架操作失败(${path}): ${(json == null ? void 0 : json.message) ?? res.status}`);
     }
     return json;
+  }
+  async function addToBookshelf(bookId) {
+    await shelfPost("/add", {
+      add_book_source: 0,
+      identify_data: [identify(bookId)]
+    });
   }
   async function removeFromBookshelf(bookId) {
     await shelfPost("/delete", {
@@ -4050,30 +4140,30 @@
       PAGE_SIZE
     };
   }
-  const _hoisted_1 = { id: "fqa-bookshelf" };
-  const _hoisted_2 = { class: "fqa-bs-header" };
-  const _hoisted_3 = { class: "fqa-bs-actions" };
-  const _hoisted_4 = { key: 0 };
-  const _hoisted_5 = ["disabled"];
-  const _hoisted_6 = ["aria-selected", "onClick", "onKeydown"];
-  const _hoisted_7 = { class: "fqa-tab-count" };
-  const _hoisted_8 = {
+  const _hoisted_1$3 = { id: "fqa-bookshelf" };
+  const _hoisted_2$3 = { class: "fqa-bs-header" };
+  const _hoisted_3$3 = { class: "fqa-bs-actions" };
+  const _hoisted_4$3 = { key: 0 };
+  const _hoisted_5$3 = ["disabled"];
+  const _hoisted_6$3 = ["aria-selected", "onClick", "onKeydown"];
+  const _hoisted_7$3 = { class: "fqa-tab-count" };
+  const _hoisted_8$3 = {
     key: 0,
     class: "fqa-groupbar"
   };
-  const _hoisted_9 = { class: "fqa-groupbar-name" };
-  const _hoisted_10 = { class: "fqa-groupbar-count" };
-  const _hoisted_11 = {
+  const _hoisted_9$3 = { class: "fqa-groupbar-name" };
+  const _hoisted_10$3 = { class: "fqa-groupbar-count" };
+  const _hoisted_11$3 = {
     key: 1,
     class: "fqa-status"
   };
-  const _hoisted_12 = {
+  const _hoisted_12$3 = {
     key: 2,
     class: "fqa-status"
   };
-  const _hoisted_13 = { class: "fqa-status-title" };
-  const _hoisted_14 = { class: "fqa-grid" };
-  const _hoisted_15 = {
+  const _hoisted_13$3 = { class: "fqa-status-title" };
+  const _hoisted_14$3 = { class: "fqa-grid" };
+  const _hoisted_15$1 = {
     key: 0,
     class: "fqa-toast"
   };
@@ -4083,7 +4173,7 @@
   const HOVER_GAP = 12;
   const VIEWPORT_MARGIN = 8;
   const MOVE_PREFIX = "move:";
-  const _sfc_main = /* @__PURE__ */ vue.defineComponent({
+  const _sfc_main$3 = /* @__PURE__ */ vue.defineComponent({
     __name: "BookshelfView",
     setup(__props) {
       const { loading, detailLoading, error, counts, groups, load: load2, ensureDetails, cellsOf, findGroup, PAGE_SIZE: PAGE_SIZE2 } = useBookshelf();
@@ -4377,16 +4467,16 @@
         window.removeEventListener("resize", onScrollOrResize);
       });
       return (_ctx, _cache) => {
-        return vue.openBlock(), vue.createElementBlock("div", _hoisted_1, [
-          vue.createElementVNode("div", _hoisted_2, [
+        return vue.openBlock(), vue.createElementBlock("div", _hoisted_1$3, [
+          vue.createElementVNode("div", _hoisted_2$3, [
             _cache[1] || (_cache[1] = vue.createElementVNode("div", { class: "fqa-bs-title" }, "我的书架", -1)),
-            vue.createElementVNode("div", _hoisted_3, [
-              vue.unref(detailLoading) ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_4, "正在补全详情…")) : vue.createCommentVNode("", true),
+            vue.createElementVNode("div", _hoisted_3$3, [
+              vue.unref(detailLoading) ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_4$3, "正在补全详情…")) : vue.createCommentVNode("", true),
               vue.createElementVNode("button", {
                 class: "fqa-btn",
                 disabled: vue.unref(loading),
                 onClick: refresh
-              }, vue.toDisplayString(vue.unref(loading) ? "刷新中…" : "刷新"), 9, _hoisted_5)
+              }, vue.toDisplayString(vue.unref(loading) ? "刷新中…" : "刷新"), 9, _hoisted_5$3)
             ])
           ]),
           vue.createElementVNode("div", {
@@ -4406,33 +4496,33 @@
                 onKeydown: vue.withKeys(vue.withModifiers(($event) => selectTab(tab.key), ["prevent"]), ["enter"])
               }, [
                 vue.createTextVNode(vue.toDisplayString(tab.label), 1),
-                vue.createElementVNode("span", _hoisted_7, vue.toDisplayString(vue.unref(counts)[tab.key]), 1)
-              ], 42, _hoisted_6);
+                vue.createElementVNode("span", _hoisted_7$3, vue.toDisplayString(vue.unref(counts)[tab.key]), 1)
+              ], 42, _hoisted_6$3);
             }), 128)),
             vue.createElementVNode("span", {
               class: "fqa-tab-ink",
               style: vue.normalizeStyle(inkStyle.value)
             }, null, 4)
           ], 512),
-          openedGroup.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_8, [
+          openedGroup.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_8$3, [
             vue.createElementVNode("button", {
               class: "fqa-btn",
               onClick: backToList
             }, "← 返回"),
-            vue.createElementVNode("span", _hoisted_9, vue.toDisplayString(openedGroup.value.name), 1),
-            vue.createElementVNode("span", _hoisted_10, "共" + vue.toDisplayString(openedGroup.value.books.length) + "本书", 1)
+            vue.createElementVNode("span", _hoisted_9$3, vue.toDisplayString(openedGroup.value.name), 1),
+            vue.createElementVNode("span", _hoisted_10$3, "共" + vue.toDisplayString(openedGroup.value.books.length) + "本书", 1)
           ])) : vue.createCommentVNode("", true),
-          vue.unref(error) ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_11, [
+          vue.unref(error) ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_11$3, [
             _cache[2] || (_cache[2] = vue.createElementVNode("div", { class: "fqa-status-title" }, "书架加载失败", -1)),
             vue.createElementVNode("div", null, vue.toDisplayString(vue.unref(error)), 1),
             vue.createElementVNode("button", {
               class: "fqa-btn",
               onClick: refresh
             }, "重试")
-          ])) : isEmpty.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_12, [
-            vue.createElementVNode("div", _hoisted_13, vue.toDisplayString(emptyText.value), 1)
+          ])) : isEmpty.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_12$3, [
+            vue.createElementVNode("div", _hoisted_13$3, vue.toDisplayString(emptyText.value), 1)
           ])) : (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 3 }, [
-            vue.createElementVNode("div", _hoisted_14, [
+            vue.createElementVNode("div", _hoisted_14$3, [
               vue.unref(loading) ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, vue.renderList(8, (n) => {
                 return vue.createElementVNode("div", {
                   key: `sk-${n}`,
@@ -4452,7 +4542,7 @@
                 return vue.openBlock(), vue.createElementBlock(vue.Fragment, {
                   key: cell.key
                 }, [
-                  cell.kind === "book" ? (vue.openBlock(), vue.createBlock(_sfc_main$4, {
+                  cell.kind === "book" ? (vue.openBlock(), vue.createBlock(_sfc_main$7, {
                     key: 0,
                     entry: cell.entry,
                     onHover: onCardHover,
@@ -4460,7 +4550,7 @@
                     onOpen: openBook,
                     onVisible: onCardVisible,
                     onContextmenu: onCardContextMenu
-                  }, null, 8, ["entry"])) : (vue.openBlock(), vue.createBlock(_sfc_main$3, {
+                  }, null, 8, ["entry"])) : (vue.openBlock(), vue.createBlock(_sfc_main$6, {
                     key: 1,
                     group: cell.group,
                     onOpen: openGroup,
@@ -4477,7 +4567,7 @@
             }, "加载中…", 512)) : vue.createCommentVNode("", true)
           ], 64)),
           (vue.openBlock(), vue.createBlock(vue.Teleport, { to: "body" }, [
-            vue.createVNode(_sfc_main$2, {
+            vue.createVNode(_sfc_main$5, {
               entry: hoverEntry.value,
               x: hoverPos.value.x,
               y: hoverPos.value.y,
@@ -4486,7 +4576,7 @@
               onPanelEnter,
               onPanelLeave
             }, null, 8, ["entry", "x", "y", "height", "visible"]),
-            vue.createVNode(_sfc_main$1, {
+            vue.createVNode(_sfc_main$4, {
               visible: menuVisible.value,
               x: menuPos.value.x,
               y: menuPos.value.y,
@@ -4494,25 +4584,1081 @@
               onSelect: onMenuSelect,
               onClose: _cache[0] || (_cache[0] = ($event) => menuVisible.value = false)
             }, null, 8, ["visible", "x", "y", "items"]),
-            toast.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_15, vue.toDisplayString(toast.value), 1)) : vue.createCommentVNode("", true)
+            toast.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_15$1, vue.toDisplayString(toast.value), 1)) : vue.createCommentVNode("", true)
           ]))
         ]);
       };
     }
   });
-  const bookshelfcss = "#fqa-bookshelf {\n    --fqa-text: #1f2329;\n    --fqa-text-sub: #646a73;\n    --fqa-text-weak: #8f959e;\n    --fqa-border: rgba(31, 35, 41, 0.08);\n    --fqa-hover: rgba(31, 35, 41, 0.04);\n    --fqa-accent: #ff6f3d;\n    --fqa-skeleton: rgba(31, 35, 41, 0.06);\n    --fqa-skeleton-hl: rgba(31, 35, 41, 0.12);\n    --fqa-shadow: 0 4px 16px rgba(31, 35, 41, 0.08);\n\n    display: block;\n    box-sizing: border-box;\n    width: 100%;\n    max-width: 1100px;\n    margin: 0 auto;\n    /* 顶部留出原站 fixed 顶栏（80px）的高度，否则标题和 tab 会被压在下面 */\n    padding: calc(80px + 24px) 16px 64px;\n    color: var(--fqa-text);\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\n        sans-serif;\n}\n\n#fqa-bookshelf *,\n#fqa-bookshelf *::before,\n#fqa-bookshelf *::after {\n    box-sizing: border-box;\n}\n\n#fqa-bookshelf div,\n#fqa-bookshelf span,\n#fqa-bookshelf h1,\n#fqa-bookshelf ul,\n#fqa-bookshelf li {\n    margin: 0;\n    padding: 0;\n    border: 0;\n    list-style: none;\n    float: none;\n    position: static;\n}\n\n/* ------------------------------ 顶部 / Tabs ------------------------------ */\n\n#fqa-bookshelf .fqa-bs-header {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 16px;\n    margin-bottom: 8px;\n}\n\n#fqa-bookshelf .fqa-bs-title {\n    font-size: 24px;\n    font-weight: 600;\n    line-height: 1.4;\n}\n\n#fqa-bookshelf .fqa-bs-actions {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    font-size: 13px;\n    color: var(--fqa-text-weak);\n}\n\n#fqa-bookshelf .fqa-btn {\n    display: inline-flex;\n    align-items: center;\n    gap: 4px;\n    padding: 6px 14px;\n    border: 1px solid var(--fqa-border);\n    border-radius: 999px;\n    background: transparent;\n    color: var(--fqa-text-sub);\n    font-size: 13px;\n    font-family: inherit;\n    line-height: 1.4;\n    cursor: pointer;\n    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;\n}\n\n#fqa-bookshelf .fqa-btn:hover:not(:disabled) {\n    border-color: var(--fqa-accent);\n    color: var(--fqa-accent);\n    background: rgba(255, 111, 61, 0.06);\n}\n\n#fqa-bookshelf .fqa-btn:disabled {\n    opacity: 0.5;\n    cursor: default;\n}\n\n#fqa-bookshelf .fqa-tabs {\n    position: relative;\n    display: flex;\n    align-items: center;\n    gap: 4px;\n    margin-bottom: 24px;\n    border-bottom: 1px solid var(--fqa-border);\n}\n\n#fqa-bookshelf .fqa-tab {\n    padding: 10px 16px;\n    color: var(--fqa-text-sub);\n    font-size: 15px;\n    line-height: 22px;\n    cursor: pointer;\n    user-select: none;\n    transition: color 0.15s ease;\n}\n\n#fqa-bookshelf .fqa-tab:hover {\n    color: var(--fqa-text);\n}\n\n#fqa-bookshelf .fqa-tab-active {\n    color: var(--fqa-accent);\n    font-weight: 600;\n}\n\n#fqa-bookshelf .fqa-tab-count {\n    margin-left: 4px;\n    font-size: 12px;\n    font-weight: 400;\n    color: var(--fqa-text-weak);\n}\n\n#fqa-bookshelf .fqa-tab-ink {\n    position: absolute;\n    bottom: -1px;\n    left: 0;\n    width: 0;\n    height: 2px;\n    border-radius: 2px;\n    background: var(--fqa-accent);\n    transition: left 0.25s ease, width 0.25s ease;\n}\n\n/* ------------------------------- 书架网格 ------------------------------- */\n\n/* 原站一排最多 4 本；窄屏逐级降到 3 / 2 */\n#fqa-bookshelf .fqa-grid {\n    display: grid;\n    grid-template-columns: repeat(4, minmax(0, 1fr));\n    gap: 28px 24px;\n    align-items: start;\n}\n\n@media (max-width: 900px) {\n    #fqa-bookshelf .fqa-grid {\n        grid-template-columns: repeat(3, minmax(0, 1fr));\n    }\n}\n\n@media (max-width: 600px) {\n    #fqa-bookshelf .fqa-grid {\n        grid-template-columns: repeat(2, minmax(0, 1fr));\n    }\n}\n\n#fqa-bookshelf .fqa-card {\n    display: block;\n    border-radius: 8px;\n    cursor: pointer;\n    outline: none;\n}\n\n#fqa-bookshelf .fqa-card:focus-visible {\n    box-shadow: 0 0 0 2px var(--fqa-accent);\n}\n\n/* 封面：3:4，靠 aspect-ratio 定高，内部元素绝对定位 */\n#fqa-bookshelf .fqa-cover {\n    position: relative;\n    display: block;\n    width: 100%;\n    aspect-ratio: 3 / 4;\n    border-radius: 6px;\n    overflow: hidden;\n    background: var(--fqa-skeleton);\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\n}\n\n#fqa-bookshelf .fqa-card:hover .fqa-cover {\n    transform: translateY(-4px);\n    box-shadow: var(--fqa-shadow);\n}\n\n#fqa-bookshelf .fqa-cover-img {\n    position: absolute;\n    inset: 0;\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: opacity 0.25s ease;\n}\n\n#fqa-bookshelf .fqa-cover-img-loading {\n    opacity: 0;\n}\n\n#fqa-bookshelf .fqa-cover-tag {\n    position: absolute;\n    top: 0;\n    right: 0;\n    z-index: 2;\n    padding: 2px 6px;\n    border-radius: 0 6px 0 6px;\n    background: var(--fqa-accent);\n    color: #fff;\n    font-size: 11px;\n    line-height: 16px;\n    font-weight: 500;\n    white-space: nowrap;\n}\n\n/* 连载 / 完结 / 断更共用：灰底，弱化于“更新”角标 */\n#fqa-bookshelf .fqa-cover-tag-gray {\n    background: rgba(31, 35, 41, 0.55);\n}\n\n@media (prefers-color-scheme: dark) {\n    #fqa-bookshelf .fqa-cover-tag-gray {\n        background: rgba(0, 0, 0, 0.6);\n    }\n}\n\n#fqa-bookshelf .fqa-cover-progress {\n    position: absolute;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    z-index: 2;\n    height: 3px;\n    background: rgba(255, 255, 255, 0.35);\n}\n\n#fqa-bookshelf .fqa-cover-progress-bar {\n    display: block;\n    height: 100%;\n    background: var(--fqa-accent);\n    transition: width 0.3s ease;\n}\n\n/* 文字区：与封面同为普通流元素，不会重叠 */\n#fqa-bookshelf .fqa-card-title {\n    display: -webkit-box;\n    margin-top: 8px;\n    color: var(--fqa-text);\n    font-size: 14px;\n    line-height: 20px;\n    font-weight: 500;\n    -webkit-line-clamp: 2;\n    line-clamp: 2;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    word-break: break-all;\n}\n\n#fqa-bookshelf .fqa-card-sub {\n    margin-top: 4px;\n    color: var(--fqa-text-weak);\n    font-size: 12px;\n    line-height: 18px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n/* ------------------------------- 分组卡片 ------------------------------- */\n\n#fqa-bookshelf .fqa-group-cover {\n    position: relative;\n    display: block;\n    width: 100%;\n    aspect-ratio: 3 / 4;\n    border-radius: 6px;\n    overflow: hidden;\n    background: linear-gradient(135deg, rgba(255, 111, 61, 0.12), rgba(78, 131, 253, 0.12));\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\n}\n\n#fqa-bookshelf .fqa-card:hover .fqa-group-cover {\n    transform: translateY(-4px);\n    box-shadow: var(--fqa-shadow);\n}\n\n#fqa-bookshelf .fqa-group-grid {\n    position: absolute;\n    inset: 0;\n    display: grid;\n    grid-template-columns: 1fr 1fr;\n    grid-template-rows: 1fr 1fr;\n    gap: 4px;\n    padding: 6px;\n}\n\n#fqa-bookshelf .fqa-group-cell {\n    position: relative;\n    border-radius: 3px;\n    overflow: hidden;\n    background: rgba(31, 35, 41, 0.06);\n}\n\n#fqa-bookshelf .fqa-group-cell img {\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n}\n\n/* 分组详情返回条 */\n\n#fqa-bookshelf .fqa-groupbar {\n    display: flex;\n    align-items: center;\n    gap: 10px;\n    margin-bottom: 16px;\n}\n\n#fqa-bookshelf .fqa-groupbar-name {\n    font-size: 16px;\n    font-weight: 600;\n}\n\n#fqa-bookshelf .fqa-groupbar-count {\n    color: var(--fqa-text-weak);\n    font-size: 13px;\n}\n\n/* --------------------------- hover 详情浮层 --------------------------- */\n\n/*\n * 用 popover 进入浏览器顶层，不参与页面 z-index 竞争，\n * 因此不会被相邻卡片或原站的层叠上下文盖住。z-index 仅作降级保险。\n */\n#fqa-bookshelf-hover {\n    position: fixed;\n    z-index: 2147483000;\n    /* 容器本身透传，只有内部卡片接收事件，避免空白区挡住下层 */\n    pointer-events: none;\n    opacity: 0;\n    transform: translateY(4px);\n    /* allow-discrete：顶层元素从 display:none 切入时也能播放淡入 */\n    transition: opacity 0.16s ease, transform 0.16s ease, display 0.16s allow-discrete;\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\n        sans-serif;\n}\n\n/* popover 默认带边框/内边距/居中定位，全部清掉，改由 left/top 控制 */\n#fqa-bookshelf-hover:popover-open,\n#fqa-bookshelf-hover[popover] {\n    margin: 0;\n    padding: 0;\n    border: 0;\n    background: transparent;\n    overflow: visible;\n    inset: auto;\n    width: auto;\n    height: auto;\n    max-width: none;\n    max-height: none;\n    color: inherit;\n}\n\n#fqa-bookshelf-hover::backdrop {\n    background: transparent;\n}\n\n#fqa-bookshelf-hover.fqa-visible {\n    opacity: 1;\n    transform: translateY(0);\n}\n\n@starting-style {\n    #fqa-bookshelf-hover.fqa-visible {\n        opacity: 0;\n        transform: translateY(4px);\n    }\n}\n\n/* 高度由 JS 按封面尺寸设定；纵向 flex 让简介吃掉剩余空间 */\n#fqa-bookshelf-hover .fqa-hover-inner {\n    display: flex;\n    flex-direction: column;\n    box-sizing: border-box;\n    width: 280px;\n    padding: 12px 14px;\n    border-radius: 10px;\n    background: #fff;\n    box-shadow: 0 8px 32px rgba(31, 35, 41, 0.16);\n    color: #1f2329;\n    overflow: hidden;\n    /* 卡片可交互：鼠标可以移进来而不触发收起 */\n    pointer-events: auto;\n}\n\n#fqa-bookshelf-hover .fqa-hover-title {\n    flex: none;\n    margin: 0;\n    font-size: 14px;\n    line-height: 20px;\n    font-weight: 600;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n#fqa-bookshelf-hover .fqa-hover-author {\n    flex: none;\n    margin-top: 2px;\n    color: #8f959e;\n    font-size: 12px;\n    line-height: 17px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stats {\n    display: flex;\n    flex: none;\n    margin-top: 10px;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat {\n    flex: 1 1 0;\n    min-width: 0;\n    padding: 0 6px;\n    text-align: center;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat:first-child {\n    padding-left: 0;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat:last-child {\n    padding-right: 0;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat + .fqa-hover-stat {\n    border-left: 1px solid rgba(31, 35, 41, 0.08);\n}\n\n/* 第一栏可悬停切换为更新时间，给个可交互提示 */\n#fqa-bookshelf-hover .fqa-hover-stat:first-child {\n    border-radius: 4px;\n    cursor: default;\n    transition: background 0.15s ease;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat:first-child:hover {\n    background: rgba(31, 35, 41, 0.05);\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat-v {\n    font-size: 13px;\n    line-height: 18px;\n    font-weight: 600;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat-k {\n    margin-top: 1px;\n    color: #8f959e;\n    font-size: 11px;\n    line-height: 16px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n/* 梗概 / 简介 双栏切换 */\n#fqa-bookshelf-hover .fqa-hover-seg {\n    display: flex;\n    flex: none;\n    gap: 4px;\n    margin-top: 10px;\n    padding-top: 10px;\n    border-top: 1px solid rgba(31, 35, 41, 0.08);\n}\n\n#fqa-bookshelf-hover .fqa-hover-seg-btn {\n    flex: 1 1 0;\n    padding: 4px 0;\n    border: 0;\n    border-radius: 5px;\n    background: rgba(31, 35, 41, 0.05);\n    color: #646a73;\n    font-family: inherit;\n    font-size: 12px;\n    line-height: 18px;\n    cursor: pointer;\n    transition: background 0.15s ease, color 0.15s ease;\n}\n\n#fqa-bookshelf-hover .fqa-hover-seg-btn:hover {\n    color: #1f2329;\n}\n\n#fqa-bookshelf-hover .fqa-hover-seg-active {\n    background: rgba(255, 111, 61, 0.12);\n    color: #ff6f3d;\n    font-weight: 500;\n}\n\n#fqa-bookshelf-hover .fqa-hover-seg-active:hover {\n    color: #ff6f3d;\n}\n\n/*\n * 撑满剩余高度。行数不再写死，由容器高度自然裁切；\n * min-height:0 让 flex 子项允许被压缩，否则 overflow 不生效。\n */\n#fqa-bookshelf-hover .fqa-hover-abstract {\n    flex: 1 1 auto;\n    min-height: 0;\n    margin-top: 8px;\n    color: #646a73;\n    font-size: 12px;\n    line-height: 18px;\n    overflow-y: auto;\n    overscroll-behavior: contain;\n}\n\n#fqa-bookshelf-hover .fqa-hover-abstract::-webkit-scrollbar {\n    width: 4px;\n}\n\n#fqa-bookshelf-hover .fqa-hover-abstract::-webkit-scrollbar-thumb {\n    border-radius: 2px;\n    background: rgba(31, 35, 41, 0.18);\n}\n\n\n#fqa-bookshelf-hover .fqa-hover-chapter {\n    display: block;\n    margin-bottom: 1px;\n    color: #1f2329;\n    font-weight: 500;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n/* ------------------------------- 骨架屏 ------------------------------- */\n\n#fqa-bookshelf .fqa-sk-cover {\n    display: block;\n    width: 100%;\n    aspect-ratio: 3 / 4;\n    border-radius: 6px;\n    background: var(--fqa-skeleton);\n}\n\n#fqa-bookshelf .fqa-sk-line {\n    height: 12px;\n    margin-top: 8px;\n    border-radius: 4px;\n    background: var(--fqa-skeleton);\n}\n\n#fqa-bookshelf .fqa-sk-anim {\n    position: relative;\n    overflow: hidden;\n}\n\n#fqa-bookshelf .fqa-sk-anim::after {\n    content: '';\n    position: absolute;\n    inset: 0;\n    transform: translateX(-100%);\n    background: linear-gradient(90deg, transparent, var(--fqa-skeleton-hl), transparent);\n    animation: fqa-shimmer 1.4s infinite;\n}\n\n@keyframes fqa-shimmer {\n    100% {\n        transform: translateX(100%);\n    }\n}\n\n/* --------------------------- 空态 / 错误态 --------------------------- */\n\n#fqa-bookshelf .fqa-loadmore {\n    padding: 24px 0;\n    text-align: center;\n    color: var(--fqa-text-weak);\n    font-size: 13px;\n}\n\n#fqa-bookshelf .fqa-status {\n    padding: 80px 16px;\n    text-align: center;\n    color: var(--fqa-text-weak);\n    font-size: 14px;\n    line-height: 22px;\n}\n\n#fqa-bookshelf .fqa-status-title {\n    margin-bottom: 8px;\n    color: var(--fqa-text);\n    font-size: 16px;\n    font-weight: 500;\n}\n\n#fqa-bookshelf .fqa-status .fqa-btn {\n    margin-top: 16px;\n}\n\n/* ------------------------------- 深色模式 ------------------------------- */\n\n@media (prefers-color-scheme: dark) {\n    #fqa-bookshelf {\n        --fqa-text: #e6e6e6;\n        --fqa-text-sub: #a6a6a6;\n        --fqa-text-weak: #7a7a7a;\n        --fqa-border: rgba(255, 255, 255, 0.1);\n        --fqa-hover: rgba(255, 255, 255, 0.06);\n        --fqa-skeleton: rgba(255, 255, 255, 0.08);\n        --fqa-skeleton-hl: rgba(255, 255, 255, 0.14);\n        --fqa-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);\n    }\n\n    #fqa-bookshelf-hover .fqa-hover-inner {\n        background: #212125;\n        color: #e6e6e6;\n        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);\n    }\n\n    #fqa-bookshelf-hover .fqa-hover-chapter {\n        color: #e6e6e6;\n    }\n\n    #fqa-bookshelf-hover .fqa-hover-abstract {\n        color: #a6a6a6;\n        border-top-color: rgba(255, 255, 255, 0.1);\n    }\n\n    #fqa-bookshelf-hover .fqa-hover-stat + .fqa-hover-stat {\n        border-left-color: rgba(255, 255, 255, 0.1);\n    }\n}\n\n/* ----------------------------- 右键菜单 ----------------------------- */\n\n/*\n * 菜单 Teleport 到 body，拿不到 #fqa-bookshelf 上的变量，\n * 这里重新声明一份（与书架同色板），并给出深色模式回退。\n */\n.fqa-menu {\n    --fqa-menu-bg: #fff;\n    --fqa-menu-text: #1f2329;\n    --fqa-menu-sub: #8f959e;\n    --fqa-menu-hover: rgba(31, 35, 41, 0.06);\n    --fqa-menu-danger: #f5222d;\n\n    position: fixed;\n    z-index: 2147483001;\n    min-width: 132px;\n    max-width: 240px;\n    padding: 4px;\n    box-sizing: border-box;\n    background: var(--fqa-menu-bg);\n    border: 1px solid rgba(31, 35, 41, 0.08);\n    border-radius: 8px;\n    box-shadow: 0 6px 24px rgba(31, 35, 41, 0.16);\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\n        sans-serif;\n    font-size: 13px;\n    color: var(--fqa-menu-text);\n    user-select: none;\n}\n\n/* 二级面板：分组数量多时可滚动 */\n.fqa-menu-sub {\n    max-height: 320px;\n    overflow-y: auto;\n}\n\n.fqa-menu-row {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 12px;\n    padding: 7px 10px;\n    border-radius: 5px;\n    line-height: 1.4;\n    cursor: pointer;\n    white-space: nowrap;\n    overflow: hidden;\n}\n\n.fqa-menu-row > span:first-child {\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n.fqa-menu-row:hover,\n.fqa-menu-row.fqa-menu-open {\n    background: var(--fqa-menu-hover);\n}\n\n.fqa-menu-arrow {\n    color: var(--fqa-menu-sub);\n    font-size: 15px;\n    line-height: 1;\n}\n\n.fqa-menu-danger {\n    color: var(--fqa-menu-danger);\n}\n\n.fqa-menu-disabled {\n    color: var(--fqa-menu-sub);\n    cursor: not-allowed;\n}\n\n.fqa-menu-disabled:hover {\n    background: transparent;\n}\n\n/* 操作结果提示 */\n.fqa-toast {\n    position: fixed;\n    left: 50%;\n    bottom: 48px;\n    transform: translateX(-50%);\n    z-index: 2147483002;\n    max-width: 80vw;\n    padding: 10px 18px;\n    box-sizing: border-box;\n    background: rgba(31, 35, 41, 0.88);\n    color: #fff;\n    border-radius: 8px;\n    font-size: 13px;\n    line-height: 1.4;\n    box-shadow: 0 6px 24px rgba(31, 35, 41, 0.24);\n    pointer-events: none;\n}\n\n@media (prefers-color-scheme: dark) {\n    .fqa-menu {\n        --fqa-menu-bg: #23272e;\n        --fqa-menu-text: #e5e6eb;\n        --fqa-menu-sub: #8f959e;\n        --fqa-menu-hover: rgba(255, 255, 255, 0.08);\n        border-color: rgba(255, 255, 255, 0.1);\n    }\n}\n";
-  const CONTAINER_ID = "fqa-bookshelf-root";
-  const STYLE_ID = "fqa-bookshelf-style";
-  const ORIGIN_SELECTOR = ".muye-bookshelf, .muye-bookshelf-home-page, .bookshelf-tabs";
+  const bookshelfcss = "#fqa-bookshelf {\n    --fqa-text: #1f2329;\n    --fqa-text-sub: #646a73;\n    --fqa-text-weak: #8f959e;\n    --fqa-border: rgba(31, 35, 41, 0.08);\n    --fqa-hover: rgba(31, 35, 41, 0.04);\n    --fqa-accent: #ff6f3d;\n    --fqa-skeleton: rgba(31, 35, 41, 0.06);\n    --fqa-skeleton-hl: rgba(31, 35, 41, 0.12);\n    --fqa-shadow: 0 4px 16px rgba(31, 35, 41, 0.08);\n\n    display: block;\n    box-sizing: border-box;\n    width: 100%;\n    max-width: 1100px;\n    margin: 0 auto;\n    /* 顶部留出原站 fixed 顶栏（80px）的高度，否则标题和 tab 会被压在下面 */\n    padding: calc(80px + 24px) 16px 64px;\n    color: var(--fqa-text);\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\n        sans-serif;\n}\n\n#fqa-bookshelf *,\n#fqa-bookshelf *::before,\n#fqa-bookshelf *::after {\n    box-sizing: border-box;\n}\n\n#fqa-bookshelf div,\n#fqa-bookshelf span,\n#fqa-bookshelf h1,\n#fqa-bookshelf ul,\n#fqa-bookshelf li {\n    margin: 0;\n    padding: 0;\n    border: 0;\n    list-style: none;\n    float: none;\n    position: static;\n}\n\n/* ------------------------------ 顶部 / Tabs ------------------------------ */\n\n#fqa-bookshelf .fqa-bs-header {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 16px;\n    margin-bottom: 8px;\n}\n\n#fqa-bookshelf .fqa-bs-title {\n    font-size: 24px;\n    font-weight: 600;\n    line-height: 1.4;\n}\n\n#fqa-bookshelf .fqa-bs-actions {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    font-size: 13px;\n    color: var(--fqa-text-weak);\n}\n\n#fqa-bookshelf .fqa-btn {\n    display: inline-flex;\n    align-items: center;\n    gap: 4px;\n    padding: 6px 14px;\n    border: 1px solid var(--fqa-border);\n    border-radius: 999px;\n    background: transparent;\n    color: var(--fqa-text-sub);\n    font-size: 13px;\n    font-family: inherit;\n    line-height: 1.4;\n    cursor: pointer;\n    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;\n}\n\n#fqa-bookshelf .fqa-btn:hover:not(:disabled) {\n    border-color: var(--fqa-accent);\n    color: var(--fqa-accent);\n    background: rgba(255, 111, 61, 0.06);\n}\n\n#fqa-bookshelf .fqa-btn:disabled {\n    opacity: 0.5;\n    cursor: default;\n}\n\n#fqa-bookshelf .fqa-tabs {\n    position: relative;\n    display: flex;\n    align-items: center;\n    gap: 4px;\n    margin-bottom: 24px;\n    border-bottom: 1px solid var(--fqa-border);\n}\n\n#fqa-bookshelf .fqa-tab {\n    padding: 10px 16px;\n    color: var(--fqa-text-sub);\n    font-size: 15px;\n    line-height: 22px;\n    cursor: pointer;\n    user-select: none;\n    transition: color 0.15s ease;\n}\n\n#fqa-bookshelf .fqa-tab:hover {\n    color: var(--fqa-text);\n}\n\n#fqa-bookshelf .fqa-tab-active {\n    color: var(--fqa-accent);\n    font-weight: 600;\n}\n\n#fqa-bookshelf .fqa-tab-count {\n    margin-left: 4px;\n    font-size: 12px;\n    font-weight: 400;\n    color: var(--fqa-text-weak);\n}\n\n#fqa-bookshelf .fqa-tab-ink {\n    position: absolute;\n    bottom: -1px;\n    left: 0;\n    width: 0;\n    height: 2px;\n    border-radius: 2px;\n    background: var(--fqa-accent);\n    transition: left 0.25s ease, width 0.25s ease;\n}\n\n/* ------------------------------- 书架网格 ------------------------------- */\n\n/* 原站一排最多 4 本；窄屏逐级降到 3 / 2 */\n#fqa-bookshelf .fqa-grid {\n    display: grid;\n    grid-template-columns: repeat(4, minmax(0, 1fr));\n    gap: 28px 24px;\n    align-items: start;\n}\n\n@media (max-width: 900px) {\n    #fqa-bookshelf .fqa-grid {\n        grid-template-columns: repeat(3, minmax(0, 1fr));\n    }\n}\n\n@media (max-width: 600px) {\n    #fqa-bookshelf .fqa-grid {\n        grid-template-columns: repeat(2, minmax(0, 1fr));\n    }\n}\n\n#fqa-bookshelf .fqa-card {\n    display: block;\n    border-radius: 8px;\n    cursor: pointer;\n    outline: none;\n}\n\n#fqa-bookshelf .fqa-card:focus-visible {\n    box-shadow: 0 0 0 2px var(--fqa-accent);\n}\n\n/* 封面：3:4，靠 aspect-ratio 定高，内部元素绝对定位 */\n#fqa-bookshelf .fqa-cover {\n    position: relative;\n    display: block;\n    width: 100%;\n    aspect-ratio: 3 / 4;\n    border-radius: 6px;\n    overflow: hidden;\n    background: var(--fqa-skeleton);\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\n}\n\n#fqa-bookshelf .fqa-card:hover .fqa-cover {\n    transform: translateY(-4px);\n    box-shadow: var(--fqa-shadow);\n}\n\n#fqa-bookshelf .fqa-cover-img {\n    position: absolute;\n    inset: 0;\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: opacity 0.25s ease;\n}\n\n#fqa-bookshelf .fqa-cover-img-loading {\n    opacity: 0;\n}\n\n#fqa-bookshelf .fqa-cover-tag {\n    position: absolute;\n    top: 0;\n    right: 0;\n    z-index: 2;\n    padding: 2px 6px;\n    border-radius: 0 6px 0 6px;\n    background: var(--fqa-accent);\n    color: #fff;\n    font-size: 11px;\n    line-height: 16px;\n    font-weight: 500;\n    white-space: nowrap;\n}\n\n/* 连载 / 完结 / 断更共用：灰底，弱化于“更新”角标 */\n#fqa-bookshelf .fqa-cover-tag-gray {\n    background: rgba(31, 35, 41, 0.55);\n}\n\n@media (prefers-color-scheme: dark) {\n    #fqa-bookshelf .fqa-cover-tag-gray {\n        background: rgba(0, 0, 0, 0.6);\n    }\n}\n\n#fqa-bookshelf .fqa-cover-progress {\n    position: absolute;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    z-index: 2;\n    height: 3px;\n    background: rgba(255, 255, 255, 0.35);\n}\n\n#fqa-bookshelf .fqa-cover-progress-bar {\n    display: block;\n    height: 100%;\n    background: var(--fqa-accent);\n    transition: width 0.3s ease;\n}\n\n/* 文字区：与封面同为普通流元素，不会重叠 */\n#fqa-bookshelf .fqa-card-title {\n    display: -webkit-box;\n    margin-top: 8px;\n    color: var(--fqa-text);\n    font-size: 14px;\n    line-height: 20px;\n    font-weight: 500;\n    -webkit-line-clamp: 2;\n    line-clamp: 2;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    word-break: break-all;\n}\n\n#fqa-bookshelf .fqa-card-sub {\n    margin-top: 4px;\n    color: var(--fqa-text-weak);\n    font-size: 12px;\n    line-height: 18px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n/* ------------------------------- 分组卡片 ------------------------------- */\n\n#fqa-bookshelf .fqa-group-cover {\n    position: relative;\n    display: block;\n    width: 100%;\n    aspect-ratio: 3 / 4;\n    border-radius: 6px;\n    overflow: hidden;\n    background: linear-gradient(135deg, rgba(255, 111, 61, 0.12), rgba(78, 131, 253, 0.12));\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\n}\n\n#fqa-bookshelf .fqa-card:hover .fqa-group-cover {\n    transform: translateY(-4px);\n    box-shadow: var(--fqa-shadow);\n}\n\n#fqa-bookshelf .fqa-group-grid {\n    position: absolute;\n    inset: 0;\n    display: grid;\n    grid-template-columns: 1fr 1fr;\n    grid-template-rows: 1fr 1fr;\n    gap: 4px;\n    padding: 6px;\n}\n\n#fqa-bookshelf .fqa-group-cell {\n    position: relative;\n    border-radius: 3px;\n    overflow: hidden;\n    background: rgba(31, 35, 41, 0.06);\n}\n\n#fqa-bookshelf .fqa-group-cell img {\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n}\n\n/* 分组详情返回条 */\n\n#fqa-bookshelf .fqa-groupbar {\n    display: flex;\n    align-items: center;\n    gap: 10px;\n    margin-bottom: 16px;\n}\n\n#fqa-bookshelf .fqa-groupbar-name {\n    font-size: 16px;\n    font-weight: 600;\n}\n\n#fqa-bookshelf .fqa-groupbar-count {\n    color: var(--fqa-text-weak);\n    font-size: 13px;\n}\n\n/* --------------------------- hover 详情浮层 --------------------------- */\n\n/*\n * 用 popover 进入浏览器顶层，不参与页面 z-index 竞争，\n * 因此不会被相邻卡片或原站的层叠上下文盖住。z-index 仅作降级保险。\n */\n#fqa-bookshelf-hover {\n    position: fixed;\n    z-index: 2147483000;\n    /* 容器本身透传，只有内部卡片接收事件，避免空白区挡住下层 */\n    pointer-events: none;\n    opacity: 0;\n    transform: translateY(4px);\n    /* allow-discrete：顶层元素从 display:none 切入时也能播放淡入 */\n    transition: opacity 0.16s ease, transform 0.16s ease, display 0.16s allow-discrete;\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\n        sans-serif;\n}\n\n/* popover 默认带边框/内边距/居中定位，全部清掉，改由 left/top 控制 */\n#fqa-bookshelf-hover:popover-open,\n#fqa-bookshelf-hover[popover] {\n    margin: 0;\n    padding: 0;\n    border: 0;\n    background: transparent;\n    overflow: visible;\n    inset: auto;\n    width: auto;\n    height: auto;\n    max-width: none;\n    max-height: none;\n    color: inherit;\n}\n\n#fqa-bookshelf-hover::backdrop {\n    background: transparent;\n}\n\n#fqa-bookshelf-hover.fqa-visible {\n    opacity: 1;\n    transform: translateY(0);\n}\n\n@starting-style {\n    #fqa-bookshelf-hover.fqa-visible {\n        opacity: 0;\n        transform: translateY(4px);\n    }\n}\n\n/* 高度由 JS 按封面尺寸设定；纵向 flex 让简介吃掉剩余空间 */\n#fqa-bookshelf-hover .fqa-hover-inner {\n    display: flex;\n    flex-direction: column;\n    box-sizing: border-box;\n    width: 280px;\n    padding: 12px 14px;\n    border-radius: 10px;\n    background: #fff;\n    box-shadow: 0 8px 32px rgba(31, 35, 41, 0.16);\n    color: #1f2329;\n    overflow: hidden;\n    /* 卡片可交互：鼠标可以移进来而不触发收起 */\n    pointer-events: auto;\n}\n\n#fqa-bookshelf-hover .fqa-hover-title {\n    flex: none;\n    margin: 0;\n    font-size: 14px;\n    line-height: 20px;\n    font-weight: 600;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n#fqa-bookshelf-hover .fqa-hover-author {\n    flex: none;\n    margin-top: 2px;\n    color: #8f959e;\n    font-size: 12px;\n    line-height: 17px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stats {\n    display: flex;\n    flex: none;\n    margin-top: 10px;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat {\n    flex: 1 1 0;\n    min-width: 0;\n    padding: 0 6px;\n    text-align: center;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat:first-child {\n    padding-left: 0;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat:last-child {\n    padding-right: 0;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat + .fqa-hover-stat {\n    border-left: 1px solid rgba(31, 35, 41, 0.08);\n}\n\n/* 第一栏可悬停切换为更新时间，给个可交互提示 */\n#fqa-bookshelf-hover .fqa-hover-stat:first-child {\n    border-radius: 4px;\n    cursor: default;\n    transition: background 0.15s ease;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat:first-child:hover {\n    background: rgba(31, 35, 41, 0.05);\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat-v {\n    font-size: 13px;\n    line-height: 18px;\n    font-weight: 600;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n#fqa-bookshelf-hover .fqa-hover-stat-k {\n    margin-top: 1px;\n    color: #8f959e;\n    font-size: 11px;\n    line-height: 16px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n/* 梗概 / 简介 双栏切换 */\n#fqa-bookshelf-hover .fqa-hover-seg {\n    display: flex;\n    flex: none;\n    gap: 4px;\n    margin-top: 10px;\n    padding-top: 10px;\n    border-top: 1px solid rgba(31, 35, 41, 0.08);\n}\n\n#fqa-bookshelf-hover .fqa-hover-seg-btn {\n    flex: 1 1 0;\n    padding: 4px 0;\n    border: 0;\n    border-radius: 5px;\n    background: rgba(31, 35, 41, 0.05);\n    color: #646a73;\n    font-family: inherit;\n    font-size: 12px;\n    line-height: 18px;\n    cursor: pointer;\n    transition: background 0.15s ease, color 0.15s ease;\n}\n\n#fqa-bookshelf-hover .fqa-hover-seg-btn:hover {\n    color: #1f2329;\n}\n\n#fqa-bookshelf-hover .fqa-hover-seg-active {\n    background: rgba(255, 111, 61, 0.12);\n    color: #ff6f3d;\n    font-weight: 500;\n}\n\n#fqa-bookshelf-hover .fqa-hover-seg-active:hover {\n    color: #ff6f3d;\n}\n\n/*\n * 撑满剩余高度。行数不再写死，由容器高度自然裁切；\n * min-height:0 让 flex 子项允许被压缩，否则 overflow 不生效。\n */\n#fqa-bookshelf-hover .fqa-hover-abstract {\n    flex: 1 1 auto;\n    min-height: 0;\n    margin-top: 8px;\n    color: #646a73;\n    font-size: 12px;\n    line-height: 18px;\n    overflow-y: auto;\n    overscroll-behavior: contain;\n}\n\n#fqa-bookshelf-hover .fqa-hover-abstract::-webkit-scrollbar {\n    width: 4px;\n}\n\n#fqa-bookshelf-hover .fqa-hover-abstract::-webkit-scrollbar-thumb {\n    border-radius: 2px;\n    background: rgba(31, 35, 41, 0.18);\n}\n\n\n#fqa-bookshelf-hover .fqa-hover-chapter {\n    display: block;\n    margin-bottom: 1px;\n    color: #1f2329;\n    font-weight: 500;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n/* ------------------------------- 骨架屏 ------------------------------- */\n\n#fqa-bookshelf .fqa-sk-cover {\n    display: block;\n    width: 100%;\n    aspect-ratio: 3 / 4;\n    border-radius: 6px;\n    background: var(--fqa-skeleton);\n}\n\n#fqa-bookshelf .fqa-sk-line {\n    height: 12px;\n    margin-top: 8px;\n    border-radius: 4px;\n    background: var(--fqa-skeleton);\n}\n\n#fqa-bookshelf .fqa-sk-anim {\n    position: relative;\n    overflow: hidden;\n}\n\n/* keyframes fqa-shimmer 在 script.css 里全局声明 */\n#fqa-bookshelf .fqa-sk-anim::after {\n    content: '';\n    position: absolute;\n    inset: 0;\n    transform: translateX(-100%);\n    background: linear-gradient(90deg, transparent, var(--fqa-skeleton-hl), transparent);\n    animation: fqa-shimmer 1.4s infinite;\n}\n\n/* --------------------------- 空态 / 错误态 --------------------------- */\n\n#fqa-bookshelf .fqa-loadmore {\n    padding: 24px 0;\n    text-align: center;\n    color: var(--fqa-text-weak);\n    font-size: 13px;\n}\n\n#fqa-bookshelf .fqa-status {\n    padding: 80px 16px;\n    text-align: center;\n    color: var(--fqa-text-weak);\n    font-size: 14px;\n    line-height: 22px;\n}\n\n#fqa-bookshelf .fqa-status-title {\n    margin-bottom: 8px;\n    color: var(--fqa-text);\n    font-size: 16px;\n    font-weight: 500;\n}\n\n#fqa-bookshelf .fqa-status .fqa-btn {\n    margin-top: 16px;\n}\n\n/* ------------------------------- 深色模式 ------------------------------- */\n\n@media (prefers-color-scheme: dark) {\n    #fqa-bookshelf {\n        --fqa-text: #e6e6e6;\n        --fqa-text-sub: #a6a6a6;\n        --fqa-text-weak: #7a7a7a;\n        --fqa-border: rgba(255, 255, 255, 0.1);\n        --fqa-hover: rgba(255, 255, 255, 0.06);\n        --fqa-skeleton: rgba(255, 255, 255, 0.08);\n        --fqa-skeleton-hl: rgba(255, 255, 255, 0.14);\n        --fqa-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);\n    }\n\n    #fqa-bookshelf-hover .fqa-hover-inner {\n        background: #212125;\n        color: #e6e6e6;\n        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);\n    }\n\n    #fqa-bookshelf-hover .fqa-hover-chapter {\n        color: #e6e6e6;\n    }\n\n    #fqa-bookshelf-hover .fqa-hover-abstract {\n        color: #a6a6a6;\n        border-top-color: rgba(255, 255, 255, 0.1);\n    }\n\n    #fqa-bookshelf-hover .fqa-hover-stat + .fqa-hover-stat {\n        border-left-color: rgba(255, 255, 255, 0.1);\n    }\n}\n\n/* 右键菜单与 toast 样式已移到 script.css，书架和搜索共用 */\n";
+  const CONTAINER_ID$1 = "fqa-bookshelf-root";
+  const STYLE_ID$1 = "fqa-bookshelf-style";
+  const ORIGIN_SELECTOR$1 = ".muye-bookshelf, .muye-bookshelf-home-page, .bookshelf-tabs";
+  let app$1 = null;
+  let container$1 = null;
+  let observer$1 = null;
+  function injectStyle$1() {
+    if (document.getElementById(STYLE_ID$1)) return;
+    const style = document.createElement("style");
+    style.id = STYLE_ID$1;
+    style.textContent = bookshelfcss;
+    document.head.appendChild(style);
+  }
+  function hideOrigin$1(root = document) {
+    root.querySelectorAll(ORIGIN_SELECTOR$1).forEach((el) => {
+      if (el.id === CONTAINER_ID$1 || el.closest(`#${CONTAINER_ID$1}`)) return;
+      el.classList.add("fqa-hide");
+    });
+  }
+  function isBookshelfPath(path) {
+    return path.startsWith("/bookshelf");
+  }
+  function unmount$1() {
+    var _a;
+    observer$1 == null ? void 0 : observer$1.disconnect();
+    observer$1 = null;
+    app$1 == null ? void 0 : app$1.unmount();
+    app$1 = null;
+    container$1 == null ? void 0 : container$1.remove();
+    container$1 = null;
+    (_a = document.getElementById("fqa-bookshelf-hover")) == null ? void 0 : _a.remove();
+    document.querySelectorAll(ORIGIN_SELECTOR$1).forEach((el) => {
+      el.classList.remove("fqa-hide");
+    });
+  }
+  async function mainHook$1(_previous) {
+    if (!isBookshelfPath(window.location.pathname)) {
+      unmount$1();
+      return;
+    }
+    if (app$1) {
+      hideOrigin$1();
+      return;
+    }
+    injectStyle$1();
+    const origin = await waitForElement(ORIGIN_SELECTOR$1);
+    if (!isBookshelfPath(window.location.pathname)) return;
+    if (app$1) return;
+    hideOrigin$1();
+    container$1 = document.createElement("div");
+    container$1.id = CONTAINER_ID$1;
+    const anchor = origin ?? document.querySelector("#root") ?? document.body;
+    if (origin == null ? void 0 : origin.parentElement) {
+      origin.insertAdjacentElement("beforebegin", container$1);
+    } else {
+      anchor.appendChild(container$1);
+    }
+    app$1 = vue.createApp(_sfc_main$3);
+    app$1.config.errorHandler = (err, _instance, info) => {
+      console.error(`[fqa:bookshelf] Vue error (${info}):`, err);
+    };
+    app$1.mount(container$1);
+    console.log("[fqa:bookshelf] 书架视图已挂载");
+    document.title = "我的书架 - 番茄小说";
+    observer$1 = new MutationObserver((mutations) => {
+      var _a;
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
+          if (node.id === CONTAINER_ID$1 || node.closest(`#${CONTAINER_ID$1}`)) continue;
+          if ((_a = node.matches) == null ? void 0 : _a.call(node, ORIGIN_SELECTOR$1)) {
+            node.classList.add("fqa-hide");
+          } else {
+            hideOrigin$1(node);
+          }
+        }
+      }
+    });
+    observer$1.observe(document.body, { childList: true, subtree: true });
+  }
+  function filter$1(path, _query, _hash) {
+    return (isBookshelfPath(path) || !!app$1) && userState.isLogin;
+  }
+  const _exports$1 = [
+    {
+      id: "bookshelfHook_onload",
+      event: "load",
+      filter: filter$1,
+      handler: mainHook$1
+    },
+    {
+      id: "bookshelfHook_onurlchange",
+      event: "onUrlChange",
+      filter: filter$1,
+      handler: mainHook$1
+    }
+  ];
+  const _hoisted_1$2 = ["aria-label"];
+  const _hoisted_2$2 = { class: "fqa-sr-cover" };
+  const _hoisted_3$2 = ["src", "alt"];
+  const _hoisted_4$2 = {
+    key: 0,
+    class: "fqa-sr-badge"
+  };
+  const _hoisted_5$2 = { class: "fqa-sr-body" };
+  const _hoisted_6$2 = ["innerHTML"];
+  const _hoisted_7$2 = {
+    key: 1,
+    class: "fqa-sr-title"
+  };
+  const _hoisted_8$2 = { class: "fqa-sr-author" };
+  const _hoisted_9$2 = {
+    key: 2,
+    class: "fqa-sr-summary"
+  };
+  const _hoisted_10$2 = { class: "fqa-sr-meta" };
+  const _hoisted_11$2 = {
+    key: 0,
+    class: "fqa-sr-read"
+  };
+  const _hoisted_12$2 = {
+    key: 3,
+    class: "fqa-sr-update"
+  };
+  const _hoisted_13$2 = {
+    key: 0,
+    class: "fqa-sr-chapter"
+  };
+  const _hoisted_14$2 = {
+    key: 1,
+    class: "fqa-sr-time"
+  };
+  const _sfc_main$2 = /* @__PURE__ */ vue.defineComponent({
+    __name: "SearchBookCard",
+    props: {
+      book: {}
+    },
+    emits: ["open", "contextmenu"],
+    setup(__props, { emit: __emit }) {
+      const props = __props;
+      const emit = __emit;
+      const titleHtml = vue.computed(() => props.book.highlight_title ?? null);
+      const statusText = vue.computed(() => mappingCreationStatus(props.book.status));
+      const wordText = vue.computed(() => {
+        const n = props.book.word_count;
+        if (!n) return "";
+        if (n >= 1e4) return `${(n / 1e4).toFixed(1).replace(/\.0$/, "")}万字`;
+        return `${n}字`;
+      });
+      const metaParts = vue.computed(
+        () => [statusText.value, wordText.value, props.book.category].filter(Boolean)
+      );
+      const readText = vue.computed(() => {
+        if (props.book.sub_info) return props.book.sub_info;
+        const n = props.book.read_count;
+        if (!n) return "";
+        return n >= 1e4 ? `${(n / 1e4).toFixed(1).replace(/\.0$/, "")}万人在读` : `${n}人在读`;
+      });
+      const updateText = vue.computed(() => {
+        const t = props.book.last_publish_time;
+        return t ? `${fromNow(t)}更新` : "";
+      });
+      const imgLoaded = vue.ref(false);
+      vue.watch(
+        () => props.book.cover_url,
+        () => {
+          imgLoaded.value = false;
+        }
+      );
+      function onContextMenu(event) {
+        event.preventDefault();
+        emit("contextmenu", { book: props.book, x: event.clientX, y: event.clientY });
+      }
+      return (_ctx, _cache) => {
+        return vue.openBlock(), vue.createElementBlock("div", {
+          class: "fqa-sr-card",
+          role: "link",
+          tabindex: "0",
+          "aria-label": __props.book.title,
+          onClick: _cache[2] || (_cache[2] = ($event) => emit("open", __props.book)),
+          onKeydown: _cache[3] || (_cache[3] = vue.withKeys(vue.withModifiers(($event) => emit("open", __props.book), ["prevent"]), ["enter"])),
+          onContextmenu: onContextMenu
+        }, [
+          vue.createElementVNode("div", _hoisted_2$2, [
+            vue.createElementVNode("img", {
+              class: vue.normalizeClass(["fqa-sr-cover-img", { "fqa-sr-cover-loading": !imgLoaded.value }]),
+              crossorigin: "anonymous",
+              loading: "lazy",
+              referrerpolicy: "no-referrer",
+              src: __props.book.cover_url,
+              alt: __props.book.title,
+              onLoad: _cache[0] || (_cache[0] = ($event) => imgLoaded.value = true),
+              onError: _cache[1] || (_cache[1] = ($event) => imgLoaded.value = true)
+            }, null, 42, _hoisted_3$2),
+            __props.book.in_bookshelf ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_4$2, "在书架")) : vue.createCommentVNode("", true)
+          ]),
+          vue.createElementVNode("div", _hoisted_5$2, [
+            titleHtml.value ? (vue.openBlock(), vue.createElementBlock("h3", {
+              key: 0,
+              class: "fqa-sr-title",
+              innerHTML: titleHtml.value
+            }, null, 8, _hoisted_6$2)) : (vue.openBlock(), vue.createElementBlock("h3", _hoisted_7$2, vue.toDisplayString(__props.book.title), 1)),
+            vue.createElementVNode("div", _hoisted_8$2, [
+              vue.createElementVNode("span", null, vue.toDisplayString(__props.book.author), 1),
+              vue.createElementVNode("span", {
+                class: vue.normalizeClass(["fqa-sr-score", { "fqa-sr-score-none": !__props.book.score }])
+              }, vue.toDisplayString(__props.book.score ? `${__props.book.score}分` : "暂无评分"), 3)
+            ]),
+            __props.book.summary ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_9$2, vue.toDisplayString(__props.book.summary), 1)) : vue.createCommentVNode("", true),
+            vue.createElementVNode("div", _hoisted_10$2, [
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(metaParts.value, (part) => {
+                return vue.openBlock(), vue.createElementBlock("span", {
+                  key: part,
+                  class: "fqa-sr-tag"
+                }, vue.toDisplayString(part), 1);
+              }), 128)),
+              readText.value ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_11$2, vue.toDisplayString(readText.value), 1)) : vue.createCommentVNode("", true)
+            ]),
+            updateText.value || __props.book.last_chapter_title ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_12$2, [
+              __props.book.last_chapter_title ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_13$2, vue.toDisplayString(__props.book.last_chapter_title), 1)) : vue.createCommentVNode("", true),
+              updateText.value ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_14$2, vue.toDisplayString(updateText.value), 1)) : vue.createCommentVNode("", true)
+            ])) : vue.createCommentVNode("", true)
+          ])
+        ], 40, _hoisted_1$2);
+      };
+    }
+  });
+  const BOOK_TAB_TYPE = 1;
+  const RESULT_SHOW_TYPE = 110;
+  const RENDERABLE_TABS = /* @__PURE__ */ new Set([1, 2, 3, 5, 8]);
+  function credentials() {
+    return settings$1.searchPersonalized ? "include" : "omit";
+  }
+  function num(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+  }
+  function bool(v) {
+    if (typeof v === "string") return v !== "" && v !== "0" && v !== "false";
+    return Boolean(v);
+  }
+  function sanitizeHighlight(html) {
+    if (typeof html !== "string" || !html) return void 0;
+    return html.replace(/<(?!\/?em\s*\/?>)[^>]*>/gi, "");
+  }
+  function normalizeBook(raw, cell) {
+    var _a;
+    const bookId = String((raw == null ? void 0 : raw.book_id) ?? "");
+    if (!bookId || bookId === "0") return null;
+    const hl = cell == null ? void 0 : cell.search_high_light;
+    return {
+      book_id: bookId,
+      title: raw.book_name || raw.original_book_name || "",
+      author: raw.author || "",
+      cover_url: raw.thumb_url || raw.audio_thumb_url_hd || "",
+      summary: raw.abstract || "",
+      status: String(raw.creation_status ?? ""),
+      word_count: num(raw.word_number),
+      // sub_info 是接口给的展示文案，如「404章」「10.5万人在读」
+      sub_info: String(raw.sub_info ?? ""),
+      read_count: num(raw.read_count),
+      // 未评分的书下发 "0"，视为没有评分
+      score: num(raw.score) > 0 ? String(raw.score) : "",
+      category: raw.category || "",
+      chapter_count: num(raw.serial_count),
+      last_chapter_title: raw.last_chapter_title || "",
+      last_publish_time: num(raw.last_publish_time) * 1e3,
+      highlight_title: sanitizeHighlight((_a = hl == null ? void 0 : hl.title) == null ? void 0 : _a.rich_text),
+      genre: raw.genre != null ? String(raw.genre) : void 0,
+      in_bookshelf: bool(raw.in_bookshelf)
+    };
+  }
+  function collectBooks(cells) {
+    const books = [];
+    const seen = /* @__PURE__ */ new Set();
+    const take = (cell) => {
+      for (const raw of (cell == null ? void 0 : cell.book_data) ?? []) {
+        const book = normalizeBook(raw, cell);
+        if (!book || seen.has(book.book_id)) continue;
+        seen.add(book.book_id);
+        books.push(book);
+      }
+    };
+    const results = cells.filter((c) => Number(c == null ? void 0 : c.show_type) === RESULT_SHOW_TYPE);
+    if (results.length) {
+      results.forEach(take);
+      return books;
+    }
+    cells.filter((c) => Array.isArray(c == null ? void 0 : c.book_data) && c.book_data.length).forEach(take);
+    return books;
+  }
+  function collectTabs(tabs) {
+    return tabs.map((t) => {
+      var _a;
+      return {
+        tab_type: num(t == null ? void 0 : t.tab_type),
+        // 字段名是 title，不是 tab_name
+        tab_name: String((t == null ? void 0 : t.title) ?? ""),
+        has_selector: Array.isArray((_a = t == null ? void 0 : t.selector) == null ? void 0 : _a.rows) && t.selector.rows.length > 0
+      };
+    }).filter((t) => t.tab_type > 0 && t.tab_name && RENDERABLE_TABS.has(t.tab_type));
+  }
+  function collectSelectorRows(tabs) {
+    var _a, _b;
+    const rows = (_b = (_a = tabs.find((t) => {
+      var _a2;
+      return Array.isArray((_a2 = t == null ? void 0 : t.selector) == null ? void 0 : _a2.rows);
+    })) == null ? void 0 : _a.selector) == null ? void 0 : _b.rows;
+    if (!Array.isArray(rows)) return [];
+    return rows.map((row) => ({
+      name: String((row == null ? void 0 : row.row_name) ?? ""),
+      items: (Array.isArray(row == null ? void 0 : row.items) ? row.items : []).map((item) => ({
+        id: String((item == null ? void 0 : item.selector_item_id) ?? ""),
+        name: String((item == null ? void 0 : item.show_name) ?? ""),
+        default: Boolean(item == null ? void 0 : item.is_default_selected)
+      })).filter((item) => item.id && item.name)
+    })).filter((row) => row.name && row.items.length > 0);
+  }
+  async function search({
+    query,
+    passback = 0,
+    selectedItems = [],
+    tabType = BOOK_TAB_TYPE
+  }) {
+    const selected = tabType === BOOK_TAB_TYPE ? selectedItems.filter(Boolean).join(",") : "";
+    const j = await webGet(
+      "/bookapi/search/tab/v",
+      {
+        query,
+        passback: String(passback),
+        selected_items: selected,
+        tab_type: String(tabType)
+      },
+      credentials()
+    );
+    if ((j == null ? void 0 : j.code) !== void 0 && j.code !== 0) {
+      throw new Error(j.message || `搜索失败(code=${j.code})`);
+    }
+    const tabs = Array.isArray(j == null ? void 0 : j.search_tabs) ? j.search_tabs : [];
+    const current = tabs.find((t) => num(t == null ? void 0 : t.tab_type) === tabType);
+    const cells = Array.isArray(current == null ? void 0 : current.data) ? current.data : [];
+    const books = collectBooks(cells);
+    return {
+      books,
+      // 回填服务端游标；没给就按已取回的书数往前推，至少不会原地打转
+      next_passback: num(current == null ? void 0 : current.passback) || passback + Math.max(books.length, 1),
+      has_more: Boolean(current == null ? void 0 : current.has_more) && books.length > 0,
+      tabs: collectTabs(tabs),
+      selector_rows: collectSelectorRows(tabs)
+    };
+  }
+  function collectWords(list) {
+    if (!Array.isArray(list)) return [];
+    return list.map((t) => ({
+      word: String((t == null ? void 0 : t.tag_title) ?? ""),
+      // 「877405热搜值」之类的附加说明
+      tag: (t == null ? void 0 : t.tag_attached) ? String(t.tag_attached) : void 0,
+      label: (t == null ? void 0 : t.label) ? String(t.label) : void 0
+    })).filter((w) => w.word);
+  }
+  function collectSugBooks(list) {
+    if (!Array.isArray(list)) return [];
+    return list.map((b) => ({
+      book_id: String((b == null ? void 0 : b.book_id) ?? ""),
+      title: String((b == null ? void 0 : b.book_name) ?? ""),
+      cover_url: String((b == null ? void 0 : b.thumb_url) ?? ""),
+      author: (b == null ? void 0 : b.author) ? String(b.author) : void 0,
+      desc: (b == null ? void 0 : b.sub_info) ? String(b.sub_info) : void 0
+    })).filter((b) => b.book_id && b.title);
+  }
+  function pushSection(out, title, words, books) {
+    if (!words.length && !books.length) return;
+    out.push({
+      title: title || (words.length ? "热搜" : "推荐"),
+      kind: words.length ? "hotword" : "book",
+      words,
+      books
+    });
+  }
+  async function getSearchLanding() {
+    const j = await webGet(
+      "/bookapi/plan/v",
+      {
+        search_source: "1",
+        scene: "10",
+        new_search_middle_page: "true",
+        search_middle_page_version: "2",
+        from: "search_input_page",
+        tab_name: "store",
+        bookstore_tab: "2",
+        bookstore_tab_type: "2",
+        hot_word_exchange: "false",
+        query_history_removed: "false",
+        user_is_login: settings$1.searchPersonalized ? "1" : "0"
+      },
+      credentials()
+    );
+    if ((j == null ? void 0 : j.code) !== void 0 && j.code !== 0) {
+      throw new Error(j.message || `加载推荐失败(code=${j.code})`);
+    }
+    const sections = [];
+    for (const cell of Array.isArray(j == null ? void 0 : j.data) ? j.data : []) {
+      if (Array.isArray(cell == null ? void 0 : cell.cell_data)) {
+        for (const sub of cell.cell_data) {
+          pushSection(
+            sections,
+            String((sub == null ? void 0 : sub.cell_name) ?? ""),
+            collectWords(sub == null ? void 0 : sub.search_tag_data),
+            collectSugBooks(sub == null ? void 0 : sub.book_data)
+          );
+        }
+        continue;
+      }
+      pushSection(
+        sections,
+        String((cell == null ? void 0 : cell.cell_name) ?? "") || "猜你想搜",
+        collectWords(cell == null ? void 0 : cell.search_tag_data),
+        collectSugBooks(cell == null ? void 0 : cell.book_data)
+      );
+    }
+    return sections;
+  }
+  const _hoisted_1$1 = { class: "fqa-s-landing" };
+  const _hoisted_2$1 = {
+    key: 0,
+    class: "fqa-s-landing-sk"
+  };
+  const _hoisted_3$1 = {
+    key: 1,
+    class: "fqa-s-status"
+  };
+  const _hoisted_4$1 = {
+    key: 2,
+    class: "fqa-s-status"
+  };
+  const _hoisted_5$1 = { class: "fqa-s-sec-title" };
+  const _hoisted_6$1 = {
+    key: 0,
+    class: "fqa-s-words"
+  };
+  const _hoisted_7$1 = ["onClick"];
+  const _hoisted_8$1 = {
+    key: 0,
+    class: "fqa-s-word-label"
+  };
+  const _hoisted_9$1 = {
+    key: 1,
+    class: "fqa-s-word-tag"
+  };
+  const _hoisted_10$1 = {
+    key: 1,
+    class: "fqa-s-sugs"
+  };
+  const _hoisted_11$1 = ["onClick", "onKeydown"];
+  const _hoisted_12$1 = ["src", "alt"];
+  const _hoisted_13$1 = ["title"];
+  const _hoisted_14$1 = {
+    key: 0,
+    class: "fqa-s-sug-sub"
+  };
+  const _sfc_main$1 = /* @__PURE__ */ vue.defineComponent({
+    __name: "SearchLanding",
+    emits: ["word"],
+    setup(__props, { emit: __emit }) {
+      const emit = __emit;
+      const sections = vue.ref([]);
+      const loading = vue.ref(true);
+      const error = vue.ref(null);
+      async function load2() {
+        loading.value = true;
+        error.value = null;
+        try {
+          sections.value = await getSearchLanding();
+        } catch (err) {
+          console.error("[fqa:search] 推荐加载失败:", err);
+          error.value = err instanceof Error ? err.message : String(err);
+        } finally {
+          loading.value = false;
+        }
+      }
+      function openBook(bookId) {
+        unsafeWindow.location.href = `https://fanqienovel.com/page/${bookId}`;
+      }
+      vue.onMounted(load2);
+      return (_ctx, _cache) => {
+        return vue.openBlock(), vue.createElementBlock("div", _hoisted_1$1, [
+          loading.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_2$1, [
+            (vue.openBlock(), vue.createElementBlock(vue.Fragment, null, vue.renderList(12, (n) => {
+              return vue.createElementVNode("div", {
+                key: n,
+                class: "fqa-sk-chip fqa-sk-anim"
+              });
+            }), 64))
+          ])) : error.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_3$1, [
+            _cache[0] || (_cache[0] = vue.createElementVNode("div", { class: "fqa-s-status-title" }, "推荐内容加载失败", -1)),
+            _cache[1] || (_cache[1] = vue.createElementVNode("div", null, "直接在上方输入关键词也可以搜索", -1)),
+            vue.createElementVNode("button", {
+              class: "fqa-s-submit",
+              onClick: load2
+            }, "重试")
+          ])) : !sections.value.length ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_4$1, [..._cache[2] || (_cache[2] = [
+            vue.createElementVNode("div", { class: "fqa-s-status-title" }, "输入关键词开始搜索", -1)
+          ])])) : (vue.openBlock(true), vue.createElementBlock(vue.Fragment, { key: 3 }, vue.renderList(sections.value, (section, i2) => {
+            return vue.openBlock(), vue.createElementBlock("section", {
+              key: `${section.title}-${i2}`,
+              class: "fqa-s-sec"
+            }, [
+              vue.createElementVNode("h3", _hoisted_5$1, vue.toDisplayString(section.title), 1),
+              section.words.length ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_6$1, [
+                (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(section.words, (w, wi) => {
+                  return vue.openBlock(), vue.createElementBlock("button", {
+                    key: `${w.word}-${wi}`,
+                    class: "fqa-s-word",
+                    onClick: ($event) => emit("word", w.word)
+                  }, [
+                    w.label ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_8$1, vue.toDisplayString(w.label), 1)) : vue.createCommentVNode("", true),
+                    vue.createTextVNode(" " + vue.toDisplayString(w.word) + " ", 1),
+                    w.tag ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_9$1, vue.toDisplayString(w.tag), 1)) : vue.createCommentVNode("", true)
+                  ], 8, _hoisted_7$1);
+                }), 128))
+              ])) : vue.createCommentVNode("", true),
+              section.books.length ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_10$1, [
+                (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(section.books, (b) => {
+                  return vue.openBlock(), vue.createElementBlock("div", {
+                    key: b.book_id,
+                    class: "fqa-s-sug",
+                    role: "link",
+                    tabindex: "0",
+                    onClick: ($event) => openBook(b.book_id),
+                    onKeydown: vue.withKeys(vue.withModifiers(($event) => openBook(b.book_id), ["prevent"]), ["enter"])
+                  }, [
+                    vue.createElementVNode("img", {
+                      class: "fqa-s-sug-cover",
+                      crossorigin: "anonymous",
+                      loading: "lazy",
+                      referrerpolicy: "no-referrer",
+                      src: b.cover_url,
+                      alt: b.title
+                    }, null, 8, _hoisted_12$1),
+                    vue.createElementVNode("div", {
+                      class: "fqa-s-sug-title",
+                      title: b.title
+                    }, vue.toDisplayString(b.title), 9, _hoisted_13$1),
+                    b.desc || b.author ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_14$1, vue.toDisplayString(b.desc || b.author), 1)) : vue.createCommentVNode("", true)
+                  ], 40, _hoisted_11$1);
+                }), 128))
+              ])) : vue.createCommentVNode("", true)
+            ]);
+          }), 128))
+        ]);
+      };
+    }
+  });
+  const FALLBACK_TABS = [{ tab_type: BOOK_TAB_TYPE, tab_name: "综合", has_selector: true }];
+  function useSearch() {
+    const query = vue.ref("");
+    const tabType = vue.ref(BOOK_TAB_TYPE);
+    const tabs = vue.ref([]);
+    const selectorRows = vue.ref([]);
+    const selected = vue.ref({});
+    const books = vue.ref([]);
+    const passback = vue.ref(0);
+    const hasMore = vue.ref(false);
+    const loading = vue.ref(false);
+    const loadingMore = vue.ref(false);
+    const error = vue.ref(null);
+    const searched = vue.ref(false);
+    let token = 0;
+    const selectedItems = vue.computed(
+      () => Object.values(selected.value).filter(Boolean)
+    );
+    const availableTabs = vue.computed(() => tabs.value.length ? tabs.value : FALLBACK_TABS);
+    const canFilter = vue.computed(() => tabType.value === BOOK_TAB_TYPE && selectorRows.value.length > 0);
+    const filterCount = vue.computed(() => selectedItems.value.length);
+    async function run(reset2) {
+      const q = query.value.trim();
+      if (!q) return;
+      const current = ++token;
+      if (reset2) {
+        passback.value = 0;
+        loading.value = true;
+        error.value = null;
+      } else {
+        if (loadingMore.value || !hasMore.value) return;
+        loadingMore.value = true;
+      }
+      try {
+        const result = await search({
+          query: q,
+          passback: passback.value,
+          selectedItems: selectedItems.value,
+          tabType: tabType.value
+        });
+        if (current !== token) return;
+        if (reset2) {
+          books.value = result.books;
+        } else {
+          const seen = new Set(books.value.map((b) => b.book_id));
+          books.value = [...books.value, ...result.books.filter((b) => !seen.has(b.book_id))];
+        }
+        passback.value = result.next_passback;
+        hasMore.value = result.has_more;
+        if (result.tabs.length) tabs.value = result.tabs;
+        if (result.selector_rows.length) selectorRows.value = result.selector_rows;
+        searched.value = true;
+      } catch (err) {
+        if (current !== token) return;
+        console.error("[fqa:search] 搜索失败:", err);
+        error.value = err instanceof Error ? err.message : String(err);
+        if (reset2) books.value = [];
+        searched.value = true;
+      } finally {
+        if (current === token) {
+          loading.value = false;
+          loadingMore.value = false;
+        }
+      }
+    }
+    async function submit(q) {
+      if (q !== void 0) query.value = q;
+      await run(true);
+    }
+    function reset() {
+      token++;
+      query.value = "";
+      books.value = [];
+      passback.value = 0;
+      hasMore.value = false;
+      searched.value = false;
+      error.value = null;
+      loading.value = false;
+      loadingMore.value = false;
+      selected.value = {};
+      tabType.value = BOOK_TAB_TYPE;
+    }
+    async function loadMore() {
+      if (!hasMore.value || loading.value || loadingMore.value) return;
+      await run(false);
+    }
+    function selectTab(next) {
+      if (tabType.value === next) return;
+      tabType.value = next;
+      if (next !== BOOK_TAB_TYPE) selected.value = {};
+      void run(true);
+    }
+    function toggleFilter(rowName, itemId) {
+      const cur = selected.value[rowName];
+      if (cur === itemId) {
+        const next = { ...selected.value };
+        delete next[rowName];
+        selected.value = next;
+      } else {
+        selected.value = { ...selected.value, [rowName]: itemId };
+      }
+      void run(true);
+    }
+    function clearFilters() {
+      if (!filterCount.value) return;
+      selected.value = {};
+      void run(true);
+    }
+    const isEmpty = vue.computed(
+      () => searched.value && !loading.value && !error.value && books.value.length === 0
+    );
+    return {
+      query,
+      tabType,
+      availableTabs,
+      selectorRows,
+      selected,
+      canFilter,
+      filterCount,
+      books,
+      hasMore,
+      loading,
+      loadingMore,
+      error,
+      searched,
+      isEmpty,
+      submit,
+      reset,
+      loadMore,
+      selectTab,
+      toggleFilter,
+      clearFilters
+    };
+  }
+  const routeQuery = vue.ref("");
+  function parseQuery(path) {
+    const rest = path.replace(/^\/search\/?/, "");
+    if (!rest) return "";
+    try {
+      return decodeURIComponent(rest);
+    } catch {
+      return rest;
+    }
+  }
+  function syncFromUrl(path) {
+    const q = parseQuery(path);
+    if (routeQuery.value !== q) routeQuery.value = q;
+  }
+  function pushQuery(q) {
+    routeQuery.value = q;
+    const next = q ? `/search/${encodeURIComponent(q)}` : "/search";
+    if (unsafeWindow.location.pathname === next) return;
+    unsafeWindow.history.pushState(null, "", next);
+  }
+  const _hoisted_1 = { id: "fqa-search" };
+  const _hoisted_2 = { class: "fqa-s-bar" };
+  const _hoisted_3 = { class: "fqa-s-inputwrap" };
+  const _hoisted_4 = ["disabled"];
+  const _hoisted_5 = ["aria-selected", "onClick", "onKeydown"];
+  const _hoisted_6 = {
+    key: 0,
+    class: "fqa-s-filterbar"
+  };
+  const _hoisted_7 = {
+    key: 0,
+    class: "fqa-s-fcount"
+  };
+  const _hoisted_8 = { class: "fqa-s-hint" };
+  const _hoisted_9 = {
+    key: 1,
+    class: "fqa-s-filters"
+  };
+  const _hoisted_10 = { class: "fqa-s-frow-name" };
+  const _hoisted_11 = { class: "fqa-s-fitems" };
+  const _hoisted_12 = ["onClick"];
+  const _hoisted_13 = {
+    key: 2,
+    class: "fqa-s-status"
+  };
+  const _hoisted_14 = {
+    key: 3,
+    class: "fqa-s-status"
+  };
+  const _hoisted_15 = { class: "fqa-s-list" };
+  const _hoisted_16 = {
+    key: 1,
+    class: "fqa-s-loadmore"
+  };
+  const _hoisted_17 = {
+    key: 2,
+    class: "fqa-s-inline-error"
+  };
+  const _hoisted_18 = {
+    key: 2,
+    class: "fqa-s-privacy"
+  };
+  const _hoisted_19 = {
+    key: 0,
+    class: "fqa-toast"
+  };
+  const _sfc_main = /* @__PURE__ */ vue.defineComponent({
+    __name: "SearchView",
+    setup(__props) {
+      const {
+        query,
+        tabType,
+        availableTabs,
+        selectorRows,
+        selected,
+        canFilter,
+        filterCount,
+        books,
+        hasMore,
+        loading,
+        loadingMore,
+        error,
+        isEmpty,
+        submit,
+        reset,
+        loadMore,
+        selectTab,
+        toggleFilter,
+        clearFilters
+      } = useSearch();
+      const input = vue.ref(routeQuery.value);
+      const filterOpen = vue.ref(false);
+      const showLanding = vue.computed(() => !query.value.trim());
+      async function doSearch(q = input.value) {
+        const trimmed = q.trim();
+        if (!trimmed) return;
+        input.value = trimmed;
+        filterOpen.value = false;
+        pushQuery(trimmed);
+        await submit(trimmed);
+      }
+      function onWord(word) {
+        void doSearch(word);
+      }
+      const sentinel = vue.ref(null);
+      let io = null;
+      vue.onMounted(async () => {
+        if (routeQuery.value) await doSearch(routeQuery.value);
+        if (typeof IntersectionObserver !== "undefined") {
+          io = new IntersectionObserver(
+            (entries) => {
+              if (entries.some((e) => e.isIntersecting)) void loadMore();
+            },
+            { rootMargin: "400px" }
+          );
+          vue.watch(
+            sentinel,
+            (el) => {
+              io == null ? void 0 : io.disconnect();
+              if (el) io == null ? void 0 : io.observe(el);
+            },
+            { immediate: true, flush: "post" }
+          );
+        }
+      });
+      vue.onBeforeUnmount(() => {
+        io == null ? void 0 : io.disconnect();
+        io = null;
+      });
+      vue.watch(
+        routeQuery,
+        (q) => {
+          input.value = q;
+          if (q === query.value.trim()) return;
+          if (q) {
+            void submit(q);
+          } else {
+            filterOpen.value = false;
+            reset();
+          }
+        }
+      );
+      const menuVisible = vue.ref(false);
+      const menuPos = vue.ref({ x: 0, y: 0 });
+      const menuBook = vue.ref(null);
+      const toast = vue.ref(null);
+      let toastTimer;
+      function showToast(msg) {
+        toast.value = msg;
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toast.value = null;
+          toastTimer = void 0;
+        }, 2600);
+      }
+      const menuItems = vue.computed(() => {
+        var _a, _b, _c;
+        return [
+          { key: "detail", label: "查看详情" },
+          {
+            key: "shelf",
+            label: ((_a = menuBook.value) == null ? void 0 : _a.in_bookshelf) ? "已在书架" : "加入书架",
+            disabled: !userState.isLogin || Boolean((_b = menuBook.value) == null ? void 0 : _b.in_bookshelf)
+          },
+          { key: "author", label: "搜索该作者", disabled: !((_c = menuBook.value) == null ? void 0 : _c.author) }
+        ];
+      });
+      function onCardContextMenu({ book, x, y }) {
+        menuBook.value = book;
+        menuPos.value = { x, y };
+        menuVisible.value = true;
+      }
+      function openBook(book) {
+        unsafeWindow.location.href = `https://fanqienovel.com/page/${book.book_id}`;
+      }
+      async function onMenuSelect(key) {
+        const book = menuBook.value;
+        if (!book) return;
+        if (key === "detail") {
+          openBook(book);
+          return;
+        }
+        if (key === "author") {
+          void doSearch(book.author);
+          return;
+        }
+        if (key === "shelf") {
+          try {
+            await addToBookshelf(book.book_id);
+            book.in_bookshelf = true;
+            showToast(`已把《${book.title}》加入书架`);
+          } catch (err) {
+            console.error("[fqa:search] 加入书架失败:", err);
+            showToast(err instanceof Error ? err.message : "加入书架失败");
+          }
+        }
+      }
+      const tabsRef = vue.ref(null);
+      const inkStyle = vue.ref({ left: "0px", width: "0px" });
+      function updateInk() {
+        const wrap = tabsRef.value;
+        if (!wrap) return;
+        const index = availableTabs.value.findIndex((t) => t.tab_type === tabType.value);
+        const el = wrap.querySelectorAll(".fqa-s-tab")[index];
+        if (!el) return;
+        inkStyle.value = { left: `${el.offsetLeft}px`, width: `${el.offsetWidth}px` };
+      }
+      vue.watch([tabType, availableTabs], () => vue.nextTick(updateInk), { deep: true });
+      vue.watch(showLanding, () => vue.nextTick(updateInk));
+      vue.onMounted(() => {
+        window.addEventListener("resize", updateInk);
+      });
+      vue.onBeforeUnmount(() => {
+        window.removeEventListener("resize", updateInk);
+        if (toastTimer) clearTimeout(toastTimer);
+      });
+      const resultHint = vue.computed(() => {
+        if (loading.value) return "搜索中…";
+        if (books.value.length) return `已加载 ${books.value.length} 条`;
+        return "";
+      });
+      return (_ctx, _cache) => {
+        return vue.openBlock(), vue.createElementBlock("div", _hoisted_1, [
+          vue.createElementVNode("div", _hoisted_2, [
+            vue.createElementVNode("div", _hoisted_3, [
+              vue.withDirectives(vue.createElementVNode("input", {
+                "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => input.value = $event),
+                class: "fqa-s-input",
+                type: "search",
+                placeholder: "搜索书名、作者",
+                "aria-label": "搜索",
+                onKeydown: _cache[1] || (_cache[1] = vue.withKeys(vue.withModifiers(($event) => doSearch(), ["prevent"]), ["enter"]))
+              }, null, 544), [
+                [vue.vModelText, input.value]
+              ]),
+              input.value ? (vue.openBlock(), vue.createElementBlock("button", {
+                key: 0,
+                class: "fqa-s-clear",
+                "aria-label": "清空",
+                onClick: _cache[2] || (_cache[2] = ($event) => input.value = "")
+              }, " ✕ ")) : vue.createCommentVNode("", true)
+            ]),
+            vue.createElementVNode("button", {
+              class: "fqa-s-submit",
+              disabled: !input.value.trim() || vue.unref(loading),
+              onClick: _cache[3] || (_cache[3] = ($event) => doSearch())
+            }, " 搜索 ", 8, _hoisted_4)
+          ]),
+          showLanding.value ? (vue.openBlock(), vue.createBlock(_sfc_main$1, {
+            key: 0,
+            onWord
+          })) : (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 1 }, [
+            vue.createElementVNode("div", {
+              ref_key: "tabsRef",
+              ref: tabsRef,
+              class: "fqa-s-tabs",
+              role: "tablist"
+            }, [
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(vue.unref(availableTabs), (tab) => {
+                return vue.openBlock(), vue.createElementBlock("div", {
+                  key: tab.tab_type,
+                  class: vue.normalizeClass(["fqa-s-tab", { "fqa-s-tab-active": vue.unref(tabType) === tab.tab_type }]),
+                  role: "tab",
+                  tabindex: "0",
+                  "aria-selected": vue.unref(tabType) === tab.tab_type,
+                  onClick: ($event) => vue.unref(selectTab)(tab.tab_type),
+                  onKeydown: vue.withKeys(vue.withModifiers(($event) => vue.unref(selectTab)(tab.tab_type), ["prevent"]), ["enter"])
+                }, vue.toDisplayString(tab.tab_name), 43, _hoisted_5);
+              }), 128)),
+              vue.createElementVNode("span", {
+                class: "fqa-s-tab-ink",
+                style: vue.normalizeStyle(inkStyle.value)
+              }, null, 4)
+            ], 512),
+            vue.unref(canFilter) ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_6, [
+              vue.createElementVNode("button", {
+                class: vue.normalizeClass(["fqa-s-fbtn", { "fqa-s-fbtn-on": filterOpen.value || vue.unref(filterCount) > 0 }]),
+                onClick: _cache[4] || (_cache[4] = ($event) => filterOpen.value = !filterOpen.value)
+              }, [
+                _cache[8] || (_cache[8] = vue.createTextVNode(" 筛选", -1)),
+                vue.unref(filterCount) ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_7, vue.toDisplayString(vue.unref(filterCount)), 1)) : vue.createCommentVNode("", true)
+              ], 2),
+              vue.unref(filterCount) ? (vue.openBlock(), vue.createElementBlock("button", {
+                key: 0,
+                class: "fqa-s-fclear",
+                onClick: _cache[5] || (_cache[5] = //@ts-ignore
+                (...args) => vue.unref(clearFilters) && vue.unref(clearFilters)(...args))
+              }, "清除")) : vue.createCommentVNode("", true),
+              vue.createElementVNode("span", _hoisted_8, vue.toDisplayString(resultHint.value), 1)
+            ])) : vue.createCommentVNode("", true),
+            vue.unref(canFilter) && filterOpen.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_9, [
+              (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(vue.unref(selectorRows), (row) => {
+                return vue.openBlock(), vue.createElementBlock("div", {
+                  key: row.name,
+                  class: "fqa-s-frow"
+                }, [
+                  vue.createElementVNode("span", _hoisted_10, vue.toDisplayString(row.name), 1),
+                  vue.createElementVNode("div", _hoisted_11, [
+                    (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(row.items, (item) => {
+                      return vue.openBlock(), vue.createElementBlock("button", {
+                        key: item.id,
+                        class: vue.normalizeClass(["fqa-s-fitem", { "fqa-s-fitem-on": vue.unref(selected)[row.name] === item.id }]),
+                        onClick: ($event) => vue.unref(toggleFilter)(row.name, item.id)
+                      }, vue.toDisplayString(item.name), 11, _hoisted_12);
+                    }), 128))
+                  ])
+                ]);
+              }), 128))
+            ])) : vue.createCommentVNode("", true),
+            vue.unref(error) && !vue.unref(books).length ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_13, [
+              _cache[9] || (_cache[9] = vue.createElementVNode("div", { class: "fqa-s-status-title" }, "搜索失败", -1)),
+              vue.createElementVNode("div", null, vue.toDisplayString(vue.unref(error)), 1),
+              vue.createElementVNode("button", {
+                class: "fqa-s-submit",
+                onClick: _cache[6] || (_cache[6] = ($event) => doSearch())
+              }, "重试")
+            ])) : vue.unref(isEmpty) ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_14, [..._cache[10] || (_cache[10] = [
+              vue.createElementVNode("div", { class: "fqa-s-status-title" }, "没有找到相关内容", -1),
+              vue.createElementVNode("div", null, "换个关键词或者放宽筛选条件试试", -1)
+            ])])) : (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 4 }, [
+              vue.createElementVNode("div", _hoisted_15, [
+                vue.unref(loading) ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, vue.renderList(5, (n) => {
+                  return vue.createElementVNode("div", {
+                    key: `sk-${n}`,
+                    class: "fqa-sr-card fqa-sr-skeleton"
+                  }, [..._cache[11] || (_cache[11] = [
+                    vue.createStaticVNode('<div class="fqa-sk-cover fqa-sk-anim"></div><div class="fqa-sr-body"><div class="fqa-sk-line fqa-sk-anim" style="width:40%;"></div><div class="fqa-sk-line fqa-sk-anim" style="width:24%;"></div><div class="fqa-sk-line fqa-sk-anim" style="width:92%;"></div><div class="fqa-sk-line fqa-sk-anim" style="width:76%;"></div></div>', 2)
+                  ])]);
+                }), 64)) : (vue.openBlock(true), vue.createElementBlock(vue.Fragment, { key: 1 }, vue.renderList(vue.unref(books), (book) => {
+                  return vue.openBlock(), vue.createBlock(_sfc_main$2, {
+                    key: book.book_id,
+                    book,
+                    onOpen: openBook,
+                    onContextmenu: onCardContextMenu
+                  }, null, 8, ["book"]);
+                }), 128))
+              ]),
+              !vue.unref(loading) && vue.unref(hasMore) ? (vue.openBlock(), vue.createElementBlock("div", {
+                key: 0,
+                ref_key: "sentinel",
+                ref: sentinel,
+                class: "fqa-s-loadmore"
+              }, vue.toDisplayString(vue.unref(loadingMore) ? "加载中…" : "滚动加载更多"), 513)) : !vue.unref(loading) && vue.unref(books).length ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_16, "没有更多了")) : vue.createCommentVNode("", true),
+              vue.unref(error) && vue.unref(books).length ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_17, vue.toDisplayString(vue.unref(error)), 1)) : vue.createCommentVNode("", true)
+            ], 64))
+          ], 64)),
+          !vue.unref(settings$1).searchPersonalized ? (vue.openBlock(), vue.createElementBlock("p", _hoisted_18, " 当前使用匿名搜索。如需按你的阅读偏好排序，可在助手设置里开启个人化推荐。 ")) : vue.createCommentVNode("", true),
+          (vue.openBlock(), vue.createBlock(vue.Teleport, { to: "body" }, [
+            vue.createVNode(_sfc_main$4, {
+              visible: menuVisible.value,
+              x: menuPos.value.x,
+              y: menuPos.value.y,
+              items: menuItems.value,
+              onSelect: onMenuSelect,
+              onClose: _cache[7] || (_cache[7] = ($event) => menuVisible.value = false)
+            }, null, 8, ["visible", "x", "y", "items"]),
+            toast.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_19, vue.toDisplayString(toast.value), 1)) : vue.createCommentVNode("", true)
+          ]))
+        ]);
+      };
+    }
+  });
+  const searchcss = "#fqa-search {\n    --fqa-text: #1f2329;\n    --fqa-text-sub: #646a73;\n    --fqa-text-weak: #8f959e;\n    --fqa-border: rgba(31, 35, 41, 0.08);\n    --fqa-hover: rgba(31, 35, 41, 0.04);\n    --fqa-accent: #ff6f3d;\n    --fqa-skeleton: rgba(31, 35, 41, 0.06);\n    --fqa-skeleton-hl: rgba(31, 35, 41, 0.12);\n    --fqa-shadow: 0 4px 16px rgba(31, 35, 41, 0.08);\n    --fqa-card-bg: #fff;\n\n    display: block;\n    box-sizing: border-box;\n    width: 100%;\n    max-width: 1000px;\n    margin: 0 auto;\n    /* 顶部让开原站 fixed 顶栏 */\n    padding: calc(80px + 24px) 16px 64px;\n    color: var(--fqa-text);\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\n        sans-serif;\n}\n\n#fqa-search *,\n#fqa-search *::before,\n#fqa-search *::after {\n    box-sizing: border-box;\n}\n\n#fqa-search div,\n#fqa-search span,\n#fqa-search h3,\n#fqa-search p {\n    margin: 0;\n    padding: 0;\n    border: 0;\n    float: none;\n    position: static;\n}\n\n/* -------------------------------- 搜索栏 -------------------------------- */\n\n#fqa-search .fqa-s-bar {\n    display: flex;\n    align-items: center;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n#fqa-search .fqa-s-inputwrap {\n    position: relative;\n    flex: 1 1 auto;\n    min-width: 0;\n}\n\n#fqa-search .fqa-s-input {\n    width: 100%;\n    padding: 11px 36px 11px 16px;\n    box-sizing: border-box;\n    border: 1px solid var(--fqa-border);\n    border-radius: 999px;\n    background: var(--fqa-card-bg);\n    color: var(--fqa-text);\n    font-size: 15px;\n    font-family: inherit;\n    line-height: 22px;\n    transition: border-color 0.15s ease, box-shadow 0.15s ease;\n}\n\n#fqa-search .fqa-s-input::placeholder {\n    color: var(--fqa-text-weak);\n}\n\n#fqa-search .fqa-s-input:focus {\n    outline: none;\n    border-color: var(--fqa-accent);\n    box-shadow: 0 0 0 3px rgba(255, 111, 61, 0.12);\n}\n\n/* 隐藏浏览器自带的 search 清除按钮，用自己的 */\n#fqa-search .fqa-s-input::-webkit-search-cancel-button {\n    appearance: none;\n}\n\n#fqa-search .fqa-s-clear {\n    position: absolute;\n    top: 50%;\n    right: 10px;\n    transform: translateY(-50%);\n    width: 22px;\n    height: 22px;\n    padding: 0;\n    border: 0;\n    border-radius: 50%;\n    background: var(--fqa-hover);\n    color: var(--fqa-text-weak);\n    font-size: 11px;\n    line-height: 1;\n    cursor: pointer;\n}\n\n#fqa-search .fqa-s-clear:hover {\n    color: var(--fqa-text);\n}\n\n#fqa-search .fqa-s-submit {\n    flex: 0 0 auto;\n    padding: 11px 24px;\n    border: 0;\n    border-radius: 999px;\n    background: var(--fqa-accent);\n    color: #fff;\n    font-size: 15px;\n    font-family: inherit;\n    line-height: 22px;\n    cursor: pointer;\n    transition: opacity 0.15s ease;\n}\n\n#fqa-search .fqa-s-submit:hover:not(:disabled) {\n    opacity: 0.88;\n}\n\n#fqa-search .fqa-s-submit:disabled {\n    opacity: 0.45;\n    cursor: default;\n}\n\n/* --------------------------------- tab --------------------------------- */\n\n#fqa-search .fqa-s-tabs {\n    position: relative;\n    display: flex;\n    align-items: center;\n    gap: 4px;\n    margin-bottom: 16px;\n    border-bottom: 1px solid var(--fqa-border);\n    overflow-x: auto;\n    scrollbar-width: none;\n}\n\n#fqa-search .fqa-s-tabs::-webkit-scrollbar {\n    display: none;\n}\n\n#fqa-search .fqa-s-tab {\n    flex: 0 0 auto;\n    padding: 10px 16px;\n    color: var(--fqa-text-sub);\n    font-size: 15px;\n    line-height: 22px;\n    white-space: nowrap;\n    cursor: pointer;\n    user-select: none;\n    transition: color 0.15s ease;\n}\n\n#fqa-search .fqa-s-tab:hover {\n    color: var(--fqa-text);\n}\n\n#fqa-search .fqa-s-tab-active {\n    color: var(--fqa-accent);\n    font-weight: 600;\n}\n\n#fqa-search .fqa-s-tab-ink {\n    position: absolute;\n    bottom: -1px;\n    left: 0;\n    width: 0;\n    height: 2px;\n    border-radius: 2px;\n    background: var(--fqa-accent);\n    transition: left 0.25s ease, width 0.25s ease;\n}\n\n/* -------------------------------- 筛选器 -------------------------------- */\n\n#fqa-search .fqa-s-filterbar {\n    display: flex;\n    align-items: center;\n    gap: 10px;\n    margin-bottom: 12px;\n}\n\n#fqa-search .fqa-s-fbtn,\n#fqa-search .fqa-s-fclear {\n    padding: 5px 14px;\n    border: 1px solid var(--fqa-border);\n    border-radius: 999px;\n    background: transparent;\n    color: var(--fqa-text-sub);\n    font-size: 13px;\n    font-family: inherit;\n    line-height: 20px;\n    cursor: pointer;\n    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;\n}\n\n#fqa-search .fqa-s-fbtn:hover,\n#fqa-search .fqa-s-fclear:hover {\n    border-color: var(--fqa-accent);\n    color: var(--fqa-accent);\n}\n\n#fqa-search .fqa-s-fbtn-on {\n    border-color: var(--fqa-accent);\n    color: var(--fqa-accent);\n    background: rgba(255, 111, 61, 0.08);\n}\n\n#fqa-search .fqa-s-fcount {\n    display: inline-block;\n    min-width: 16px;\n    margin-left: 5px;\n    padding: 0 4px;\n    border-radius: 8px;\n    background: var(--fqa-accent);\n    color: #fff;\n    font-size: 11px;\n    line-height: 16px;\n    text-align: center;\n}\n\n#fqa-search .fqa-s-hint {\n    margin-left: auto;\n    color: var(--fqa-text-weak);\n    font-size: 13px;\n}\n\n#fqa-search .fqa-s-filters {\n    margin-bottom: 16px;\n    padding: 14px 16px;\n    border: 1px solid var(--fqa-border);\n    border-radius: 10px;\n    background: var(--fqa-card-bg);\n}\n\n#fqa-search .fqa-s-frow {\n    display: flex;\n    align-items: flex-start;\n    gap: 12px;\n    padding: 7px 0;\n}\n\n#fqa-search .fqa-s-frow-name {\n    flex: 0 0 58px;\n    padding-top: 5px;\n    color: var(--fqa-text-weak);\n    font-size: 13px;\n    line-height: 20px;\n}\n\n#fqa-search .fqa-s-fitems {\n    display: flex;\n    flex: 1 1 auto;\n    flex-wrap: wrap;\n    gap: 8px;\n    min-width: 0;\n}\n\n#fqa-search .fqa-s-fitem {\n    padding: 4px 12px;\n    border: 1px solid transparent;\n    border-radius: 6px;\n    background: var(--fqa-hover);\n    color: var(--fqa-text-sub);\n    font-size: 13px;\n    font-family: inherit;\n    line-height: 20px;\n    cursor: pointer;\n    transition: background 0.15s ease, color 0.15s ease;\n}\n\n#fqa-search .fqa-s-fitem:hover {\n    color: var(--fqa-text);\n}\n\n#fqa-search .fqa-s-fitem-on {\n    background: rgba(255, 111, 61, 0.12);\n    border-color: rgba(255, 111, 61, 0.4);\n    color: var(--fqa-accent);\n    font-weight: 500;\n}\n\n/* ------------------------------- 结果列表 ------------------------------- */\n\n#fqa-search .fqa-s-list {\n    display: flex;\n    flex-direction: column;\n    gap: 4px;\n}\n\n#fqa-search .fqa-sr-card {\n    display: flex;\n    gap: 16px;\n    padding: 16px 12px;\n    border-radius: 10px;\n    cursor: pointer;\n    outline: none;\n    transition: background 0.15s ease;\n}\n\n#fqa-search .fqa-sr-card:hover {\n    background: var(--fqa-hover);\n}\n\n#fqa-search .fqa-sr-card:focus-visible {\n    box-shadow: 0 0 0 2px var(--fqa-accent);\n}\n\n#fqa-search .fqa-sr-skeleton {\n    cursor: default;\n}\n\n#fqa-search .fqa-sr-skeleton:hover {\n    background: transparent;\n}\n\n#fqa-search .fqa-sr-cover {\n    position: relative;\n    flex: 0 0 96px;\n    width: 96px;\n    aspect-ratio: 3 / 4;\n    border-radius: 6px;\n    overflow: hidden;\n    background: var(--fqa-skeleton);\n}\n\n#fqa-search .fqa-sr-cover-img {\n    position: absolute;\n    inset: 0;\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: opacity 0.25s ease;\n}\n\n#fqa-search .fqa-sr-cover-loading {\n    opacity: 0;\n}\n\n#fqa-search .fqa-sr-badge {\n    position: absolute;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    padding: 2px 4px;\n    background: rgba(31, 35, 41, 0.7);\n    color: #fff;\n    font-size: 10px;\n    line-height: 14px;\n    text-align: center;\n}\n\n#fqa-search .fqa-sr-body {\n    display: flex;\n    flex: 1 1 auto;\n    flex-direction: column;\n    min-width: 0;\n}\n\n#fqa-search .fqa-sr-title {\n    color: var(--fqa-text);\n    font-size: 16px;\n    font-weight: 600;\n    line-height: 24px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n/* 接口下发的高亮片段 */\n#fqa-search .fqa-sr-title em {\n    color: var(--fqa-accent);\n    font-style: normal;\n}\n\n#fqa-search .fqa-sr-author {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    margin-top: 3px;\n    color: var(--fqa-text-sub);\n    font-size: 13px;\n    line-height: 20px;\n}\n\n#fqa-search .fqa-sr-author > span:first-child {\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis;\n}\n\n#fqa-search .fqa-sr-score {\n    flex: 0 0 auto;\n    color: var(--fqa-accent);\n    font-weight: 500;\n}\n\n/* 无评分时弱化，不跟真实分数抢注意力 */\n#fqa-search .fqa-sr-score-none {\n    color: var(--fqa-text-weak);\n    font-weight: 400;\n}\n\n#fqa-search .fqa-sr-summary {\n    display: -webkit-box;\n    margin-top: 6px;\n    color: var(--fqa-text-sub);\n    font-size: 13px;\n    line-height: 20px;\n    -webkit-line-clamp: 2;\n    line-clamp: 2;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n}\n\n#fqa-search .fqa-sr-meta {\n    display: flex;\n    align-items: center;\n    flex-wrap: wrap;\n    gap: 6px;\n    margin-top: 8px;\n}\n\n#fqa-search .fqa-sr-tag {\n    padding: 1px 7px;\n    border-radius: 4px;\n    background: var(--fqa-hover);\n    color: var(--fqa-text-weak);\n    font-size: 12px;\n    line-height: 18px;\n}\n\n#fqa-search .fqa-sr-read {\n    color: var(--fqa-text-weak);\n    font-size: 12px;\n    line-height: 18px;\n}\n\n#fqa-search .fqa-sr-update {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    margin-top: 6px;\n    color: var(--fqa-text-weak);\n    font-size: 12px;\n    line-height: 18px;\n}\n\n#fqa-search .fqa-sr-chapter {\n    min-width: 0;\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis;\n}\n\n#fqa-search .fqa-sr-time {\n    flex: 0 0 auto;\n}\n\n@media (max-width: 600px) {\n    #fqa-search .fqa-sr-cover {\n        flex-basis: 72px;\n        width: 72px;\n    }\n\n    #fqa-search .fqa-sr-summary {\n        -webkit-line-clamp: 3;\n        line-clamp: 3;\n    }\n}\n\n/* -------------------------------- 落地页 -------------------------------- */\n\n#fqa-search .fqa-s-sec {\n    margin-bottom: 28px;\n}\n\n#fqa-search .fqa-s-sec-title {\n    margin-bottom: 12px;\n    font-size: 16px;\n    font-weight: 600;\n    line-height: 24px;\n}\n\n#fqa-search .fqa-s-words {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 8px;\n}\n\n#fqa-search .fqa-s-word {\n    display: inline-flex;\n    align-items: center;\n    gap: 5px;\n    padding: 6px 14px;\n    border: 0;\n    border-radius: 999px;\n    background: var(--fqa-hover);\n    color: var(--fqa-text-sub);\n    font-size: 13px;\n    font-family: inherit;\n    line-height: 20px;\n    cursor: pointer;\n    transition: background 0.15s ease, color 0.15s ease;\n}\n\n#fqa-search .fqa-s-word:hover {\n    background: rgba(255, 111, 61, 0.1);\n    color: var(--fqa-accent);\n}\n\n#fqa-search .fqa-s-word-tag {\n    color: var(--fqa-text-weak);\n    font-size: 11px;\n}\n\n/* 「荐」「热」这类角标 */\n#fqa-search .fqa-s-word-label {\n    padding: 0 4px;\n    border-radius: 3px;\n    background: var(--fqa-accent);\n    color: #fff;\n    font-size: 10px;\n    line-height: 15px;\n}\n\n#fqa-search .fqa-s-sugs {\n    display: grid;\n    grid-template-columns: repeat(6, minmax(0, 1fr));\n    gap: 20px 16px;\n}\n\n@media (max-width: 900px) {\n    #fqa-search .fqa-s-sugs {\n        grid-template-columns: repeat(4, minmax(0, 1fr));\n    }\n}\n\n@media (max-width: 600px) {\n    #fqa-search .fqa-s-sugs {\n        grid-template-columns: repeat(3, minmax(0, 1fr));\n    }\n}\n\n#fqa-search .fqa-s-sug {\n    cursor: pointer;\n    outline: none;\n}\n\n#fqa-search .fqa-s-sug-cover {\n    display: block;\n    width: 100%;\n    aspect-ratio: 3 / 4;\n    border-radius: 6px;\n    object-fit: cover;\n    background: var(--fqa-skeleton);\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\n}\n\n#fqa-search .fqa-s-sug:hover .fqa-s-sug-cover {\n    transform: translateY(-4px);\n    box-shadow: var(--fqa-shadow);\n}\n\n#fqa-search .fqa-s-sug-title {\n    margin-top: 7px;\n    font-size: 13px;\n    line-height: 19px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n#fqa-search .fqa-s-sug-sub {\n    margin-top: 2px;\n    color: var(--fqa-text-weak);\n    font-size: 12px;\n    line-height: 18px;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n#fqa-search .fqa-s-landing-sk {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 8px;\n}\n\n#fqa-search .fqa-sk-chip {\n    width: 84px;\n    height: 32px;\n    border-radius: 999px;\n    background: var(--fqa-skeleton);\n}\n\n/* ------------------------------ 骨架 / 状态 ------------------------------ */\n\n#fqa-search .fqa-sk-cover {\n    flex: 0 0 96px;\n    width: 96px;\n    aspect-ratio: 3 / 4;\n    border-radius: 6px;\n    background: var(--fqa-skeleton);\n}\n\n#fqa-search .fqa-sk-line {\n    height: 12px;\n    margin-bottom: 9px;\n    border-radius: 4px;\n    background: var(--fqa-skeleton);\n}\n\n#fqa-search .fqa-sk-anim {\n    position: relative;\n    overflow: hidden;\n}\n\n#fqa-search .fqa-sk-anim::after {\n    content: '';\n    position: absolute;\n    inset: 0;\n    transform: translateX(-100%);\n    background: linear-gradient(90deg, transparent, var(--fqa-skeleton-hl), transparent);\n    animation: fqa-shimmer 1.4s infinite;\n}\n\n#fqa-search .fqa-s-status {\n    padding: 72px 16px;\n    text-align: center;\n    color: var(--fqa-text-weak);\n    font-size: 14px;\n    line-height: 22px;\n}\n\n#fqa-search .fqa-s-status-title {\n    margin-bottom: 8px;\n    color: var(--fqa-text);\n    font-size: 16px;\n    font-weight: 500;\n}\n\n#fqa-search .fqa-s-status .fqa-s-submit {\n    margin-top: 16px;\n}\n\n#fqa-search .fqa-s-loadmore {\n    padding: 24px 0;\n    text-align: center;\n    color: var(--fqa-text-weak);\n    font-size: 13px;\n}\n\n#fqa-search .fqa-s-inline-error {\n    padding: 12px 0;\n    text-align: center;\n    color: #f5222d;\n    font-size: 13px;\n}\n\n#fqa-search .fqa-s-privacy {\n    margin-top: 24px;\n    padding-top: 16px;\n    border-top: 1px solid var(--fqa-border);\n    color: var(--fqa-text-weak);\n    font-size: 12px;\n    line-height: 18px;\n    text-align: center;\n}\n\n/* ------------------------------- 深色模式 ------------------------------- */\n\n@media (prefers-color-scheme: dark) {\n    #fqa-search {\n        --fqa-text: #e6e6e6;\n        --fqa-text-sub: #a6a6a6;\n        --fqa-text-weak: #7a7a7a;\n        --fqa-border: rgba(255, 255, 255, 0.1);\n        --fqa-hover: rgba(255, 255, 255, 0.06);\n        --fqa-skeleton: rgba(255, 255, 255, 0.08);\n        --fqa-skeleton-hl: rgba(255, 255, 255, 0.14);\n        --fqa-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);\n        --fqa-card-bg: #212125;\n    }\n}\n";
+  const CONTAINER_ID = "fqa-search-root";
+  const STYLE_ID = "fqa-search-style";
+  const RESULT_SELECTOR = ".muye-search";
+  const NOTFOUND_SELECTOR = ".muye-undefined";
+  const ORIGIN_SELECTOR = `${RESULT_SELECTOR}, ${NOTFOUND_SELECTOR}`;
   let app = null;
   let container = null;
   let observer = null;
+  let stopTitleWatch = null;
   function injectStyle() {
     if (document.getElementById(STYLE_ID)) return;
     const style = document.createElement("style");
     style.id = STYLE_ID;
-    style.textContent = bookshelfcss;
+    style.textContent = searchcss;
     document.head.appendChild(style);
+  }
+  function isSearchPath(path) {
+    return path === "/search" || path === "/search/" || path.startsWith("/search/");
   }
   function hideOrigin(root = document) {
     root.querySelectorAll(ORIGIN_SELECTOR).forEach((el) => {
@@ -4520,51 +5666,36 @@
       el.classList.add("fqa-hide");
     });
   }
-  function isBookshelfPath(path) {
-    return path.startsWith("/bookshelf");
-  }
   function unmount() {
-    var _a;
     observer == null ? void 0 : observer.disconnect();
     observer = null;
+    stopTitleWatch == null ? void 0 : stopTitleWatch();
+    stopTitleWatch = null;
     app == null ? void 0 : app.unmount();
     app = null;
     container == null ? void 0 : container.remove();
     container = null;
-    (_a = document.getElementById("fqa-bookshelf-hover")) == null ? void 0 : _a.remove();
     document.querySelectorAll(ORIGIN_SELECTOR).forEach((el) => {
       el.classList.remove("fqa-hide");
     });
   }
   async function mainHook(_previous) {
-    if (!isBookshelfPath(window.location.pathname)) {
+    const path = window.location.pathname;
+    if (!isSearchPath(path) || !settings$1.enhanceSearch) {
       unmount();
       return;
     }
+    syncFromUrl(path);
     if (app) {
       hideOrigin();
       return;
     }
     injectStyle();
-    const origin = await waitForElement(ORIGIN_SELECTOR);
-    if (!isBookshelfPath(window.location.pathname)) return;
+    const origin = await waitForElement(ORIGIN_SELECTOR, 8e3);
+    if (!isSearchPath(window.location.pathname)) return;
     if (app) return;
     hideOrigin();
-    container = document.createElement("div");
-    container.id = CONTAINER_ID;
-    const anchor = origin ?? document.querySelector("#root") ?? document.body;
-    if (origin == null ? void 0 : origin.parentElement) {
-      origin.insertAdjacentElement("beforebegin", container);
-    } else {
-      anchor.appendChild(container);
-    }
-    app = vue.createApp(_sfc_main);
-    app.config.errorHandler = (err, _instance, info) => {
-      console.error(`[fqa:bookshelf] Vue error (${info}):`, err);
-    };
-    app.mount(container);
-    console.log("[fqa:bookshelf] 书架视图已挂载");
-    document.title = "我的书架 - 番茄小说";
+    mount(origin);
     observer = new MutationObserver((mutations) => {
       var _a;
       for (const mutation of mutations) {
@@ -4581,24 +5712,58 @@
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
+  function mount(origin) {
+    container = document.createElement("div");
+    container.id = CONTAINER_ID;
+    if (origin == null ? void 0 : origin.parentElement) {
+      origin.insertAdjacentElement("beforebegin", container);
+    } else {
+      const anchor = document.querySelector("#root") ?? document.body;
+      anchor.appendChild(container);
+    }
+    app = vue.createApp(_sfc_main);
+    app.config.errorHandler = (err, _instance, info) => {
+      console.error(`[fqa:search] Vue error (${info}):`, err);
+    };
+    app.mount(container);
+    stopTitleWatch = vue.watch(
+      routeQuery,
+      (q) => {
+        document.title = q ? `${q} - 搜索 - 番茄小说` : "搜索 - 番茄小说";
+      },
+      { immediate: true }
+    );
+    console.log("[fqa:search] 搜索视图已挂载:", routeQuery.value || "(落地页)");
+  }
   function filter(path, _query, _hash) {
-    return (isBookshelfPath(path) || !!app) && userState.isLogin;
+    return isSearchPath(path) || !!app;
+  }
+  async function overloadTitle(_previous) {
+    const searchKey = routeQuery.value || "搜索";
+    document.title = `${searchKey} - 番茄小说`;
   }
   const _exports = [
     {
-      id: "bookshelfHook_onload",
+      id: "searchHook_onload",
       event: "load",
       filter,
       handler: mainHook
     },
     {
-      id: "bookshelfHook_onurlchange",
+      id: "searchHook_onurlchange",
       event: "onUrlChange",
       filter,
       handler: mainHook
+    },
+    {
+      id: "searchHook_e",
+      event: "enter",
+      filter,
+      handler: overloadTitle
     }
   ];
   const hooks = [
+    ..._exports$4,
     ..._exports$3,
     ..._exports$2,
     ..._exports$1,
@@ -4635,6 +5800,9 @@
   async function onLoad() {
     return await onEvent("load");
   }
+  async function onEnter() {
+    return await onEvent("enter");
+  }
   const win = unsafeWindow;
   let previousUrl = win.location.href;
   let previousHash = win.location.hash;
@@ -4663,6 +5831,7 @@
     console.log(`==          ${name} - ${version}         ==`);
     console.log(`================================================`);
     installNavigationHooks();
+    void onEnter();
     initFontDecrypt();
     await inject();
     initUserStyle();

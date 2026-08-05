@@ -2,7 +2,7 @@ import _config from './config'
 import injectCSS from './cssInject'
 import initFontDecrypt from './fontDecrypt'
 import initUserStyle from './userStyle'
-import { onLoad, onUrlChange, onHashChange } from './hooks'
+import { onLoad, onUrlChange, onHashChange, onEnter } from './hooks'
 import { version, name } from '../package.json'
 import initUser from './api/user'
 import { ensureDevice } from './api/provision'
@@ -44,6 +44,8 @@ async function mainInit() {
     console.log(`================================================`)
 
     installNavigationHooks()
+
+    void onEnter()
 
     initFontDecrypt()
 

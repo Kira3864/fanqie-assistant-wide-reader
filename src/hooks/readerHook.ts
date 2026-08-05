@@ -4,9 +4,9 @@ import { getBookInfoAndCatalog } from '../api/book'
 import { applyBookCss } from '../api/bookcss'
 import { processFootnotes, bindFootnoteInteraction } from '../utils/footnote'
 import { settings } from '../settings'
-import { fetch } from '../config'
 // import defaultcss from '../assets/default.css?raw';
 import { cloneElement } from '../utils';
+import { fetchArrayBuffer } from '../utils/request';
 import { type Book } from '../types'
 import { decryptComicImage } from '../crypto/content';
 // import moment from 'moment'
@@ -14,6 +14,40 @@ import { decryptComicImage } from '../crypto/content';
 let currentBook: Book | null = null
 
 let latestItemId: string | null = null
+
+/** 脚本接管的正文容器 id。文字章与漫画章共用同一个，切章时复用 */
+const SCRIPT_CONTAINER_ID = 'fqa-reader-content'
+
+/** 漫画懒加载观察器，切章时要换掉旧的 */
+let comicObserver: IntersectionObserver | null = null
+
+/**
+ * 取到脚本容器：没有就克隆一个插到原容器前面，有就复用并清空。
+ *
+ * 必须按 id 复用。之前漫画分支查的是 'fqa-comic-content'、写的却是
+ * 'fqa-reader-content'，永远查不到，于是每切一章就多插一个容器，
+ * 上一章的图片留在页面里，新图被挤到视口外，懒加载再也不触发。
+ */
+function ensureScriptContainer(readerContainer: Element, comic: boolean): HTMLDivElement {
+    let scriptContainer = document.getElementById(SCRIPT_CONTAINER_ID) as HTMLDivElement | null
+    if (!scriptContainer) {
+        scriptContainer = cloneElement(readerContainer) as HTMLDivElement
+        scriptContainer.id = SCRIPT_CONTAINER_ID
+        scriptContainer.classList.add('fqa')
+        readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
+    }
+    // 文字章与漫画章互相切换时同步类名
+    scriptContainer.classList.toggle('fqa-comic-reader', comic)
+    if (settings.allowCopy) scriptContainer.classList.remove('noselect')
+
+    // 容器一清空，旧图片就从文档里消失了，观察器留着没意义
+    comicObserver?.disconnect()
+    comicObserver = null
+
+    scriptContainer.innerHTML = ''
+    readerContainer.classList.add('fqa-hide')
+    return scriptContainer
+}
 
 async function insertContent() {
     const itemId = window.location.pathname.split('/').pop()?.substring(0, 19) || ''
@@ -69,18 +103,7 @@ async function insertContent() {
 
         const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)")
         if (readerContainer) {
-            // 防止插入多次
-            let scriptContainer = document.getElementById('fqa-reader-content') as HTMLDivElement | null
-            if (!scriptContainer) {
-                scriptContainer = cloneElement(readerContainer) as HTMLDivElement
-                scriptContainer.id = 'fqa-reader-content'
-                scriptContainer.classList.add('fqa')
-                if (settings.allowCopy) scriptContainer.classList.remove('noselect')
-                readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
-            }
-            scriptContainer.innerHTML = ''
-            // 隐藏原来的内容div
-            readerContainer.classList.add('fqa-hide')
+            const scriptContainer = ensureScriptContainer(readerContainer, false)
             scriptContainer.appendChild(toProcess)
             bindFootnoteInteraction(scriptContainer)
         }
@@ -104,17 +127,7 @@ async function insertContent() {
 
             const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)")
             if (readerContainer) {
-                let scriptContainer = document.getElementById('fqa-comic-content') as HTMLDivElement | null
-                if (!scriptContainer) {
-                    scriptContainer = cloneElement(readerContainer) as HTMLDivElement
-                    scriptContainer.id = 'fqa-reader-content'
-                    scriptContainer.classList.add('fqa')
-                    scriptContainer.classList.add('fqa-comic-reader')
-                    if (settings.allowCopy) scriptContainer.classList.remove('noselect')
-                    readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
-                }
-                scriptContainer.innerHTML = ''
-                readerContainer.classList.add('fqa-hide')
+                const scriptContainer = ensureScriptContainer(readerContainer, true)
                 imgs.forEach(img => scriptContainer.appendChild(img))
 
                 const observer = new IntersectionObserver(
@@ -125,8 +138,11 @@ async function insertContent() {
                                 if (img.dataset.encryptedUrl && img.dataset.encryptKey && !img.src) {
                                     observer.unobserve(img) // 只解密一次
                                     try {
-                                        const response = await fetch(img.dataset.encryptedUrl)
-                                        const encryptedBuffer = await response.arrayBuffer()
+                                        // 图片 CDN 多数不支持跨域，页面 fetch 读不到响应体，
+                                        // fetchArrayBuffer 会自动退到 GM_xmlhttpRequest
+                                        const encryptedBuffer = await fetchArrayBuffer(
+                                            img.dataset.encryptedUrl
+                                        )
                                         const decryptedBuffer = await decryptComicImage(
                                             encryptedBuffer,
                                             img.dataset.encryptKey
@@ -153,6 +169,8 @@ async function insertContent() {
                     }
                 )
 
+                // 记下来，下次切章时断开
+                comicObserver = observer
                 imgs.forEach(img => observer.observe(img))
             }
         } else {
@@ -167,19 +185,7 @@ async function insertContent() {
             }
             const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)")
             if (readerContainer) {
-                // 防止插入多次
-                let scriptContainer = document.getElementById('fqa-comic-content') as HTMLDivElement | null
-                if (!scriptContainer) {
-                    scriptContainer = cloneElement(readerContainer) as HTMLDivElement
-                    scriptContainer.id = 'fqa-reader-content'
-                    scriptContainer.classList.add('fqa')
-                    scriptContainer.classList.add('fqa-comic-reader')
-                    if (settings.allowCopy) scriptContainer.classList.remove('noselect')
-                    readerContainer.insertAdjacentElement('beforebegin', scriptContainer)
-                }
-                scriptContainer.innerHTML = ''
-                // 隐藏原来的内容div
-                readerContainer.classList.add('fqa-hide')
+                const scriptContainer = ensureScriptContainer(readerContainer, true)
                 imgs.forEach(img => scriptContainer.appendChild(img))
             }
         }

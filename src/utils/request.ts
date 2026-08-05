@@ -1,3 +1,5 @@
+import { fetch as pageFetch } from "../config";
+
 type GMRequestMethod = "GET" | "HEAD" | "POST" | "PUT" | "DELETE";
 
 export type ApiResponse = Tampermonkey.Response<unknown> & {
@@ -87,6 +89,50 @@ export default function apiFetch(
 
         signal?.addEventListener("abort", abort, { once: true });
     });
+}
+
+/**
+ * 拉取二进制资源。
+ *
+ * 部分图片 CDN 不下发 CORS 头，页面 fetch 读不到响应体（但 <img> 能显示，
+ * 因为图片元素不受同源策略约束）。加密漫画必须拿到原始字节才能解密，
+ * 所以这里先试页面 fetch（快、无需权限），失败再退到 GM_xmlhttpRequest —
+ * 后者是特权请求，不受 CORS 限制，但要求目标域名在 @connect 列表里。
+ */
+export function fetchArrayBuffer(url: string): Promise<ArrayBuffer> {
+    // 用启动时存下的原始 fetch，避免被字节上报 SDK 或本脚本的拦截改写
+    return pageFetch(url, { referrerPolicy: 'no-referrer' })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`)
+            return res.arrayBuffer()
+        })
+        .catch(err => {
+            console.debug('[fqa:img] 页面 fetch 失败，改用 GM_xmlhttpRequest:', url, err)
+            return gmArrayBuffer(url)
+        })
+}
+
+function gmArrayBuffer(url: string): Promise<ArrayBuffer> {
+    return new Promise((resolve, reject) => {
+        GM_xmlhttpRequest({
+            url,
+            method: 'GET',
+            responseType: 'arraybuffer',
+            onload(response) {
+                const buf = response.response as ArrayBuffer | null
+                if (response.status >= 200 && response.status < 300 && buf?.byteLength) {
+                    resolve(buf)
+                } else {
+                    reject(new Error(`GM 请求失败(${response.status})`))
+                }
+            },
+            onerror() {
+                // 多半是域名不在 @connect 里
+                reject(new Error(`GM 请求出错，检查 @connect 是否覆盖该域名: ${url}`))
+            },
+            ontimeout: () => reject(new Error('GM 请求超时')),
+        })
+    })
 }
 
 function normalizeHeaders(

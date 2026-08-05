@@ -1,10 +1,12 @@
 import { defaultConfig, type DeviceConfig } from "../config";
 import { b64decode, getSubtle, unhex } from ".";
+import { gunzip } from "../utils/compress";
 
 // 正文算法: AES/CBC/PKCS5Padding
 // 返回 string(xhtml/html) | 章节 JSON 对象 | undefined(解析失败)
 export async function decryptChapter(
     encrypted: string,
+    rawData?: any,
     config: DeviceConfig = defaultConfig,
 ): Promise<string | unknown> {
     if (!encrypted) {
@@ -29,7 +31,10 @@ export async function decryptChapter(
         { name: "AES-CBC", iv },
         cryptoKey,
         data,
-    ).then((decrypted) => {
+    ).then(async (decrypted) => {
+        if (rawData && rawData?.compress_status === 1) {
+            decrypted = await gunzip(decrypted);
+        }
         const decoder = new TextDecoder();
         const plain = decoder.decode(decrypted);
         if (plain.trim().startsWith("<")) { // xhtml || html

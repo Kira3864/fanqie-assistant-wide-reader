@@ -1,6 +1,7 @@
 import { getDetailedUserInfo, userState } from '../api/user'
 import type { HookConfig } from '../config'
 import bookshelf from '../assets/bookshelf.svg?raw'
+import settings from '../assets/settings.svg?raw'
 import { openSettings } from '../settingsPanel'
 import { cloneElement } from '../utils'
 
@@ -57,6 +58,10 @@ async function mainHook(_previous?: string): Promise<void> {
     const injected = new WeakSet<HTMLElement>()
 
     const inject = (menuInner: HTMLElement) => {
+        if (menuInner.querySelectorAll('div.arco-menu-inline').length > 0) {
+            // 排行榜不注入
+            return
+        }
         if (injected.has(menuInner)) {
             return
         }
@@ -71,7 +76,7 @@ async function mainHook(_previous?: string): Promise<void> {
         })
         secondDiv.insertAdjacentElement('afterend', thirdDiv)
         // 助手设置固定放在菜单最后
-        menuInner.appendChild(createMenuItem('助手设置', undefined, openSettings))
+        menuInner.appendChild(createMenuItem('助手设置', settings, openSettings))
     }
 
     const scan = (root: HTMLElement) => {

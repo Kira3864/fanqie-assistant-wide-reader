@@ -1,4 +1,4 @@
-export type HookEvent = 'load' | 'click' | 'onUrlChange' | 'onHashChange' | 'keyup' | 'keydown'
+export type HookEvent = 'load' | 'click' | 'onUrlChange' | 'onHashChange' | 'enter' | 'keyup' | 'keydown'
 
 export interface KeyInfo {
     key?: ArrayBuffer;

@@ -1,11 +1,16 @@
 import apiFetch from '../utils/request'
 import { signRequest } from '../crypto/sign'
-import config from '../config'
+import config, { fetch as pageFetch } from '../config'
 import { settings } from '../settings'
 
 
 export const appBaseUrl = 'https://reading.snssdk.com/reading'
 export const redcandleBaseUrl = 'https://api5-sinfonlinec.jxbhmy.com/reading'
+/**
+ * 番茄网页站同源挂载的 APP 接口。走页面 fetch 时浏览器会自动带上 Cookie，
+ * 其中包括脚本读不到的 HttpOnly sessionid —— 个人化推荐就靠这个。
+ */
+export const webBaseUrl = 'https://fanqienovel.com/reading'
 export const appUserAgent = 'com.dragon.read'
 
 
@@ -26,8 +31,32 @@ export function buildAppQuery(extra?: Record<string, string>): URLSearchParams {
         os_version: '10',
         device_type: c.device_type || 'P30',
         device_brand: c.device_brand || 'realme',
+        update_version_code: '70132',
+        manifest_version_code: '70132',
         ...extra,
     })
+}
+
+
+/**
+ * 同源请求。签名依然必须，但同源可以自由设置自定义请求头，
+ * 且 Cookie 由浏览器附带，脚本不接触任何凭据。
+ *
+ * @param credentials 'include' 带登录态（个人化），'omit' 匿名
+ */
+export async function webGet(
+    path: string,
+    query?: Record<string, string>,
+    credentials: RequestCredentials = 'omit',
+): Promise<any> {
+    const url = `${webBaseUrl}${path}?${buildAppQuery(query).toString()}`
+    const signed = await signRequest(url)
+    // User-Agent 是浏览器保留头，这里设不了，也没必要设
+    const res = await pageFetch(url, { headers: signed, credentials })
+    if (!res.ok) {
+        throw new Error(`请求失败(${res.status})`)
+    }
+    return res.json()
 }
 
 

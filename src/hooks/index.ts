@@ -3,12 +3,14 @@ import readerHook from "./readerHook";
 import fetchHook from "./fetchHook";
 import userHook from "./userHook";
 import bookshelfHook from "./bookshelfHook";
+import searchHook from "./searchHook";
 
 const hooks: HookConfig[] = [
     ...readerHook,
     ...fetchHook,
     ...userHook,
     ...bookshelfHook,
+    ...searchHook,
 ];
 
 async function onEvent(event: HookEvent, previous?: string) {
@@ -44,5 +46,11 @@ export async function onHashChange(previous: string) {
 }
 
 export async function onLoad() {
+    /* document.body ready */
     return await onEvent('load');
+}
+
+export async function onEnter() {
+    /* page enter(document.body may not ready) */
+    return await onEvent('enter');
 }

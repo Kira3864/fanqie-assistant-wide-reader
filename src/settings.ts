@@ -23,6 +23,12 @@ export interface Settings {
     /** 自定义 CSS 内容。关闭开关时仍然保留，只是不应用 */
     customCss: string
 
+    /* --- 搜索 --- */
+    /** 接管网页搜索界面 */
+    enhanceSearch: boolean
+    /** 搜索时携带登录态以获取个人化推荐 */
+    searchPersonalized: boolean
+
     /* --- 协议 --- */
     apiPreference: ApiPreference
     /** 用户手动指定的设备信息，留空表示用脚本自动注册的设备 */
@@ -39,6 +45,10 @@ export const DEFAULT_SETTINGS: Settings = {
     readerFont: '',
     customCssEnabled: false,
     customCss: '',
+
+    enhanceSearch: true,
+    // 默认关：携带登录态属于额外的隐私暴露，交给用户显式开启
+    searchPersonalized: false,
 
     apiPreference: 'app',
     deviceId: '',

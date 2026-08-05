@@ -71,7 +71,7 @@ export async function getChapter(itemId: string, _retry?: number): Promise<any> 
         await ensureKeyinfo(parseInt(j?.key_version))
         return await getChapter(itemId, _retry + 1)
     }
-    j.content = await decryptChapter(j?.content, config.currentConfig)
+    j.content = await decryptChapter(j?.content, j, config.currentConfig)
     return j
 }
 
@@ -129,7 +129,8 @@ export async function getChapters(
             results[id] = {
                 ...item,
                 item_id: id,
-                content: await decryptChapter(item.content, config.currentConfig),
+                novel_data: item.novel_data,
+                content: await decryptChapter(item.content, item, config.currentConfig),
             }
         } catch (e) {
             results[id] = { ...item, item_id: id, error: String(e) }
