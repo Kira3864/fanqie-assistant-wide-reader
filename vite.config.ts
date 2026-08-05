@@ -31,7 +31,14 @@ export default defineConfig({
         'run-at': 'document-start',
         match: ['*://*.fanqienovel.com/*'],
         grant: ['GM_addStyle', 'GM_getValue', 'GM_setValue', 'GM_deleteValue', 'GM_xmlhttpRequest', 'unsafeWindow'],
-        connect: ['fanqienovel.com', 'api5-sinfonlinec.jxbhmy.com', 'api3-sinfonlinec.jxbhmy.com', 'reading.snssdk.com', 'i.snssdk.com'],
+        connect: [
+            'fanqienovel.com', // 主站
+            'jxbhmy.com', // 红烛小说 API
+            'snssdk.com', // 字节通用 API(含番茄小说)
+            'byteimg.com', // 图床
+            'fqnovelpic.com', // 图床
+            'bytecdn.cn', // 图床
+        ],
       },
       build: {
         fileName: 'fanqie-assistant.user.js',
