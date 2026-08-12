@@ -21,13 +21,15 @@ export default defineConfig({
     monkey({
       entry: 'src/main.ts',
       userscript: {
-        name: '番茄小说助手',
-        namespace: 'https://github.com/naiyQAQ/fanqie-assistant',
+        name: '番茄小说助手・宽屏阅读版',
+      namespace: 'https://github.com/Kira3864/fanqie-assistant-wide-reader',
 		license: "GPLv3",
         version,
-        description: '番茄小说助手，去广告、去推广、解锁章节、优化体验。',
+        description: '保留番茄小说助手原有功能，增加沉浸式单/双栏分页阅读、目录、主题和阅读位置保存。',
+      homepage: 'https://github.com/Kira3864/fanqie-assistant-wide-reader',
+      supportURL: 'https://github.com/Kira3864/fanqie-assistant-wide-reader/issues',
         icon: iconUrl,
-        author: 'naiyQAQ',
+      author: 'naiyQAQ, Kira3864',
         'run-at': 'document-start',
         match: ['*://*.fanqienovel.com/*'],
         grant: ['GM_addStyle', 'GM_getValue', 'GM_setValue', 'GM_deleteValue', 'GM_xmlhttpRequest', 'unsafeWindow'],
@@ -41,7 +43,7 @@ export default defineConfig({
         ],
       },
       build: {
-        fileName: 'fanqie-assistant.user.js',
+        fileName: 'fanqie-assistant-wide-reader.user.js',
         // vue / moment 走 CDN @require，不打进脚本体积
         externalGlobals: {
           vue: tocdn('Vue', 'dist/vue.global.prod.js'),

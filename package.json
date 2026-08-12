@@ -1,10 +1,11 @@
 {
-  "name": "fanqie-assistant",
-  "version": "0.0.5",
+  "name": "fanqie-assistant-wide-reader",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "test": "vitest run",
     "preview": "vite preview"
   },
   "devDependencies": {
@@ -12,7 +13,8 @@
     "@types/tampermonkey": "^5.0.5",
     "typescript": "~6.0.2",
     "vite": "6.4.3",
-    "vite-plugin-monkey": "^5.0.9"
+    "vite-plugin-monkey": "^5.0.9",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "@vitejs/plugin-vue": "^6.0.8",

@@ -22,6 +22,18 @@ export interface Settings {
     customCssEnabled: boolean
     /** 自定义 CSS 内容。关闭开关时仍然保留，只是不应用 */
     customCss: string
+    /** 是否在文字章节中自动启用沉浸式分页阅读 */
+    wideReaderEnabled: boolean
+    /** 沉浸式阅读主题 */
+    wideReaderTheme: 'system' | 'light' | 'dark'
+    /** 沉浸式阅读字号，单位为像素 */
+    wideReaderFontSize: number
+    /** 沉浸式阅读行高 */
+    wideReaderLineHeight: number
+    /** 沉浸式阅读栏间距，单位为像素 */
+    wideReaderColumnGap: number
+    /** 沉浸式阅读页边距，单位为像素 */
+    wideReaderPageMargin: number
 
     /* --- 搜索 --- */
     /** 接管网页搜索界面 */
@@ -45,6 +57,12 @@ export const DEFAULT_SETTINGS: Settings = {
     readerFont: '',
     customCssEnabled: false,
     customCss: '',
+    wideReaderEnabled: true,
+    wideReaderTheme: 'system',
+    wideReaderFontSize: 18,
+    wideReaderLineHeight: 1.9,
+    wideReaderColumnGap: 64,
+    wideReaderPageMargin: 72,
 
     enhanceSearch: true,
     // 默认关：携带登录态属于额外的隐私暴露，交给用户显式开启
@@ -72,7 +90,19 @@ function normalize(raw: unknown): Settings {
     if (s.apiPreference !== 'app' && s.apiPreference !== 'redcandle') {
         s.apiPreference = DEFAULT_SETTINGS.apiPreference
     }
+    if (!['system', 'light', 'dark'].includes(s.wideReaderTheme)) {
+        s.wideReaderTheme = DEFAULT_SETTINGS.wideReaderTheme
+    }
+    s.wideReaderFontSize = clamp(s.wideReaderFontSize, 16, 24, DEFAULT_SETTINGS.wideReaderFontSize)
+    s.wideReaderLineHeight = clamp(s.wideReaderLineHeight, 1.4, 2.6, DEFAULT_SETTINGS.wideReaderLineHeight)
+    s.wideReaderColumnGap = clamp(s.wideReaderColumnGap, 32, 112, DEFAULT_SETTINGS.wideReaderColumnGap)
+    s.wideReaderPageMargin = clamp(s.wideReaderPageMargin, 32, 120, DEFAULT_SETTINGS.wideReaderPageMargin)
     return s
+}
+
+/** 将持久化的排版数值限制在安全区间内。 */
+function clamp(value: number, min: number, max: number, fallback: number): number {
+    return Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback
 }
 
 /** 全局设置对象。直接改字段即可，会自动持久化 */

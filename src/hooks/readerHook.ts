@@ -1,6 +1,7 @@
 import { type HookConfig } from '../config'
 import { getChapter } from '../api/content'
 import { getBookInfoAndCatalog } from '../api/book'
+import { getCatalog } from '../api/catalog'
 import { applyBookCss } from '../api/bookcss'
 import { processFootnotes, bindFootnoteInteraction } from '../utils/footnote'
 import { settings } from '../settings'
@@ -9,6 +10,7 @@ import { cloneElement } from '../utils';
 import { fetchArrayBuffer } from '../utils/request';
 import { type Book } from '../types'
 import { decryptComicImage } from '../crypto/content';
+import { syncWideReader, unmountWideReader } from '../wideReader'
 // import moment from 'moment'
 
 let currentBook: Book | null = null
@@ -59,6 +61,7 @@ async function insertContent() {
     const chapter = await getChapter(itemId)
     if (!chapter) {
         console.warn('No chapter found for item_id:', itemId)
+        unmountWideReader()
         return
     }
 
@@ -255,8 +258,32 @@ async function insertContent() {
     }
     */
     console.log('Current book:', currentBook)
-    if (!currentBook || currentBook == null || currentBook.book_id !== chapter.novel_data?.book_id) {
-        currentBook = await getBookInfoAndCatalog(chapter.novel_data?.book_id)
+    const chapterBookId = chapter.novel_data?.book_id || pageState?.reader?.chapterData?.bookId
+    if (chapterBookId && (!currentBook || currentBook.book_id !== chapterBookId)) {
+        try {
+            currentBook = await getBookInfoAndCatalog(chapterBookId)
+        } catch (error) {
+            // 书籍详情接口偶发失败时，仍使用官方网页目录保证目录和切章可用。
+            console.warn('[fqa:目录] 书籍详情加载失败，改用当前页面信息和目录后备', error)
+            try {
+                const catalog = await getCatalog(chapterBookId)
+                currentBook = {
+                    book_id: chapterBookId,
+                    title: pageState?.reader?.chapterData?.bookName || '当前书籍',
+                    author: pageState?.reader?.chapterData?.author || '',
+                    cover_url: '',
+                    summary: '',
+                    update_time: '',
+                    status: '未知',
+                    volume_list: catalog.volume_list,
+                    chapter_list: catalog.chapter_list,
+                    all_item_ids: catalog.all_item_ids,
+                }
+            } catch (catalogError) {
+                console.warn('[fqa:目录] 所有目录来源均不可用，正文仍保持可读', catalogError)
+                currentBook = null
+            }
+        }
         console.log('Current book:', currentBook)
     }
     if (currentBook && currentBook.chapter_list) {
@@ -302,6 +329,17 @@ async function insertContent() {
                 updateTimeSpan.textContent = `更新时间：${currentChapterItem.update_time}`
             }
         }
+    }
+
+    const enhancedContent = document.getElementById(SCRIPT_CONTAINER_ID)
+    if (enhancedContent) {
+        syncWideReader({
+            itemId,
+            title: chapterTitle || '当前章节',
+            book: currentBook,
+            source: enhancedContent,
+            comic: typeof chapter.content !== 'string',
+        })
     }
 }
 

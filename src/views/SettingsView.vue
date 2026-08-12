@@ -65,7 +65,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
 const GREASYFORK =
     'https://greasyfork.org/zh-CN/scripts/589115-%E7%95%AA%E8%8C%84%E5%B0%8F%E8%AF%B4%E5%8A%A9%E6%89%8B'
 const FEEDBACK = `${GREASYFORK}/feedback`
-const GITHUB = 'https://github.com/naiyQAQ/fanqie-assistant'
+const GITHUB = 'https://github.com/Kira3864/fanqie-assistant-wide-reader'
 </script>
 
 <template>
@@ -116,6 +116,43 @@ const GITHUB = 'https://github.com/naiyQAQ/fanqie-assistant'
                 <!-- 界面 -->
                 <template v-else-if="active === 'ui'">
                     <h3 class="fqa-set-h">界面</h3>
+
+                    <label class="fqa-set-row">
+                        <span class="fqa-set-label">沉浸式分页阅读</span>
+                        <input v-model="settings.wideReaderEnabled" type="checkbox" class="fqa-set-switch" />
+                    </label>
+
+                    <div class="fqa-set-row fqa-set-row-col">
+                        <span class="fqa-set-label">分页阅读主题</span>
+                        <div class="fqa-set-radios">
+                            <label class="fqa-set-radio">
+                                <input v-model="settings.wideReaderTheme" type="radio" value="system" />
+                                <span>跟随系统</span>
+                            </label>
+                            <label class="fqa-set-radio">
+                                <input v-model="settings.wideReaderTheme" type="radio" value="light" />
+                                <span>浅色</span>
+                            </label>
+                            <label class="fqa-set-radio">
+                                <input v-model="settings.wideReaderTheme" type="radio" value="dark" />
+                                <span>深色</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <label class="fqa-set-row">
+                        <span class="fqa-set-label">分页字号（{{ settings.wideReaderFontSize }}px）</span>
+                        <input v-model.number="settings.wideReaderFontSize" type="range" min="16" max="24" step="1" />
+                    </label>
+
+                    <label class="fqa-set-row">
+                        <span class="fqa-set-label">分页行高（{{ settings.wideReaderLineHeight.toFixed(2) }}）</span>
+                        <input v-model.number="settings.wideReaderLineHeight" type="range" min="1.4" max="2.6" step="0.05" />
+                    </label>
+
+                    <p class="fqa-set-note">
+                        宽屏时使用双栏，窄屏自动切换单栏；支持左右边缘、方向键、PageUp/PageDown、滚轮翻页。
+                    </p>
 
                     <div class="fqa-set-row fqa-set-row-col">
                         <span class="fqa-set-label">阅读器字体</span>
