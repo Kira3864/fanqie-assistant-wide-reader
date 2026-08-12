@@ -3,6 +3,7 @@ import type { Book, ChapterItem } from './types'
 import { settings } from './settings'
 import wideReaderCss from './assets/wideReader.css?raw'
 import { bindFootnoteInteraction } from './utils/footnote'
+import { createReaderChapterUrl, replaceReaderChapter } from './wideReaderNavigation'
 
 /** 分页阅读器同步时需要的章节快照。 */
 export interface WideReaderSnapshot {
@@ -49,6 +50,7 @@ interface SavedPosition {
 }
 
 const ROOT_ID = 'fqa-wide-reader-root'
+const ENTRY_ID = 'fqa-wide-reader-entry'
 const POSITION_PREFIX = 'wide-reader-position:'
 let runtime: WideReaderRuntime | null = null
 let lastSnapshot: WideReaderSnapshot | null = null
@@ -62,10 +64,34 @@ let previousDocumentOverflow: string | null = null
 export function syncWideReader(snapshot: WideReaderSnapshot): void {
     lastSnapshot = snapshot
     if (!settings.wideReaderEnabled || snapshot.comic) {
+        removeWideReaderEntry()
         unmountWideReader()
         return
     }
     mountWideReader(snapshot)
+}
+
+/** 在异步获取新章节期间保留当前分页层，避免短暂露出原网页排版。 */
+export function beginWideReaderTransition(): void {
+    if (!runtime) return
+    runtime.root.dataset.loading = 'true'
+    runtime.root.setAttribute('aria-busy', 'true')
+    runtime.indicator.textContent = '正在加载章节…'
+}
+
+/** 在章节获取失败时解除加载状态，并在当前分页层提示错误。 */
+export function failWideReaderTransition(): void {
+    if (!runtime) return
+    runtime.root.removeAttribute('data-loading')
+    runtime.root.removeAttribute('aria-busy')
+    runtime.indicator.textContent = '章节加载失败，请重试'
+}
+
+/** 离开阅读页时清理分页层、恢复入口和章节快照。 */
+export function leaveWideReaderPage(): void {
+    lastSnapshot = null
+    removeWideReaderEntry()
+    unmountWideReader()
 }
 
 /** 退出当前分页层并恢复网页滚动。 */
@@ -89,6 +115,7 @@ function ensureWideReaderStyle(): void {
 /** 创建并挂载一个新的分页阅读器实例。 */
 function mountWideReader(snapshot: WideReaderSnapshot): void {
     unmountWideReader()
+    removeWideReaderEntry()
     ensureWideReaderStyle()
 
     const root = document.createElement('main')
@@ -204,8 +231,8 @@ function bindReaderEvents(
     controls.directoryButton.addEventListener('click', () => openDirectory(current))
     controls.settingsButton.addEventListener('click', () => openReaderSettings(current))
     controls.exitButton.addEventListener('click', () => {
-        settings.wideReaderEnabled = false
         unmountWideReader()
+        showWideReaderEntry()
     })
 
     let wheelTotal = 0
@@ -328,7 +355,14 @@ function navigateChapter(current: WideReaderRuntime, direction: 'previous' | 'ne
     const target = index >= 0 ? chapters[index + (direction === 'next' ? 1 : -1)] : undefined
     if (!target) return
     if (direction === 'previous') sessionStorage.setItem('fqa-wide-reader-open-at-end', target.item_id)
-    window.location.assign(`/reader/${target.item_id}?enter_from=reader`)
+    navigateToChapter(current, target.item_id)
+}
+
+/** 使用 replaceState 原地切章，保留书架历史项并让现有导航钩子加载正文。 */
+function navigateToChapter(current: WideReaderRuntime, itemId: string): void {
+    if (runtime !== current || itemId === current.snapshot.itemId) return
+    beginWideReaderTransition()
+    replaceReaderChapter(unsafeWindow.history, itemId)
 }
 
 /** 打开带搜索与当前章定位的全高目录抽屉。 */
@@ -350,7 +384,7 @@ function openDirectory(current: WideReaderRuntime): void {
     scrim.append(drawer)
     current.root.append(scrim)
 
-    const render = () => renderDirectory(nav, chapters, current.snapshot.itemId, search.value)
+    const render = () => renderDirectory(current, nav, chapters, current.snapshot.itemId, search.value)
     closeButton.addEventListener('click', () => scrim.remove())
     scrim.addEventListener('mousedown', (event) => {
         if (event.target === scrim) scrim.remove()
@@ -365,6 +399,7 @@ function openDirectory(current: WideReaderRuntime): void {
 
 /** 根据查询词渲染目录链接。 */
 function renderDirectory(
+    current: WideReaderRuntime,
     nav: HTMLElement,
     chapters: ChapterItem[],
     currentItemId: string,
@@ -384,9 +419,13 @@ function renderDirectory(
     const fragment = document.createDocumentFragment()
     visible.forEach((chapter) => {
         const link = document.createElement('a')
-        link.href = `/reader/${chapter.item_id}?enter_from=reader`
+        link.href = createReaderChapterUrl(chapter.item_id)
         link.textContent = chapter.title
         if (chapter.item_id === currentItemId) link.setAttribute('aria-current', 'page')
+        link.addEventListener('click', (event) => {
+            event.preventDefault()
+            navigateToChapter(current, chapter.item_id)
+        })
         fragment.append(link)
     })
     nav.append(fragment)
@@ -538,6 +577,23 @@ function createButton(text: string, label: string): HTMLButtonElement {
     return button
 }
 
+/** 在原网页右侧创建重新进入分页阅读的固定入口。 */
+function showWideReaderEntry(): void {
+    if (document.getElementById(ENTRY_ID) || !settings.wideReaderEnabled || !lastSnapshot || lastSnapshot.comic) return
+    ensureWideReaderStyle()
+    const button = createButton('分页阅读', '重新进入沉浸式分页阅读')
+    button.id = ENTRY_ID
+    button.addEventListener('click', () => {
+        if (lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot)
+    })
+    document.body.append(button)
+}
+
+/** 移除原网页上的分页阅读恢复入口。 */
+function removeWideReaderEntry(): void {
+    document.getElementById(ENTRY_ID)?.remove()
+}
+
 /** 判断键盘事件是否来自可编辑控件。 */
 function isEditableTarget(target: EventTarget | null): boolean {
     return target instanceof HTMLInputElement
@@ -555,7 +611,10 @@ function clamp(value: number, min: number, max: number): number {
 watch(
     () => settings.wideReaderEnabled,
     (enabled) => {
-        if (!enabled) unmountWideReader()
+        if (!enabled) {
+            removeWideReaderEntry()
+            unmountWideReader()
+        }
         else if (lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot)
     },
 )

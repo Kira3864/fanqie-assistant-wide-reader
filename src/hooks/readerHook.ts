@@ -10,7 +10,12 @@ import { cloneElement } from '../utils';
 import { fetchArrayBuffer } from '../utils/request';
 import { type Book } from '../types'
 import { decryptComicImage } from '../crypto/content';
-import { syncWideReader, unmountWideReader } from '../wideReader'
+import {
+    beginWideReaderTransition,
+    failWideReaderTransition,
+    leaveWideReaderPage,
+    syncWideReader,
+} from '../wideReader'
 // import moment from 'moment'
 
 let currentBook: Book | null = null
@@ -58,10 +63,18 @@ async function insertContent() {
         return
     }
     latestItemId = itemId
-    const chapter = await getChapter(itemId)
+    // 保留上一章分页层作为加载遮罩，避免异步请求期间露出原网页样式。
+    beginWideReaderTransition()
+    let chapter
+    try {
+        chapter = await getChapter(itemId)
+    } catch (error) {
+        failWideReaderTransition()
+        throw error
+    }
     if (!chapter) {
         console.warn('No chapter found for item_id:', itemId)
-        unmountWideReader()
+        failWideReaderTransition()
         return
     }
 
@@ -348,6 +361,13 @@ async function onUrlChange(_previous?: string): Promise<void> {
     // TODO: 记录并上报阅读历史和记录
     await insertContent()
 }
+
+/** 在导航离开阅读页时卸载固定分页界面，确保书架页面可正常显示。 */
+async function onReaderRouteChange(_previous?: string): Promise<void> {
+    if (!readerFilter(window.location.pathname, new URLSearchParams(window.location.search), window.location.hash)) {
+        leaveWideReaderPage()
+    }
+}
 async function onHashChange(_previous?: string): Promise<void> {
     // TODO: 支持从hash里解析并跳转到指定行
 }
@@ -384,6 +404,12 @@ function readerFilter(path: string, _query: URLSearchParams, _hash: string) {
 }
 
 const _exports: HookConfig[] = [
+    {
+        id: 'readerHook_leave',
+        event: 'onUrlChange',
+        handler: onReaderRouteChange,
+        filter: () => true
+    },
     {
         id: 'readerHook_load',
         event: 'load',

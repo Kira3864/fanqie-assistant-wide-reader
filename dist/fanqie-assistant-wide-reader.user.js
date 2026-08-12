@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         番茄小说助手・宽屏阅读版
 // @namespace    https://github.com/Kira3864/fanqie-assistant-wide-reader
-// @version      0.1.0
+// @version      0.1.1
 // @author       naiyQAQ, Kira3864
 // @description  保留番茄小说助手原有功能，增加沉浸式单/双栏分页阅读、目录、主题和阅读位置保存。
 // @license      GPLv3
@@ -2122,8 +2122,15 @@
       }
     });
   }
-  const wideReaderCss = "/*\n * 番茄小说助手的沉浸式分页阅读样式。\n * 所有规则限定在 #fqa-wide-reader-root 内，避免影响助手原有页面、书架和搜索界面。\n */\n#fqa-wide-reader-root {\n    --fqa-wide-bg: #f6f3ed;\n    --fqa-wide-panel: #faf8f3;\n    --fqa-wide-text: #292824;\n    --fqa-wide-muted: #716e67;\n    --fqa-wide-line: rgba(41, 40, 36, 0.11);\n    --fqa-wide-accent: #a94b3b;\n    position: fixed;\n    inset: 0;\n    z-index: 2147482900;\n    overflow: hidden;\n    background: var(--fqa-wide-bg);\n    color: var(--fqa-wide-text);\n    color-scheme: light;\n    font-family: Inter, system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;\n}\n\n#fqa-wide-reader-root[data-theme='dark'] {\n    --fqa-wide-bg: #11110f;\n    --fqa-wide-panel: #191916;\n    --fqa-wide-text: #d4d1ca;\n    --fqa-wide-muted: #969189;\n    --fqa-wide-line: rgba(255, 255, 255, 0.1);\n    --fqa-wide-accent: #c66a58;\n    color-scheme: dark;\n}\n\n@media (prefers-color-scheme: dark) {\n    #fqa-wide-reader-root[data-theme='system'] {\n        --fqa-wide-bg: #11110f;\n        --fqa-wide-panel: #191916;\n        --fqa-wide-text: #d4d1ca;\n        --fqa-wide-muted: #969189;\n        --fqa-wide-line: rgba(255, 255, 255, 0.1);\n        --fqa-wide-accent: #c66a58;\n        color-scheme: dark;\n    }\n}\n\n#fqa-wide-reader-root,\n#fqa-wide-reader-root * {\n    box-sizing: border-box;\n}\n\n#fqa-wide-reader-root button,\n#fqa-wide-reader-root input {\n    color: inherit;\n    font: inherit;\n}\n\n.fqa-wide-frame {\n    position: absolute;\n    top: 58px;\n    right: var(--fqa-wide-margin);\n    bottom: 52px;\n    left: var(--fqa-wide-margin);\n    overflow: hidden;\n    scrollbar-width: none;\n}\n\n.fqa-wide-frame::-webkit-scrollbar {\n    display: none;\n}\n\n.fqa-wide-article {\n    width: 100%;\n    height: 100%;\n    overflow: visible;\n    column-width: calc((100vw - var(--fqa-wide-margin) * 2 - var(--fqa-wide-gap)) / 2);\n    column-gap: var(--fqa-wide-gap);\n    column-fill: auto;\n    column-rule: 1px solid var(--fqa-wide-line);\n    font-family: var(--fqa-wide-font-family, 'Microsoft YaHei', sans-serif);\n    font-size: var(--fqa-wide-font-size);\n    line-height: var(--fqa-wide-line-height);\n    letter-spacing: 0;\n    text-align: justify;\n    text-justify: inter-ideograph;\n}\n\n.fqa-wide-article h1 {\n    margin: 0 0 1.45em;\n    break-after: avoid;\n    font-size: 1.28em;\n    font-weight: 600;\n    line-height: 1.4;\n}\n\n.fqa-wide-article p {\n    margin: 0 0 0.36em;\n    text-indent: 2em;\n    orphans: 2;\n    widows: 2;\n}\n\n.fqa-wide-article img,\n.fqa-wide-article figure {\n    max-width: 100%;\n    max-height: calc(100% - 24px);\n    break-inside: avoid;\n    object-fit: contain;\n}\n\n.fqa-wide-edge {\n    position: absolute;\n    z-index: 3;\n    top: 58px;\n    bottom: 52px;\n    width: max(44px, calc(var(--fqa-wide-margin) - 12px));\n    border: 0;\n    background: transparent;\n    color: var(--fqa-wide-muted);\n    cursor: pointer;\n    opacity: 0;\n    transition: opacity 0.14s, background-color 0.14s;\n}\n\n.fqa-wide-edge:hover,\n.fqa-wide-edge:focus-visible {\n    opacity: 1;\n    outline: 0;\n    background: color-mix(in srgb, var(--fqa-wide-text) 5%, transparent);\n}\n\n.fqa-wide-edge-left { left: 0; }\n.fqa-wide-edge-right { right: 0; }\n\n.fqa-wide-top-sensor,\n.fqa-wide-bottom-sensor {\n    position: absolute;\n    z-index: 4;\n    right: 0;\n    left: 0;\n    height: 30px;\n}\n\n.fqa-wide-top-sensor { top: 0; }\n.fqa-wide-bottom-sensor { bottom: 0; }\n\n.fqa-wide-controls {\n    position: absolute;\n    z-index: 5;\n    right: 16px;\n    left: 16px;\n    display: flex;\n    align-items: center;\n    min-height: 42px;\n    padding: 4px 8px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 7px;\n    background: color-mix(in srgb, var(--fqa-wide-panel) 96%, transparent);\n    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);\n    opacity: 0;\n    transition: opacity 0.14s, translate 0.14s;\n}\n\n.fqa-wide-top-controls { top: 12px; gap: 4px; translate: 0 -8px; }\n.fqa-wide-bottom-controls { bottom: 12px; justify-content: space-between; translate: 0 8px; }\n\n.fqa-wide-top-sensor:hover + .fqa-wide-top-controls,\n.fqa-wide-top-controls:hover,\n.fqa-wide-top-controls:focus-within,\n.fqa-wide-bottom-sensor:hover + .fqa-wide-bottom-controls,\n.fqa-wide-bottom-controls:hover,\n.fqa-wide-bottom-controls:focus-within {\n    opacity: 1;\n    translate: 0;\n}\n\n.fqa-wide-controls button {\n    min-height: 34px;\n    padding: 6px 10px;\n    border: 0;\n    border-radius: 5px;\n    background: transparent;\n    cursor: pointer;\n}\n\n.fqa-wide-controls button:hover,\n.fqa-wide-controls button:focus-visible {\n    outline: 0;\n    background: color-mix(in srgb, var(--fqa-wide-text) 7%, transparent);\n}\n\n.fqa-wide-title {\n    min-width: 0;\n    margin-left: 6px;\n    overflow: hidden;\n    color: var(--fqa-wide-muted);\n    font-size: 13px;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.fqa-wide-exit { margin-left: auto; }\n\n.fqa-wide-indicator {\n    position: absolute;\n    z-index: 2;\n    bottom: 17px;\n    left: 50%;\n    translate: -50%;\n    color: var(--fqa-wide-muted);\n    font-size: 12px;\n    font-variant-numeric: tabular-nums;\n}\n\n.fqa-wide-scrim {\n    position: absolute;\n    z-index: 8;\n    inset: 0;\n    background: rgba(0, 0, 0, 0.18);\n}\n\n.fqa-wide-drawer,\n.fqa-wide-settings {\n    height: 100%;\n    border-right: 1px solid var(--fqa-wide-line);\n    background: var(--fqa-wide-panel);\n    box-shadow: 16px 0 40px rgba(0, 0, 0, 0.12);\n}\n\n.fqa-wide-drawer {\n    display: flex;\n    flex-direction: column;\n    width: min(380px, 88vw);\n    padding: 18px 12px 12px;\n}\n\n.fqa-wide-panel-heading {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    margin-bottom: 14px;\n    padding: 0 6px;\n}\n\n.fqa-wide-search {\n    width: calc(100% - 12px);\n    min-height: 38px;\n    margin: 0 6px 12px;\n    padding: 0 10px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 5px;\n    background: transparent;\n}\n\n.fqa-wide-directory-list {\n    overflow: auto;\n    overscroll-behavior: contain;\n}\n\n.fqa-wide-directory-list a {\n    display: block;\n    overflow: hidden;\n    padding: 9px 10px;\n    border-bottom: 1px solid var(--fqa-wide-line);\n    color: var(--fqa-wide-text);\n    text-decoration: none;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.fqa-wide-directory-list a[aria-current='page'] {\n    padding-left: 8px;\n    border-left: 2px solid var(--fqa-wide-accent);\n    color: var(--fqa-wide-accent);\n}\n\n.fqa-wide-settings {\n    width: min(360px, 88vw);\n    padding: 18px;\n}\n\n.fqa-wide-field {\n    display: grid;\n    grid-template-columns: 90px 1fr 48px;\n    align-items: center;\n    gap: 8px;\n    margin: 15px 0;\n    font-size: 13px;\n}\n\n.fqa-wide-field input { width: 100%; accent-color: var(--fqa-wide-accent); }\n.fqa-wide-field output { color: var(--fqa-wide-muted); text-align: right; }\n\n.fqa-wide-themes {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    overflow: hidden;\n    margin-top: 12px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 5px;\n}\n\n.fqa-wide-themes button {\n    min-height: 34px;\n    border: 0;\n    border-right: 1px solid var(--fqa-wide-line);\n    background: transparent;\n    cursor: pointer;\n}\n\n.fqa-wide-themes button:last-child { border-right: 0; }\n.fqa-wide-themes button[aria-pressed='true'] { background: var(--fqa-wide-accent); color: #fff; }\n\n.fqa-wide-motion-next { animation: fqa-wide-next 0.15s ease-out; }\n.fqa-wide-motion-previous { animation: fqa-wide-previous 0.15s ease-out; }\n\n@keyframes fqa-wide-next {\n    from { opacity: 0.76; translate: 7px; }\n    to { opacity: 1; translate: 0; }\n}\n\n@keyframes fqa-wide-previous {\n    from { opacity: 0.76; translate: -7px; }\n    to { opacity: 1; translate: 0; }\n}\n\n@media (max-width: 919px) {\n    .fqa-wide-frame {\n        right: max(32px, min(var(--fqa-wide-margin), 8vw));\n        left: max(32px, min(var(--fqa-wide-margin), 8vw));\n    }\n\n    .fqa-wide-article {\n        column-width: calc(100vw - max(64px, min(var(--fqa-wide-margin) * 2, 16vw)));\n        column-rule: 0;\n    }\n}\n\n@media (prefers-reduced-motion: reduce) {\n    #fqa-wide-reader-root *,\n    #fqa-wide-reader-root *::before,\n    #fqa-wide-reader-root *::after {\n        transition-duration: 1ms !important;\n        animation-duration: 1ms !important;\n    }\n}\n";
+  const wideReaderCss = "/*\n * 番茄小说助手的沉浸式分页阅读样式。\n * 分页层规则限定在 #fqa-wide-reader-root，恢复入口使用唯一 id，避免污染其他页面。\n */\n#fqa-wide-reader-root {\n    --fqa-wide-bg: #f6f3ed;\n    --fqa-wide-panel: #faf8f3;\n    --fqa-wide-text: #292824;\n    --fqa-wide-muted: #716e67;\n    --fqa-wide-line: rgba(41, 40, 36, 0.11);\n    --fqa-wide-accent: #a94b3b;\n    position: fixed;\n    inset: 0;\n    z-index: 2147482900;\n    overflow: hidden;\n    background: var(--fqa-wide-bg);\n    color: var(--fqa-wide-text);\n    color-scheme: light;\n    font-family: Inter, system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;\n}\n\n#fqa-wide-reader-root[data-loading='true']::after {\n    content: '正在加载下一章…';\n    position: absolute;\n    z-index: 7;\n    inset: 0;\n    display: grid;\n    place-items: center;\n    background: color-mix(in srgb, var(--fqa-wide-bg) 88%, transparent);\n    color: var(--fqa-wide-muted);\n    font-size: 14px;\n    letter-spacing: 0.08em;\n    cursor: wait;\n}\n\n#fqa-wide-reader-entry {\n    position: fixed;\n    z-index: 2147482800;\n    top: 50%;\n    right: 18px;\n    min-width: 48px;\n    padding: 12px 9px;\n    border: 1px solid rgba(31, 35, 41, 0.1);\n    border-radius: 10px;\n    background: #fff;\n    box-shadow: 0 6px 20px rgba(31, 35, 41, 0.12);\n    color: #292824;\n    font: 13px/1.35 system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;\n    writing-mode: vertical-rl;\n    cursor: pointer;\n    translate: 0 -50%;\n}\n\n#fqa-wide-reader-entry:hover,\n#fqa-wide-reader-entry:focus-visible {\n    border-color: #a94b3b;\n    outline: 0;\n    color: #a94b3b;\n}\n\n#fqa-wide-reader-root[data-theme='dark'] {\n    --fqa-wide-bg: #11110f;\n    --fqa-wide-panel: #191916;\n    --fqa-wide-text: #d4d1ca;\n    --fqa-wide-muted: #969189;\n    --fqa-wide-line: rgba(255, 255, 255, 0.1);\n    --fqa-wide-accent: #c66a58;\n    color-scheme: dark;\n}\n\n@media (prefers-color-scheme: dark) {\n    #fqa-wide-reader-root[data-theme='system'] {\n        --fqa-wide-bg: #11110f;\n        --fqa-wide-panel: #191916;\n        --fqa-wide-text: #d4d1ca;\n        --fqa-wide-muted: #969189;\n        --fqa-wide-line: rgba(255, 255, 255, 0.1);\n        --fqa-wide-accent: #c66a58;\n        color-scheme: dark;\n    }\n}\n\n#fqa-wide-reader-root,\n#fqa-wide-reader-root * {\n    box-sizing: border-box;\n}\n\n#fqa-wide-reader-root button,\n#fqa-wide-reader-root input {\n    color: inherit;\n    font: inherit;\n}\n\n.fqa-wide-frame {\n    position: absolute;\n    top: 58px;\n    right: var(--fqa-wide-margin);\n    bottom: 52px;\n    left: var(--fqa-wide-margin);\n    overflow: hidden;\n    scrollbar-width: none;\n}\n\n.fqa-wide-frame::-webkit-scrollbar {\n    display: none;\n}\n\n.fqa-wide-article {\n    width: 100%;\n    height: 100%;\n    overflow: visible;\n    column-width: calc((100vw - var(--fqa-wide-margin) * 2 - var(--fqa-wide-gap)) / 2);\n    column-gap: var(--fqa-wide-gap);\n    column-fill: auto;\n    column-rule: 1px solid var(--fqa-wide-line);\n    font-family: var(--fqa-wide-font-family, 'Microsoft YaHei', sans-serif);\n    font-size: var(--fqa-wide-font-size);\n    line-height: var(--fqa-wide-line-height);\n    letter-spacing: 0;\n    text-align: justify;\n    text-justify: inter-ideograph;\n}\n\n.fqa-wide-article h1 {\n    margin: 0 0 1.45em;\n    break-after: avoid;\n    font-size: 1.28em;\n    font-weight: 600;\n    line-height: 1.4;\n}\n\n.fqa-wide-article p {\n    margin: 0 0 0.36em;\n    text-indent: 2em;\n    orphans: 2;\n    widows: 2;\n}\n\n.fqa-wide-article img,\n.fqa-wide-article figure {\n    max-width: 100%;\n    max-height: calc(100% - 24px);\n    break-inside: avoid;\n    object-fit: contain;\n}\n\n.fqa-wide-edge {\n    position: absolute;\n    z-index: 3;\n    top: 58px;\n    bottom: 52px;\n    width: max(44px, calc(var(--fqa-wide-margin) - 12px));\n    border: 0;\n    background: transparent;\n    color: var(--fqa-wide-muted);\n    cursor: pointer;\n    opacity: 0;\n    transition: opacity 0.14s, background-color 0.14s;\n}\n\n.fqa-wide-edge:hover,\n.fqa-wide-edge:focus-visible {\n    opacity: 1;\n    outline: 0;\n    background: color-mix(in srgb, var(--fqa-wide-text) 5%, transparent);\n}\n\n.fqa-wide-edge-left { left: 0; }\n.fqa-wide-edge-right { right: 0; }\n\n.fqa-wide-top-sensor,\n.fqa-wide-bottom-sensor {\n    position: absolute;\n    z-index: 4;\n    right: 0;\n    left: 0;\n    height: 30px;\n}\n\n.fqa-wide-top-sensor { top: 0; }\n.fqa-wide-bottom-sensor { bottom: 0; }\n\n.fqa-wide-controls {\n    position: absolute;\n    z-index: 5;\n    right: 16px;\n    left: 16px;\n    display: flex;\n    align-items: center;\n    min-height: 42px;\n    padding: 4px 8px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 7px;\n    background: color-mix(in srgb, var(--fqa-wide-panel) 96%, transparent);\n    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);\n    opacity: 0;\n    transition: opacity 0.14s, translate 0.14s;\n}\n\n.fqa-wide-top-controls { top: 12px; gap: 4px; translate: 0 -8px; }\n.fqa-wide-bottom-controls { bottom: 12px; justify-content: space-between; translate: 0 8px; }\n\n.fqa-wide-top-sensor:hover + .fqa-wide-top-controls,\n.fqa-wide-top-controls:hover,\n.fqa-wide-top-controls:focus-within,\n.fqa-wide-bottom-sensor:hover + .fqa-wide-bottom-controls,\n.fqa-wide-bottom-controls:hover,\n.fqa-wide-bottom-controls:focus-within {\n    opacity: 1;\n    translate: 0;\n}\n\n.fqa-wide-controls button {\n    min-height: 34px;\n    padding: 6px 10px;\n    border: 0;\n    border-radius: 5px;\n    background: transparent;\n    cursor: pointer;\n}\n\n.fqa-wide-controls button:hover,\n.fqa-wide-controls button:focus-visible {\n    outline: 0;\n    background: color-mix(in srgb, var(--fqa-wide-text) 7%, transparent);\n}\n\n.fqa-wide-title {\n    min-width: 0;\n    margin-left: 6px;\n    overflow: hidden;\n    color: var(--fqa-wide-muted);\n    font-size: 13px;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.fqa-wide-exit { margin-left: auto; }\n\n.fqa-wide-indicator {\n    position: absolute;\n    z-index: 2;\n    bottom: 17px;\n    left: 50%;\n    translate: -50%;\n    color: var(--fqa-wide-muted);\n    font-size: 12px;\n    font-variant-numeric: tabular-nums;\n}\n\n.fqa-wide-scrim {\n    position: absolute;\n    z-index: 8;\n    inset: 0;\n    background: rgba(0, 0, 0, 0.18);\n}\n\n.fqa-wide-drawer,\n.fqa-wide-settings {\n    height: 100%;\n    border-right: 1px solid var(--fqa-wide-line);\n    background: var(--fqa-wide-panel);\n    box-shadow: 16px 0 40px rgba(0, 0, 0, 0.12);\n}\n\n.fqa-wide-drawer {\n    display: flex;\n    flex-direction: column;\n    width: min(380px, 88vw);\n    padding: 18px 12px 12px;\n}\n\n.fqa-wide-panel-heading {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    margin-bottom: 14px;\n    padding: 0 6px;\n}\n\n.fqa-wide-search {\n    width: calc(100% - 12px);\n    min-height: 38px;\n    margin: 0 6px 12px;\n    padding: 0 10px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 5px;\n    background: transparent;\n}\n\n.fqa-wide-directory-list {\n    overflow: auto;\n    overscroll-behavior: contain;\n}\n\n.fqa-wide-directory-list a {\n    display: block;\n    overflow: hidden;\n    padding: 9px 10px;\n    border-bottom: 1px solid var(--fqa-wide-line);\n    color: var(--fqa-wide-text);\n    text-decoration: none;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.fqa-wide-directory-list a[aria-current='page'] {\n    padding-left: 8px;\n    border-left: 2px solid var(--fqa-wide-accent);\n    color: var(--fqa-wide-accent);\n}\n\n.fqa-wide-settings {\n    width: min(360px, 88vw);\n    padding: 18px;\n}\n\n.fqa-wide-field {\n    display: grid;\n    grid-template-columns: 90px 1fr 48px;\n    align-items: center;\n    gap: 8px;\n    margin: 15px 0;\n    font-size: 13px;\n}\n\n.fqa-wide-field input { width: 100%; accent-color: var(--fqa-wide-accent); }\n.fqa-wide-field output { color: var(--fqa-wide-muted); text-align: right; }\n\n.fqa-wide-themes {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    overflow: hidden;\n    margin-top: 12px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 5px;\n}\n\n.fqa-wide-themes button {\n    min-height: 34px;\n    border: 0;\n    border-right: 1px solid var(--fqa-wide-line);\n    background: transparent;\n    cursor: pointer;\n}\n\n.fqa-wide-themes button:last-child { border-right: 0; }\n.fqa-wide-themes button[aria-pressed='true'] { background: var(--fqa-wide-accent); color: #fff; }\n\n.fqa-wide-motion-next { animation: fqa-wide-next 0.15s ease-out; }\n.fqa-wide-motion-previous { animation: fqa-wide-previous 0.15s ease-out; }\n\n@keyframes fqa-wide-next {\n    from { opacity: 0.76; translate: 7px; }\n    to { opacity: 1; translate: 0; }\n}\n\n@keyframes fqa-wide-previous {\n    from { opacity: 0.76; translate: -7px; }\n    to { opacity: 1; translate: 0; }\n}\n\n@media (max-width: 919px) {\n    .fqa-wide-frame {\n        right: max(32px, min(var(--fqa-wide-margin), 8vw));\n        left: max(32px, min(var(--fqa-wide-margin), 8vw));\n    }\n\n    .fqa-wide-article {\n        column-width: calc(100vw - max(64px, min(var(--fqa-wide-margin) * 2, 16vw)));\n        column-rule: 0;\n    }\n}\n\n@media (prefers-reduced-motion: reduce) {\n    #fqa-wide-reader-root *,\n    #fqa-wide-reader-root *::before,\n    #fqa-wide-reader-root *::after {\n        transition-duration: 1ms !important;\n        animation-duration: 1ms !important;\n    }\n}\n";
+  function createReaderChapterUrl(itemId) {
+    return `/reader/${encodeURIComponent(itemId)}?enter_from=reader`;
+  }
+  function replaceReaderChapter(history, itemId) {
+    history.replaceState(history.state, "", createReaderChapterUrl(itemId));
+  }
   const ROOT_ID = "fqa-wide-reader-root";
+  const ENTRY_ID = "fqa-wide-reader-entry";
   const POSITION_PREFIX = "wide-reader-position:";
   let runtime = null;
   let lastSnapshot = null;
@@ -2132,10 +2139,28 @@
   function syncWideReader(snapshot) {
     lastSnapshot = snapshot;
     if (!settings$1.wideReaderEnabled || snapshot.comic) {
+      removeWideReaderEntry();
       unmountWideReader();
       return;
     }
     mountWideReader(snapshot);
+  }
+  function beginWideReaderTransition() {
+    if (!runtime) return;
+    runtime.root.dataset.loading = "true";
+    runtime.root.setAttribute("aria-busy", "true");
+    runtime.indicator.textContent = "正在加载章节…";
+  }
+  function failWideReaderTransition() {
+    if (!runtime) return;
+    runtime.root.removeAttribute("data-loading");
+    runtime.root.removeAttribute("aria-busy");
+    runtime.indicator.textContent = "章节加载失败，请重试";
+  }
+  function leaveWideReaderPage() {
+    lastSnapshot = null;
+    removeWideReaderEntry();
+    unmountWideReader();
   }
   function unmountWideReader() {
     if (!runtime) return;
@@ -2153,6 +2178,7 @@
   }
   function mountWideReader(snapshot) {
     unmountWideReader();
+    removeWideReaderEntry();
     ensureWideReaderStyle();
     const root = document.createElement("main");
     root.id = ROOT_ID;
@@ -2251,8 +2277,8 @@
     controls.directoryButton.addEventListener("click", () => openDirectory(current));
     controls.settingsButton.addEventListener("click", () => openReaderSettings(current));
     controls.exitButton.addEventListener("click", () => {
-      settings$1.wideReaderEnabled = false;
       unmountWideReader();
+      showWideReaderEntry();
     });
     let wheelTotal = 0;
     let wheelLockedUntil = 0;
@@ -2356,7 +2382,12 @@
     const target = index >= 0 ? chapters[index + (direction === "next" ? 1 : -1)] : void 0;
     if (!target) return;
     if (direction === "previous") sessionStorage.setItem("fqa-wide-reader-open-at-end", target.item_id);
-    window.location.assign(`/reader/${target.item_id}?enter_from=reader`);
+    navigateToChapter(current, target.item_id);
+  }
+  function navigateToChapter(current, itemId) {
+    if (runtime !== current || itemId === current.snapshot.itemId) return;
+    beginWideReaderTransition();
+    replaceReaderChapter(unsafeWindow.history, itemId);
   }
   function openDirectory(current) {
     var _a;
@@ -2376,7 +2407,7 @@
     drawer.append(heading, search2, nav);
     scrim.append(drawer);
     current.root.append(scrim);
-    const render = () => renderDirectory(nav, chapters, current.snapshot.itemId, search2.value);
+    const render = () => renderDirectory(current, nav, chapters, current.snapshot.itemId, search2.value);
     closeButton.addEventListener("click", () => scrim.remove());
     scrim.addEventListener("mousedown", (event) => {
       if (event.target === scrim) scrim.remove();
@@ -2389,7 +2420,7 @@
       (_a2 = nav.querySelector('[aria-current="page"]')) == null ? void 0 : _a2.scrollIntoView({ block: "center" });
     });
   }
-  function renderDirectory(nav, chapters, currentItemId, query) {
+  function renderDirectory(current, nav, chapters, currentItemId, query) {
     nav.replaceChildren();
     const keyword = query.trim().toLocaleLowerCase();
     const visible = keyword ? chapters.filter((chapter) => chapter.title.toLocaleLowerCase().includes(keyword)) : chapters;
@@ -2402,9 +2433,13 @@
     const fragment = document.createDocumentFragment();
     visible.forEach((chapter) => {
       const link = document.createElement("a");
-      link.href = `/reader/${chapter.item_id}?enter_from=reader`;
+      link.href = createReaderChapterUrl(chapter.item_id);
       link.textContent = chapter.title;
       if (chapter.item_id === currentItemId) link.setAttribute("aria-current", "page");
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        navigateToChapter(current, chapter.item_id);
+      });
       fragment.append(link);
     });
     nav.append(fragment);
@@ -2526,6 +2561,20 @@
     button.title = label;
     return button;
   }
+  function showWideReaderEntry() {
+    if (document.getElementById(ENTRY_ID) || !settings$1.wideReaderEnabled || !lastSnapshot || lastSnapshot.comic) return;
+    ensureWideReaderStyle();
+    const button = createButton("分页阅读", "重新进入沉浸式分页阅读");
+    button.id = ENTRY_ID;
+    button.addEventListener("click", () => {
+      if (lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot);
+    });
+    document.body.append(button);
+  }
+  function removeWideReaderEntry() {
+    var _a;
+    (_a = document.getElementById(ENTRY_ID)) == null ? void 0 : _a.remove();
+  }
   function isEditableTarget(target) {
     return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target instanceof HTMLElement && target.isContentEditable;
   }
@@ -2535,8 +2584,10 @@
   vue.watch(
     () => settings$1.wideReaderEnabled,
     (enabled) => {
-      if (!enabled) unmountWideReader();
-      else if (lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot);
+      if (!enabled) {
+        removeWideReaderEntry();
+        unmountWideReader();
+      } else if (lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot);
     }
   );
   let currentBook = null;
@@ -2567,10 +2618,17 @@
       return;
     }
     latestItemId = itemId;
-    const chapter = await getChapter(itemId);
+    beginWideReaderTransition();
+    let chapter;
+    try {
+      chapter = await getChapter(itemId);
+    } catch (error) {
+      failWideReaderTransition();
+      throw error;
+    }
     if (!chapter) {
       console.warn("No chapter found for item_id:", itemId);
-      unmountWideReader();
+      failWideReaderTransition();
       return;
     }
     if (latestItemId !== itemId) {
@@ -2771,6 +2829,11 @@
   async function onUrlChange$1(_previous) {
     await insertContent();
   }
+  async function onReaderRouteChange(_previous) {
+    if (!readerFilter(window.location.pathname, new URLSearchParams(window.location.search))) {
+      leaveWideReaderPage();
+    }
+  }
   async function onHashChange$1(_previous) {
   }
   async function onLoad$1() {
@@ -2781,6 +2844,12 @@
     return path.startsWith("/reader") || path.startsWith("reader");
   }
   const _exports$4 = [
+    {
+      id: "readerHook_leave",
+      event: "onUrlChange",
+      handler: onReaderRouteChange,
+      filter: () => true
+    },
     {
       id: "readerHook_load",
       event: "load",
@@ -3341,7 +3410,7 @@
     }
   }
   const name = "fanqie-assistant-wide-reader";
-  const version = "0.1.0";
+  const version = "0.1.1";
   const _hoisted_1$8 = {
     class: "fqa-set-dialog",
     role: "dialog",

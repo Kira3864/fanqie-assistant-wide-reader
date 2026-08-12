@@ -1,6 +1,6 @@
 /*
  * 番茄小说助手的沉浸式分页阅读样式。
- * 所有规则限定在 #fqa-wide-reader-root 内，避免影响助手原有页面、书架和搜索界面。
+ * 分页层规则限定在 #fqa-wide-reader-root，恢复入口使用唯一 id，避免污染其他页面。
  */
 #fqa-wide-reader-root {
     --fqa-wide-bg: #f6f3ed;
@@ -17,6 +17,45 @@
     color: var(--fqa-wide-text);
     color-scheme: light;
     font-family: Inter, system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+}
+
+#fqa-wide-reader-root[data-loading='true']::after {
+    content: '正在加载下一章…';
+    position: absolute;
+    z-index: 7;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--fqa-wide-bg) 88%, transparent);
+    color: var(--fqa-wide-muted);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    cursor: wait;
+}
+
+#fqa-wide-reader-entry {
+    position: fixed;
+    z-index: 2147482800;
+    top: 50%;
+    right: 18px;
+    min-width: 48px;
+    padding: 12px 9px;
+    border: 1px solid rgba(31, 35, 41, 0.1);
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(31, 35, 41, 0.12);
+    color: #292824;
+    font: 13px/1.35 system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    writing-mode: vertical-rl;
+    cursor: pointer;
+    translate: 0 -50%;
+}
+
+#fqa-wide-reader-entry:hover,
+#fqa-wide-reader-entry:focus-visible {
+    border-color: #a94b3b;
+    outline: 0;
+    color: #a94b3b;
 }
 
 #fqa-wide-reader-root[data-theme='dark'] {
