@@ -1,0 +1,46 @@
+# 推送 v* 标签时自动验证、构建并发布单文件 Userscript。
+name: 发布 Userscript
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: 构建并发布
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出源码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 运行测试
+        run: npm test
+
+      - name: 构建 Userscript
+        run: npm run build
+
+      - name: 打包源码
+        run: git archive --format=zip --prefix="fanqie-assistant-wide-reader-${GITHUB_REF_NAME}/" -o "fanqie-assistant-wide-reader-${GITHUB_REF_NAME}-source.zip" HEAD
+
+      - name: 创建 GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          dist/fanqie-assistant-wide-reader.user.js
+          "fanqie-assistant-wide-reader-${GITHUB_REF_NAME}-source.zip"
+          --generate-notes
+          --title "番茄小说助手・宽屏阅读版 $GITHUB_REF_NAME"

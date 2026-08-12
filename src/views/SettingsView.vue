@@ -122,20 +122,20 @@ const GITHUB = 'https://github.com/Kira3864/fanqie-assistant-wide-reader'
                         <input v-model="settings.wideReaderEnabled" type="checkbox" class="fqa-set-switch" />
                     </label>
 
+                    <label class="fqa-set-row">
+                        <span class="fqa-set-label">当前进入分页模式</span>
+                        <input v-model="settings.wideReaderActive" type="checkbox" class="fqa-set-switch" />
+                    </label>
+
                     <div class="fqa-set-row fqa-set-row-col">
                         <span class="fqa-set-label">分页阅读主题</span>
                         <div class="fqa-set-radios">
-                            <label class="fqa-set-radio">
-                                <input v-model="settings.wideReaderTheme" type="radio" value="system" />
-                                <span>跟随系统</span>
-                            </label>
-                            <label class="fqa-set-radio">
-                                <input v-model="settings.wideReaderTheme" type="radio" value="light" />
-                                <span>浅色</span>
-                            </label>
-                            <label class="fqa-set-radio">
-                                <input v-model="settings.wideReaderTheme" type="radio" value="dark" />
-                                <span>深色</span>
+                            <label v-for="theme in [
+                                ['system', '跟随系统'], ['light', '明亮'], ['paper', '羊皮纸'],
+                                ['green', '护眼绿'], ['gray', '雾灰'], ['dark', '深夜']
+                            ]" :key="theme[0]" class="fqa-set-radio">
+                                <input v-model="settings.wideReaderTheme" type="radio" :value="theme[0]" />
+                                <span>{{ theme[1] }}</span>
                             </label>
                         </div>
                     </div>
@@ -144,6 +144,18 @@ const GITHUB = 'https://github.com/Kira3864/fanqie-assistant-wide-reader'
                         <span class="fqa-set-label">分页字号（{{ settings.wideReaderFontSize }}px）</span>
                         <input v-model.number="settings.wideReaderFontSize" type="range" min="16" max="24" step="1" />
                     </label>
+
+                    <div class="fqa-set-row fqa-set-row-col">
+                        <span class="fqa-set-label">分页正文字体</span>
+                        <select v-model="settings.wideReaderFont" class="fqa-set-input">
+                            <option value="system">跟随助手字体</option>
+                            <option value="sans">现代黑体</option>
+                            <option value="serif">系统衬线</option>
+                            <option value="song">宋体</option>
+                            <option value="kai">楷体</option>
+                            <option value="fangsong">仿宋</option>
+                        </select>
+                    </div>
 
                     <label class="fqa-set-row">
                         <span class="fqa-set-label">分页行高（{{ settings.wideReaderLineHeight.toFixed(2) }}）</span>

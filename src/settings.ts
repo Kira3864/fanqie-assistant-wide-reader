@@ -1,5 +1,11 @@
 import { reactive, watch } from 'vue'
 import { read, write } from './localStorage'
+import {
+    isWideReaderFont,
+    isWideReaderTheme,
+    type WideReaderFont,
+    type WideReaderTheme,
+} from './wideReaderPreferences'
 
 const STORE_KEY = 'settings'
 
@@ -24,8 +30,12 @@ export interface Settings {
     customCss: string
     /** 是否在文字章节中自动启用沉浸式分页阅读 */
     wideReaderEnabled: boolean
+    /** 上次是否停留在分页模式；退出后刷新页面仍保持退出状态 */
+    wideReaderActive: boolean
     /** 沉浸式阅读主题 */
-    wideReaderTheme: 'system' | 'light' | 'dark'
+    wideReaderTheme: WideReaderTheme
+    /** 沉浸式阅读字体方案 */
+    wideReaderFont: WideReaderFont
     /** 沉浸式阅读字号，单位为像素 */
     wideReaderFontSize: number
     /** 沉浸式阅读行高 */
@@ -58,7 +68,9 @@ export const DEFAULT_SETTINGS: Settings = {
     customCssEnabled: false,
     customCss: '',
     wideReaderEnabled: true,
+    wideReaderActive: true,
     wideReaderTheme: 'system',
+    wideReaderFont: 'system',
     wideReaderFontSize: 18,
     wideReaderLineHeight: 1.9,
     wideReaderColumnGap: 64,
@@ -90,8 +102,11 @@ function normalize(raw: unknown): Settings {
     if (s.apiPreference !== 'app' && s.apiPreference !== 'redcandle') {
         s.apiPreference = DEFAULT_SETTINGS.apiPreference
     }
-    if (!['system', 'light', 'dark'].includes(s.wideReaderTheme)) {
+    if (!isWideReaderTheme(s.wideReaderTheme)) {
         s.wideReaderTheme = DEFAULT_SETTINGS.wideReaderTheme
+    }
+    if (!isWideReaderFont(s.wideReaderFont)) {
+        s.wideReaderFont = DEFAULT_SETTINGS.wideReaderFont
     }
     s.wideReaderFontSize = clamp(s.wideReaderFontSize, 16, 24, DEFAULT_SETTINGS.wideReaderFontSize)
     s.wideReaderLineHeight = clamp(s.wideReaderLineHeight, 1.4, 2.6, DEFAULT_SETTINGS.wideReaderLineHeight)

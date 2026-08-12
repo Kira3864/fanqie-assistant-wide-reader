@@ -1,9 +1,13 @@
 import { watch } from 'vue'
 import type { Book, ChapterItem } from './types'
-import { settings } from './settings'
+import { flushSettings, settings } from './settings'
 import wideReaderCss from './assets/wideReader.css?raw'
 import { bindFootnoteInteraction } from './utils/footnote'
 import { createReaderChapterUrl, replaceReaderChapter } from './wideReaderNavigation'
+import { getDetailedUserInfo, userState } from './api/user'
+import { openSettings } from './settingsPanel'
+import type { WideReaderFont, WideReaderTheme } from './wideReaderPreferences'
+import { shouldTurnPageForWheel } from './wideReaderInteraction'
 
 /** 分页阅读器同步时需要的章节快照。 */
 export interface WideReaderSnapshot {
@@ -37,6 +41,7 @@ interface WideReaderRuntime {
 interface WideReaderControls {
     directoryButton: HTMLButtonElement
     settingsButton: HTMLButtonElement
+    accountButton: HTMLButtonElement
     exitButton: HTMLButtonElement
     leftButton: HTMLButtonElement
     rightButton: HTMLButtonElement
@@ -63,9 +68,10 @@ let previousDocumentOverflow: string | null = null
  */
 export function syncWideReader(snapshot: WideReaderSnapshot): void {
     lastSnapshot = snapshot
-    if (!settings.wideReaderEnabled || snapshot.comic) {
+    if (!settings.wideReaderEnabled || !settings.wideReaderActive || snapshot.comic) {
         removeWideReaderEntry()
         unmountWideReader()
+        if (settings.wideReaderEnabled && !snapshot.comic) showWideReaderEntry()
         return
     }
     mountWideReader(snapshot)
@@ -128,11 +134,12 @@ function mountWideReader(snapshot: WideReaderSnapshot): void {
     const topControls = createElement('header', 'fqa-wide-controls fqa-wide-top-controls')
     const directoryButton = createButton('目录', '打开目录')
     const settingsButton = createButton('显示', '打开显示设置')
+    const accountButton = createAccountButton()
     const title = createElement('span', 'fqa-wide-title')
     title.textContent = snapshot.title
     const exitButton = createButton('退出分页', '退出沉浸式分页阅读')
     exitButton.classList.add('fqa-wide-exit')
-    topControls.append(directoryButton, settingsButton, title, exitButton)
+    topControls.append(directoryButton, settingsButton, title, accountButton, exitButton)
 
     const leftButton = createButton('‹', '上一页')
     leftButton.className = 'fqa-wide-edge fqa-wide-edge-left'
@@ -192,6 +199,7 @@ function mountWideReader(snapshot: WideReaderSnapshot): void {
     bindReaderEvents(nextRuntime, {
         directoryButton,
         settingsButton,
+        accountButton,
         exitButton,
         leftButton,
         rightButton,
@@ -230,7 +238,10 @@ function bindReaderEvents(
     controls.nextChapterButton.addEventListener('click', () => navigateChapter(current, 'next'))
     controls.directoryButton.addEventListener('click', () => openDirectory(current))
     controls.settingsButton.addEventListener('click', () => openReaderSettings(current))
+    controls.accountButton.addEventListener('click', () => void openAccountMenu(current, controls.accountButton))
     controls.exitButton.addEventListener('click', () => {
+        settings.wideReaderActive = false
+        flushSettings()
         unmountWideReader()
         showWideReaderEntry()
     })
@@ -238,6 +249,7 @@ function bindReaderEvents(
     let wheelTotal = 0
     let wheelLockedUntil = 0
     const onWheel = (event: WheelEvent) => {
+        if (!shouldTurnPageForWheel(event.target)) return
         event.preventDefault()
         const dominantDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
         wheelTotal += dominantDelta
@@ -373,7 +385,7 @@ function openDirectory(current: WideReaderRuntime): void {
     const heading = createElement('div', 'fqa-wide-panel-heading')
     const headingText = document.createElement('strong')
     headingText.textContent = `目录 · ${chapters.length} 章`
-    const closeButton = createButton('关闭', '关闭目录')
+    const closeButton = createCloseButton('关闭目录')
     heading.append(headingText, closeButton)
     const search = document.createElement('input')
     search.className = 'fqa-wide-search'
@@ -438,23 +450,58 @@ function openReaderSettings(current: WideReaderRuntime): void {
     const heading = createElement('div', 'fqa-wide-panel-heading')
     const headingText = document.createElement('strong')
     headingText.textContent = '显示设置'
-    const closeButton = createButton('关闭', '关闭显示设置')
+    const closeButton = createCloseButton('关闭显示设置')
     heading.append(headingText, closeButton)
     panel.append(heading)
 
     const themes = createElement('div', 'fqa-wide-themes')
-    ;(['light', 'dark', 'system'] as const).forEach((theme) => {
-        const label = theme === 'light' ? '浅色' : theme === 'dark' ? '深色' : '跟随系统'
+    const themeOptions: Array<{ value: WideReaderTheme; label: string }> = [
+        { value: 'system', label: '跟随系统' },
+        { value: 'light', label: '明亮' },
+        { value: 'paper', label: '羊皮纸' },
+        { value: 'green', label: '护眼绿' },
+        { value: 'gray', label: '雾灰' },
+        { value: 'dark', label: '深夜' },
+    ]
+    themeOptions.forEach(({ value: theme, label }) => {
         const button = createButton(label, `切换为${label}`)
+        button.dataset.theme = theme
         button.setAttribute('aria-pressed', String(settings.wideReaderTheme === theme))
         button.addEventListener('click', () => {
             settings.wideReaderTheme = theme
+            flushSettings()
             current.root.dataset.theme = theme
             themes.querySelectorAll('button').forEach((item) => item.setAttribute('aria-pressed', String(item === button)))
         })
         themes.append(button)
     })
-    panel.append(themes)
+    const fonts = createElement('div', 'fqa-wide-fonts')
+    const fontLabel = createElement('span', 'fqa-wide-section-label')
+    fontLabel.textContent = '正文字体'
+    const fontSelect = document.createElement('select')
+    fontSelect.className = 'fqa-wide-select'
+    const fontOptions: Array<{ value: WideReaderFont; label: string }> = [
+        { value: 'system', label: '跟随助手设置' },
+        { value: 'sans', label: '现代黑体' },
+        { value: 'serif', label: '系统衬线' },
+        { value: 'song', label: '宋体' },
+        { value: 'kai', label: '楷体' },
+        { value: 'fangsong', label: '仿宋' },
+    ]
+    fontOptions.forEach(({ value, label }) => {
+        const option = document.createElement('option')
+        option.value = value
+        option.textContent = label
+        option.selected = settings.wideReaderFont === value
+        fontSelect.append(option)
+    })
+    fontSelect.addEventListener('change', () => {
+        settings.wideReaderFont = fontSelect.value as WideReaderFont
+        flushSettings()
+        reflowAfterSettings(current)
+    })
+    fonts.append(fontLabel, fontSelect)
+    panel.append(themes, fonts)
     panel.append(
         createRangeField('字号', 16, 24, 1, () => settings.wideReaderFontSize, (value) => {
             settings.wideReaderFontSize = value
@@ -523,7 +570,20 @@ function applyReaderVariables(root: HTMLElement): void {
     root.style.setProperty('--fqa-wide-line-height', String(settings.wideReaderLineHeight))
     root.style.setProperty('--fqa-wide-gap', `${settings.wideReaderColumnGap}px`)
     root.style.setProperty('--fqa-wide-margin', `${settings.wideReaderPageMargin}px`)
-    root.style.setProperty('--fqa-wide-font-family', settings.readerFont || "'Microsoft YaHei', sans-serif")
+    root.style.setProperty('--fqa-wide-font-family', resolveReaderFont())
+}
+
+/** 将内置字体方案转换成跨平台 CSS 字体栈。 */
+function resolveReaderFont(): string {
+    const fonts: Record<WideReaderFont, string> = {
+        system: settings.readerFont || "'Microsoft YaHei', system-ui, sans-serif",
+        sans: "'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif",
+        serif: "'Noto Serif SC', 'Source Han Serif SC', serif",
+        song: "SimSun, 'Songti SC', 'Noto Serif SC', serif",
+        kai: "KaiTi, STKaiti, 'Kaiti SC', serif",
+        fangsong: "FangSong, STFangsong, 'Fangsong SC', serif",
+    }
+    return fonts[settings.wideReaderFont]
 }
 
 /** 保存当前视口内最靠左的语义内容块。 */
@@ -577,6 +637,106 @@ function createButton(text: string, label: string): HTMLButtonElement {
     return button
 }
 
+/** 创建与面板风格一致的圆形关闭按钮。 */
+function createCloseButton(label: string): HTMLButtonElement {
+    const button = createButton('×', label)
+    button.className = 'fqa-wide-close'
+    return button
+}
+
+/** 创建分页顶栏账户入口，登录时显示头像，游客显示通用图标。 */
+function createAccountButton(): HTMLButtonElement {
+    const button = createButton('', '打开账户与助手菜单')
+    button.className = 'fqa-wide-account-button'
+    const avatar = userState.userInfo?.avatar
+    if (avatar) {
+        const image = document.createElement('img')
+        image.src = avatar
+        image.alt = ''
+        button.append(image)
+    }
+    const name = document.createElement('span')
+    name.textContent = userState.userInfo?.username || '账户'
+    button.append(name)
+    return button
+}
+
+/** 打开分页模式专用账户菜单，保留书架、会员、退出和助手设置入口。 */
+async function openAccountMenu(current: WideReaderRuntime, anchor: HTMLElement): Promise<void> {
+    current.root.querySelector('.fqa-wide-account-menu')?.remove()
+    const menu = createElement('div', 'fqa-wide-account-menu')
+    menu.setAttribute('role', 'menu')
+    if (userState.isLogin && userState.userInfo) {
+        const summary = createElement('div', 'fqa-wide-account-summary')
+        summary.textContent = `${userState.userInfo.username} · 正在读取统计…`
+        menu.append(summary)
+        appendAccountLink(menu, '我的书架', '/bookshelf')
+        appendAccountAction(menu, '兑换会员', () => triggerNativeUserAction('兑换会员'))
+        appendAccountAction(menu, '退出登录', () => triggerNativeUserAction('退出登录'))
+        try {
+            const detail = await getDetailedUserInfo()
+            if (detail && menu.isConnected) {
+                summary.textContent = `${detail.username} · 阅读 ${detail.read_book_num ?? 0} 本 · ${formatReadingTime(detail.read_book_time ?? 0n)}`
+            }
+        } catch (error) {
+            console.warn('[fqa:分页菜单] 阅读统计加载失败', error)
+            summary.textContent = userState.userInfo.username
+        }
+    } else {
+        appendAccountLink(menu, '登录 / 注册', '/login')
+    }
+    const settingsButton = createButton('助手设置', '打开助手设置')
+    settingsButton.setAttribute('role', 'menuitem')
+    settingsButton.addEventListener('click', () => {
+        menu.remove()
+        openSettings()
+    })
+    menu.append(settingsButton)
+    anchor.insertAdjacentElement('afterend', menu)
+}
+
+/** 将毫秒阅读时长格式化为紧凑的小时分钟文本。 */
+function formatReadingTime(milliseconds: bigint): string {
+    const totalMinutes = milliseconds / 60_000n
+    return `${totalMinutes / 60n} 时 ${totalMinutes % 60n} 分`
+}
+
+/** 向账户菜单加入一个站内导航项。 */
+function appendAccountLink(menu: HTMLElement, label: string, href: string): void {
+    const link = document.createElement('a')
+    link.href = href
+    link.textContent = label
+    link.setAttribute('role', 'menuitem')
+    menu.append(link)
+}
+
+/** 向账户菜单加入一个转发至原站行为的按钮。 */
+function appendAccountAction(menu: HTMLElement, label: string, action: () => Promise<void>): void {
+    const button = createButton(label, label)
+    button.setAttribute('role', 'menuitem')
+    button.addEventListener('click', () => void action())
+    menu.append(button)
+}
+
+/**
+ * 唤起原站头像菜单并点击指定项目。
+ * 兑换会员和退出登录由番茄自身事件处理，避免脚本猜测接口或登录地址。
+ */
+async function triggerNativeUserAction(label: string): Promise<void> {
+    const findAction = (): HTMLElement | null => [...document.querySelectorAll<HTMLElement>('a, button, [role="menuitem"]')]
+        .find((element) => !element.closest(`#${ROOT_ID}`) && element.textContent?.trim() === label) ?? null
+    let action = findAction()
+    if (!action) {
+        const avatar = document.querySelector<HTMLElement>('.slogin-user-avatar, [class*="user-avatar"]')
+        avatar?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))
+        avatar?.click()
+        await new Promise<void>((resolve) => window.setTimeout(resolve, 120))
+        action = findAction()
+    }
+    if (action) action.click()
+    else console.warn(`[fqa:分页菜单] 未找到原站“${label}”入口`)
+}
+
 /** 在原网页右侧创建重新进入分页阅读的固定入口。 */
 function showWideReaderEntry(): void {
     if (document.getElementById(ENTRY_ID) || !settings.wideReaderEnabled || !lastSnapshot || lastSnapshot.comic) return
@@ -584,6 +744,8 @@ function showWideReaderEntry(): void {
     const button = createButton('分页阅读', '重新进入沉浸式分页阅读')
     button.id = ENTRY_ID
     button.addEventListener('click', () => {
+        settings.wideReaderActive = true
+        flushSettings()
         if (lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot)
     })
     document.body.append(button)
@@ -615,6 +777,38 @@ watch(
             removeWideReaderEntry()
             unmountWideReader()
         }
-        else if (lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot)
+        else if (settings.wideReaderActive && lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot)
+        else showWideReaderEntry()
+    },
+)
+
+// 用户在助手设置中恢复“当前进入分页”时应立即挂载，无需刷新页面。
+watch(
+    () => settings.wideReaderActive,
+    (active) => {
+        if (!active) {
+            unmountWideReader()
+            showWideReaderEntry()
+        } else if (settings.wideReaderEnabled && lastSnapshot && !lastSnapshot.comic) {
+            mountWideReader(lastSnapshot)
+        }
+    },
+)
+
+// 助手设置页修改配色或排版时，已打开的分页层应即时刷新并保持当前位置。
+watch(
+    () => [
+        settings.wideReaderTheme,
+        settings.wideReaderFont,
+        settings.readerFont,
+        settings.wideReaderFontSize,
+        settings.wideReaderLineHeight,
+        settings.wideReaderColumnGap,
+        settings.wideReaderPageMargin,
+    ],
+    () => {
+        if (!runtime) return
+        runtime.root.dataset.theme = settings.wideReaderTheme
+        reflowAfterSettings(runtime)
     },
 )

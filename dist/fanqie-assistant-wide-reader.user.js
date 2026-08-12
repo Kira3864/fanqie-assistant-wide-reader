@@ -1,13 +1,15 @@
 // ==UserScript==
 // @name         番茄小说助手・宽屏阅读版
 // @namespace    https://github.com/Kira3864/fanqie-assistant-wide-reader
-// @version      0.1.1
+// @version      0.2.0
 // @author       naiyQAQ, Kira3864
-// @description  保留番茄小说助手原有功能，增加沉浸式单/双栏分页阅读、目录、主题和阅读位置保存。
+// @description  参考 GreasyFork 与开源项目实现的番茄小说 Userscript，提供正文增强和沉浸式宽屏分页阅读。
 // @license      GPLv3
 // @icon         data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCiAgICA8cGF0aA0KICAgICAgICBkPSJNMjMuMzExNSAxSDYuNjg4NTNDMy41NDY4NCAxIDEgMy41NDY4NCAxIDYuNjg4NTNWMjMuMzExNUMxIDI2LjQ1MzIgMy41NDY4NCAyOSA2LjY4ODUzIDI5SDIzLjMxMTVDMjYuNDUzMiAyOSAyOSAyNi40NTMyIDI5IDIzLjMxMTVWNi42ODg1M0MyOSAzLjU0Njg0IDI2LjQ1MzIgMSAyMy4zMTE1IDFaIg0KICAgICAgICBmaWxsPSJ3aGl0ZSI+PC9wYXRoPg0KICAgIDxwYXRoDQogICAgICAgIGQ9Ik0yMy4zMTE1IDAuNzVINi42ODg1M0MzLjQwODc3IDAuNzUgMC43NSAzLjQwODc3IDAuNzUgNi42ODg1M1YyMy4zMTE1QzAuNzUgMjYuNTkxMiAzLjQwODc3IDI5LjI1IDYuNjg4NTMgMjkuMjVIMjMuMzExNUMyNi41OTEyIDI5LjI1IDI5LjI1IDI2LjU5MTIgMjkuMjUgMjMuMzExNVY2LjY4ODUzQzI5LjI1IDMuNDA4NzcgMjYuNTkxMiAwLjc1IDIzLjMxMTUgMC43NVoiDQogICAgICAgIHN0cm9rZT0iYmxhY2siIHN0cm9rZS1vcGFjaXR5PSIwLjA4IiBzdHJva2Utd2lkdGg9IjAuNSI+PC9wYXRoPg0KICAgIDxtYXNrIGlkPSJtYXNrMF80NzBfNDgzNjQiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjEiIHk9IjEiIHdpZHRoPSIyOCIgaGVpZ2h0PSIyOCI+DQogICAgICAgIDxwYXRoDQogICAgICAgICAgICBkPSJNMjMuMzExNSAxSDYuNjg4NTNDMy41NDY4NCAxIDEgMy41NDY4NCAxIDYuNjg4NTNWMjMuMzExNUMxIDI2LjQ1MzIgMy41NDY4NCAyOSA2LjY4ODUzIDI5SDIzLjMxMTVDMjYuNDUzMiAyOSAyOSAyNi40NTMyIDI5IDIzLjMxMTVWNi42ODg1M0MyOSAzLjU0Njg0IDI2LjQ1MzIgMSAyMy4zMTE1IDFaIg0KICAgICAgICAgICAgZmlsbD0id2hpdGUiPjwvcGF0aD4NCiAgICA8L21hc2s+DQogICAgPGcgbWFzaz0idXJsKCNtYXNrMF80NzBfNDgzNjQpIj4NCiAgICAgICAgPHBhdGgNCiAgICAgICAgICAgIGQ9Ik0yMy4zMTE1IDFINi42ODg1M0MzLjU0Njg0IDEgMSAzLjU0Njg0IDEgNi42ODg1M1YyMy4zMTE1QzEgMjYuNDUzMiAzLjU0Njg0IDI5IDYuNjg4NTMgMjlIMjMuMzExNUMyNi40NTMyIDI5IDI5IDI2LjQ1MzIgMjkgMjMuMzExNVY2LjY4ODUzQzI5IDMuNTQ2ODQgMjYuNDUzMiAxIDIzLjMxMTUgMVoiDQogICAgICAgICAgICBmaWxsPSJ3aGl0ZSI+PC9wYXRoPg0KICAgICAgICA8cGF0aA0KICAgICAgICAgICAgZD0iTTE1LjAwMDggNDguNjY0MkMyNS40MDE3IDQ4LjY2NDIgMzMuODMzNCA0MC4yMzI2IDMzLjgzMzQgMjkuODMxNkMzMy44MzM0IDE5LjQzMDcgMjUuNDAxNyAxMC45OTkgMTUuMDAwOCAxMC45OTlDNC41OTk4NSAxMC45OTkgLTMuODMxNzkgMTkuNDMwNyAtMy44MzE3OSAyOS44MzE2Qy0zLjgzMTc5IDQwLjIzMjYgNC41OTk4NSA0OC42NjQyIDE1LjAwMDggNDguNjY0MloiDQogICAgICAgICAgICBmaWxsPSJ1cmwoI3BhaW50MF9yYWRpYWxfNDcwXzQ4MzY0KSI+PC9wYXRoPg0KICAgICAgICA8cGF0aCBkPSJNMjMuMjY4OCAxVjcuMjEyOTRMMjAuNjY2MyA1LjcxNDM3TDE4LjA2NzQgNy4yMTI5NFYxSDIzLjI2ODhaIiBmaWxsPSIjRkY1RjAwIj48L3BhdGg+DQogICAgICAgIDxwYXRoDQogICAgICAgICAgICBkPSJNMTUuMTM0MyAxOC44ODFDMTUuMTM0MyAxOC44ODEgMTYuMTAxNCAxNy41NTEzIDE2LjEwMTQgMTYuNDA2NUMxNi4xMDE0IDE1LjI2MTcgMTUuNjY3NiAxNC43MzczIDE1LjEzNDMgMTQuNzM3M0MxNC42MDEgMTQuNzM3MyAxNC4xNjczIDE1LjI2MzUgMTQuMTY3MyAxNi40MDY1QzE0LjE2NzMgMTcuNTQ5NiAxNS4xMzQzIDE4Ljg4MSAxNS4xMzQzIDE4Ljg4MVoiDQogICAgICAgICAgICBmaWxsPSJ3aGl0ZSI+PC9wYXRoPg0KICAgICAgICA8cGF0aA0KICAgICAgICAgICAgZD0iTTcuNjI3MjQgMjIuNjU4NUM4Ljc3MjA1IDIyLjY1ODUgMTAuMTAxNyAyMy42MjU2IDEwLjEwMTcgMjMuNjI1NkMxMC4xMDE3IDIzLjYyNTYgOC43NzAyNyAyNC41OTI2IDcuNjI3MjQgMjQuNTkyNkM2LjQ4NDIgMjQuNTkyNiA1Ljk1ODAxIDI0LjE1ODkgNS45NTgwMSAyMy42MjU2QzUuOTU4MDEgMjMuMDkyMyA2LjQ4MjQyIDIyLjY1ODUgNy42MjcyNCAyMi42NTg1WiINCiAgICAgICAgICAgIGZpbGw9IndoaXRlIj48L3BhdGg+DQogICAgICAgIDxwYXRoDQogICAgICAgICAgICBkPSJNMjIuNjM5NiAyNC41OTI2QzIxLjQ5NDggMjQuNTkyNiAyMC4xNjUxIDIzLjYyNTYgMjAuMTY1MSAyMy42MjU2QzIwLjE2NTEgMjMuNjI1NiAyMS40OTY2IDIyLjY1ODUgMjIuNjM5NiAyMi42NTg1QzIzLjc4MjYgMjIuNjU4NSAyNC4zMDg4IDIzLjA5MjMgMjQuMzA4OCAyMy42MjU2QzI0LjMwODggMjQuMTU4OSAyMy43ODQ0IDI0LjU5MjYgMjIuNjM5NiAyNC41OTI2WiINCiAgICAgICAgICAgIGZpbGw9IndoaXRlIj48L3BhdGg+DQogICAgICAgIDxwYXRoDQogICAgICAgICAgICBkPSJNMTAuNDU1NSAxOC4zMTM5QzExLjI2NDMgMTkuMTIyNyAxMS41MjIxIDIwLjc0NzUgMTEuNTIyMSAyMC43NDc1QzExLjUyMjEgMjAuNzQ3NSA5Ljg5NzMyIDIwLjQ4OTcgOS4wODg0OCAxOS42ODA5QzguMjc5NjQgMTguODcyMSA4LjIxMzg3IDE4LjE5NDggOC41OTI1MSAxNy44MTYxQzguOTcxMTUgMTcuNDM3NSA5LjY0NjY2IDE3LjUwMzMgMTAuNDU3MyAxOC4zMTIxTDEwLjQ1NTUgMTguMzEzOVoiDQogICAgICAgICAgICBmaWxsPSJ3aGl0ZSI+PC9wYXRoPg0KICAgICAgICA8cGF0aA0KICAgICAgICAgICAgZD0iTTE4Ljc0NjUgMjAuNzQ3NkMxOC43NDY1IDIwLjc0NzYgMTkuMDA0MyAxOS4xMjI4IDE5LjgxMzEgMTguMzE0TDE5LjgxMTMgMTguMzEyMkMyMC42MjIgMTcuNTAzMyAyMS4yOTkzIDE3LjQzOTMgMjEuNjc2MSAxNy44MTYyQzIyLjA1NDggMTguMTk0OSAyMS45ODkgMTguODcyMSAyMS4xODAyIDE5LjY4MUMyMC4zNzEzIDIwLjQ4OTggMTguNzQ2NSAyMC43NDc2IDE4Ljc0NjUgMjAuNzQ3NloiDQogICAgICAgICAgICBmaWxsPSJ3aGl0ZSI+PC9wYXRoPg0KICAgIDwvZz4NCiAgICA8ZGVmcz4NCiAgICAgICAgPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDBfcmFkaWFsXzQ3MF80ODM2NCIgY3g9IjAiIGN5PSIwIiByPSIxIg0KICAgICAgICAgICAgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiDQogICAgICAgICAgICBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKDE1LjAwMDggMjkuODMxNikgc2NhbGUoMTguODMyNikiPg0KICAgICAgICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI0NDMDUwMCI+PC9zdG9wPg0KICAgICAgICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjRkY1RjAwIj48L3N0b3A+DQogICAgICAgIDwvcmFkaWFsR3JhZGllbnQ+DQogICAgPC9kZWZzPg0KPC9zdmc+
 // @homepage     https://github.com/Kira3864/fanqie-assistant-wide-reader
 // @supportURL   https://github.com/Kira3864/fanqie-assistant-wide-reader/issues
+// @downloadURL  https://raw.githubusercontent.com/Kira3864/fanqie-assistant-wide-reader/main/dist/fanqie-assistant-wide-reader.user.js
+// @updateURL    https://raw.githubusercontent.com/Kira3864/fanqie-assistant-wide-reader/main/dist/fanqie-assistant-wide-reader.user.js
 // @match        *://*.fanqienovel.com/*
 // @require      https://registry.npmmirror.com/vue/3.5.40/files/dist/vue.global.prod.js
 // @require      https://registry.npmmirror.com/moment/2.30.1/files/min/moment.min.js
@@ -112,6 +114,28 @@
   function del(key) {
     GM_deleteValue(key);
   }
+  const WIDE_READER_THEMES = [
+    "system",
+    "light",
+    "paper",
+    "green",
+    "gray",
+    "dark"
+  ];
+  const WIDE_READER_FONTS = [
+    "system",
+    "sans",
+    "serif",
+    "song",
+    "kai",
+    "fangsong"
+  ];
+  function isWideReaderTheme(value) {
+    return typeof value === "string" && WIDE_READER_THEMES.includes(value);
+  }
+  function isWideReaderFont(value) {
+    return typeof value === "string" && WIDE_READER_FONTS.includes(value);
+  }
   const STORE_KEY$1 = "settings";
   const DEFAULT_SETTINGS = {
     decryptFont: true,
@@ -121,7 +145,9 @@
     customCssEnabled: false,
     customCss: "",
     wideReaderEnabled: true,
+    wideReaderActive: true,
     wideReaderTheme: "system",
+    wideReaderFont: "system",
     wideReaderFontSize: 18,
     wideReaderLineHeight: 1.9,
     wideReaderColumnGap: 64,
@@ -148,8 +174,11 @@
     if (s.apiPreference !== "app" && s.apiPreference !== "redcandle") {
       s.apiPreference = DEFAULT_SETTINGS.apiPreference;
     }
-    if (!["system", "light", "dark"].includes(s.wideReaderTheme)) {
+    if (!isWideReaderTheme(s.wideReaderTheme)) {
       s.wideReaderTheme = DEFAULT_SETTINGS.wideReaderTheme;
+    }
+    if (!isWideReaderFont(s.wideReaderFont)) {
+      s.wideReaderFont = DEFAULT_SETTINGS.wideReaderFont;
     }
     s.wideReaderFontSize = clamp$1(s.wideReaderFontSize, 16, 24, DEFAULT_SETTINGS.wideReaderFontSize);
     s.wideReaderLineHeight = clamp$1(s.wideReaderLineHeight, 1.4, 2.6, DEFAULT_SETTINGS.wideReaderLineHeight);
@@ -2122,846 +2151,13 @@
       }
     });
   }
-  const wideReaderCss = "/*\n * 番茄小说助手的沉浸式分页阅读样式。\n * 分页层规则限定在 #fqa-wide-reader-root，恢复入口使用唯一 id，避免污染其他页面。\n */\n#fqa-wide-reader-root {\n    --fqa-wide-bg: #f6f3ed;\n    --fqa-wide-panel: #faf8f3;\n    --fqa-wide-text: #292824;\n    --fqa-wide-muted: #716e67;\n    --fqa-wide-line: rgba(41, 40, 36, 0.11);\n    --fqa-wide-accent: #a94b3b;\n    position: fixed;\n    inset: 0;\n    z-index: 2147482900;\n    overflow: hidden;\n    background: var(--fqa-wide-bg);\n    color: var(--fqa-wide-text);\n    color-scheme: light;\n    font-family: Inter, system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;\n}\n\n#fqa-wide-reader-root[data-loading='true']::after {\n    content: '正在加载下一章…';\n    position: absolute;\n    z-index: 7;\n    inset: 0;\n    display: grid;\n    place-items: center;\n    background: color-mix(in srgb, var(--fqa-wide-bg) 88%, transparent);\n    color: var(--fqa-wide-muted);\n    font-size: 14px;\n    letter-spacing: 0.08em;\n    cursor: wait;\n}\n\n#fqa-wide-reader-entry {\n    position: fixed;\n    z-index: 2147482800;\n    top: 50%;\n    right: 18px;\n    min-width: 48px;\n    padding: 12px 9px;\n    border: 1px solid rgba(31, 35, 41, 0.1);\n    border-radius: 10px;\n    background: #fff;\n    box-shadow: 0 6px 20px rgba(31, 35, 41, 0.12);\n    color: #292824;\n    font: 13px/1.35 system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;\n    writing-mode: vertical-rl;\n    cursor: pointer;\n    translate: 0 -50%;\n}\n\n#fqa-wide-reader-entry:hover,\n#fqa-wide-reader-entry:focus-visible {\n    border-color: #a94b3b;\n    outline: 0;\n    color: #a94b3b;\n}\n\n#fqa-wide-reader-root[data-theme='dark'] {\n    --fqa-wide-bg: #11110f;\n    --fqa-wide-panel: #191916;\n    --fqa-wide-text: #d4d1ca;\n    --fqa-wide-muted: #969189;\n    --fqa-wide-line: rgba(255, 255, 255, 0.1);\n    --fqa-wide-accent: #c66a58;\n    color-scheme: dark;\n}\n\n@media (prefers-color-scheme: dark) {\n    #fqa-wide-reader-root[data-theme='system'] {\n        --fqa-wide-bg: #11110f;\n        --fqa-wide-panel: #191916;\n        --fqa-wide-text: #d4d1ca;\n        --fqa-wide-muted: #969189;\n        --fqa-wide-line: rgba(255, 255, 255, 0.1);\n        --fqa-wide-accent: #c66a58;\n        color-scheme: dark;\n    }\n}\n\n#fqa-wide-reader-root,\n#fqa-wide-reader-root * {\n    box-sizing: border-box;\n}\n\n#fqa-wide-reader-root button,\n#fqa-wide-reader-root input {\n    color: inherit;\n    font: inherit;\n}\n\n.fqa-wide-frame {\n    position: absolute;\n    top: 58px;\n    right: var(--fqa-wide-margin);\n    bottom: 52px;\n    left: var(--fqa-wide-margin);\n    overflow: hidden;\n    scrollbar-width: none;\n}\n\n.fqa-wide-frame::-webkit-scrollbar {\n    display: none;\n}\n\n.fqa-wide-article {\n    width: 100%;\n    height: 100%;\n    overflow: visible;\n    column-width: calc((100vw - var(--fqa-wide-margin) * 2 - var(--fqa-wide-gap)) / 2);\n    column-gap: var(--fqa-wide-gap);\n    column-fill: auto;\n    column-rule: 1px solid var(--fqa-wide-line);\n    font-family: var(--fqa-wide-font-family, 'Microsoft YaHei', sans-serif);\n    font-size: var(--fqa-wide-font-size);\n    line-height: var(--fqa-wide-line-height);\n    letter-spacing: 0;\n    text-align: justify;\n    text-justify: inter-ideograph;\n}\n\n.fqa-wide-article h1 {\n    margin: 0 0 1.45em;\n    break-after: avoid;\n    font-size: 1.28em;\n    font-weight: 600;\n    line-height: 1.4;\n}\n\n.fqa-wide-article p {\n    margin: 0 0 0.36em;\n    text-indent: 2em;\n    orphans: 2;\n    widows: 2;\n}\n\n.fqa-wide-article img,\n.fqa-wide-article figure {\n    max-width: 100%;\n    max-height: calc(100% - 24px);\n    break-inside: avoid;\n    object-fit: contain;\n}\n\n.fqa-wide-edge {\n    position: absolute;\n    z-index: 3;\n    top: 58px;\n    bottom: 52px;\n    width: max(44px, calc(var(--fqa-wide-margin) - 12px));\n    border: 0;\n    background: transparent;\n    color: var(--fqa-wide-muted);\n    cursor: pointer;\n    opacity: 0;\n    transition: opacity 0.14s, background-color 0.14s;\n}\n\n.fqa-wide-edge:hover,\n.fqa-wide-edge:focus-visible {\n    opacity: 1;\n    outline: 0;\n    background: color-mix(in srgb, var(--fqa-wide-text) 5%, transparent);\n}\n\n.fqa-wide-edge-left { left: 0; }\n.fqa-wide-edge-right { right: 0; }\n\n.fqa-wide-top-sensor,\n.fqa-wide-bottom-sensor {\n    position: absolute;\n    z-index: 4;\n    right: 0;\n    left: 0;\n    height: 30px;\n}\n\n.fqa-wide-top-sensor { top: 0; }\n.fqa-wide-bottom-sensor { bottom: 0; }\n\n.fqa-wide-controls {\n    position: absolute;\n    z-index: 5;\n    right: 16px;\n    left: 16px;\n    display: flex;\n    align-items: center;\n    min-height: 42px;\n    padding: 4px 8px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 7px;\n    background: color-mix(in srgb, var(--fqa-wide-panel) 96%, transparent);\n    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);\n    opacity: 0;\n    transition: opacity 0.14s, translate 0.14s;\n}\n\n.fqa-wide-top-controls { top: 12px; gap: 4px; translate: 0 -8px; }\n.fqa-wide-bottom-controls { bottom: 12px; justify-content: space-between; translate: 0 8px; }\n\n.fqa-wide-top-sensor:hover + .fqa-wide-top-controls,\n.fqa-wide-top-controls:hover,\n.fqa-wide-top-controls:focus-within,\n.fqa-wide-bottom-sensor:hover + .fqa-wide-bottom-controls,\n.fqa-wide-bottom-controls:hover,\n.fqa-wide-bottom-controls:focus-within {\n    opacity: 1;\n    translate: 0;\n}\n\n.fqa-wide-controls button {\n    min-height: 34px;\n    padding: 6px 10px;\n    border: 0;\n    border-radius: 5px;\n    background: transparent;\n    cursor: pointer;\n}\n\n.fqa-wide-controls button:hover,\n.fqa-wide-controls button:focus-visible {\n    outline: 0;\n    background: color-mix(in srgb, var(--fqa-wide-text) 7%, transparent);\n}\n\n.fqa-wide-title {\n    min-width: 0;\n    margin-left: 6px;\n    overflow: hidden;\n    color: var(--fqa-wide-muted);\n    font-size: 13px;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.fqa-wide-exit { margin-left: auto; }\n\n.fqa-wide-indicator {\n    position: absolute;\n    z-index: 2;\n    bottom: 17px;\n    left: 50%;\n    translate: -50%;\n    color: var(--fqa-wide-muted);\n    font-size: 12px;\n    font-variant-numeric: tabular-nums;\n}\n\n.fqa-wide-scrim {\n    position: absolute;\n    z-index: 8;\n    inset: 0;\n    background: rgba(0, 0, 0, 0.18);\n}\n\n.fqa-wide-drawer,\n.fqa-wide-settings {\n    height: 100%;\n    border-right: 1px solid var(--fqa-wide-line);\n    background: var(--fqa-wide-panel);\n    box-shadow: 16px 0 40px rgba(0, 0, 0, 0.12);\n}\n\n.fqa-wide-drawer {\n    display: flex;\n    flex-direction: column;\n    width: min(380px, 88vw);\n    padding: 18px 12px 12px;\n}\n\n.fqa-wide-panel-heading {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    margin-bottom: 14px;\n    padding: 0 6px;\n}\n\n.fqa-wide-search {\n    width: calc(100% - 12px);\n    min-height: 38px;\n    margin: 0 6px 12px;\n    padding: 0 10px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 5px;\n    background: transparent;\n}\n\n.fqa-wide-directory-list {\n    overflow: auto;\n    overscroll-behavior: contain;\n}\n\n.fqa-wide-directory-list a {\n    display: block;\n    overflow: hidden;\n    padding: 9px 10px;\n    border-bottom: 1px solid var(--fqa-wide-line);\n    color: var(--fqa-wide-text);\n    text-decoration: none;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.fqa-wide-directory-list a[aria-current='page'] {\n    padding-left: 8px;\n    border-left: 2px solid var(--fqa-wide-accent);\n    color: var(--fqa-wide-accent);\n}\n\n.fqa-wide-settings {\n    width: min(360px, 88vw);\n    padding: 18px;\n}\n\n.fqa-wide-field {\n    display: grid;\n    grid-template-columns: 90px 1fr 48px;\n    align-items: center;\n    gap: 8px;\n    margin: 15px 0;\n    font-size: 13px;\n}\n\n.fqa-wide-field input { width: 100%; accent-color: var(--fqa-wide-accent); }\n.fqa-wide-field output { color: var(--fqa-wide-muted); text-align: right; }\n\n.fqa-wide-themes {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    overflow: hidden;\n    margin-top: 12px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 5px;\n}\n\n.fqa-wide-themes button {\n    min-height: 34px;\n    border: 0;\n    border-right: 1px solid var(--fqa-wide-line);\n    background: transparent;\n    cursor: pointer;\n}\n\n.fqa-wide-themes button:last-child { border-right: 0; }\n.fqa-wide-themes button[aria-pressed='true'] { background: var(--fqa-wide-accent); color: #fff; }\n\n.fqa-wide-motion-next { animation: fqa-wide-next 0.15s ease-out; }\n.fqa-wide-motion-previous { animation: fqa-wide-previous 0.15s ease-out; }\n\n@keyframes fqa-wide-next {\n    from { opacity: 0.76; translate: 7px; }\n    to { opacity: 1; translate: 0; }\n}\n\n@keyframes fqa-wide-previous {\n    from { opacity: 0.76; translate: -7px; }\n    to { opacity: 1; translate: 0; }\n}\n\n@media (max-width: 919px) {\n    .fqa-wide-frame {\n        right: max(32px, min(var(--fqa-wide-margin), 8vw));\n        left: max(32px, min(var(--fqa-wide-margin), 8vw));\n    }\n\n    .fqa-wide-article {\n        column-width: calc(100vw - max(64px, min(var(--fqa-wide-margin) * 2, 16vw)));\n        column-rule: 0;\n    }\n}\n\n@media (prefers-reduced-motion: reduce) {\n    #fqa-wide-reader-root *,\n    #fqa-wide-reader-root *::before,\n    #fqa-wide-reader-root *::after {\n        transition-duration: 1ms !important;\n        animation-duration: 1ms !important;\n    }\n}\n";
+  const wideReaderCss = "/*\n * 番茄小说助手的沉浸式分页阅读样式。\n * 分页层规则限定在 #fqa-wide-reader-root，恢复入口使用唯一 id，避免污染其他页面。\n */\n#fqa-wide-reader-root {\n    --fqa-wide-bg: #f6f3ed;\n    --fqa-wide-panel: #faf8f3;\n    --fqa-wide-text: #292824;\n    --fqa-wide-muted: #716e67;\n    --fqa-wide-line: rgba(41, 40, 36, 0.11);\n    --fqa-wide-accent: #a94b3b;\n    position: fixed;\n    inset: 0;\n    z-index: 2147482900;\n    overflow: hidden;\n    background: var(--fqa-wide-bg);\n    color: var(--fqa-wide-text);\n    color-scheme: light;\n    font-family: Inter, system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;\n}\n\n#fqa-wide-reader-root[data-loading='true']::after {\n    content: '正在加载下一章…';\n    position: absolute;\n    z-index: 7;\n    inset: 0;\n    display: grid;\n    place-items: center;\n    background: color-mix(in srgb, var(--fqa-wide-bg) 88%, transparent);\n    color: var(--fqa-wide-muted);\n    font-size: 14px;\n    letter-spacing: 0.08em;\n    cursor: wait;\n}\n\n#fqa-wide-reader-entry {\n    position: fixed;\n    z-index: 2147482800;\n    top: 50%;\n    right: 18px;\n    min-width: 48px;\n    padding: 12px 9px;\n    border: 1px solid rgba(31, 35, 41, 0.1);\n    border-radius: 10px;\n    background: #fff;\n    box-shadow: 0 6px 20px rgba(31, 35, 41, 0.12);\n    color: #292824;\n    font: 13px/1.35 system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;\n    writing-mode: vertical-rl;\n    cursor: pointer;\n    translate: 0 -50%;\n}\n\n#fqa-wide-reader-entry:hover,\n#fqa-wide-reader-entry:focus-visible {\n    border-color: #a94b3b;\n    outline: 0;\n    color: #a94b3b;\n}\n\n#fqa-wide-reader-root[data-theme='dark'] {\n    --fqa-wide-bg: #11110f;\n    --fqa-wide-panel: #191916;\n    --fqa-wide-text: #d4d1ca;\n    --fqa-wide-muted: #969189;\n    --fqa-wide-line: rgba(255, 255, 255, 0.1);\n    --fqa-wide-accent: #c66a58;\n    color-scheme: dark;\n}\n\n#fqa-wide-reader-root[data-theme='paper'] {\n    --fqa-wide-bg: #e9dfc7;\n    --fqa-wide-panel: #f1e8d4;\n    --fqa-wide-text: #3d3428;\n    --fqa-wide-muted: #7b6d59;\n    --fqa-wide-line: rgba(86, 67, 43, 0.14);\n    --fqa-wide-accent: #9a5c32;\n}\n\n#fqa-wide-reader-root[data-theme='green'] {\n    --fqa-wide-bg: #dce8d5;\n    --fqa-wide-panel: #e7f0e1;\n    --fqa-wide-text: #29352a;\n    --fqa-wide-muted: #607060;\n    --fqa-wide-line: rgba(43, 73, 48, 0.13);\n    --fqa-wide-accent: #4f7655;\n}\n\n#fqa-wide-reader-root[data-theme='gray'] {\n    --fqa-wide-bg: #dfe2e5;\n    --fqa-wide-panel: #e9ebed;\n    --fqa-wide-text: #303438;\n    --fqa-wide-muted: #687078;\n    --fqa-wide-line: rgba(50, 58, 66, 0.13);\n    --fqa-wide-accent: #526f89;\n}\n\n@media (prefers-color-scheme: dark) {\n    #fqa-wide-reader-root[data-theme='system'] {\n        --fqa-wide-bg: #11110f;\n        --fqa-wide-panel: #191916;\n        --fqa-wide-text: #d4d1ca;\n        --fqa-wide-muted: #969189;\n        --fqa-wide-line: rgba(255, 255, 255, 0.1);\n        --fqa-wide-accent: #c66a58;\n        color-scheme: dark;\n    }\n}\n\n#fqa-wide-reader-root,\n#fqa-wide-reader-root * {\n    box-sizing: border-box;\n}\n\n#fqa-wide-reader-root button,\n#fqa-wide-reader-root input,\n#fqa-wide-reader-root select {\n    color: inherit;\n    font: inherit;\n}\n\n.fqa-wide-frame {\n    position: absolute;\n    top: 58px;\n    right: var(--fqa-wide-margin);\n    bottom: 52px;\n    left: var(--fqa-wide-margin);\n    overflow: hidden;\n    scrollbar-width: none;\n}\n\n.fqa-wide-frame::-webkit-scrollbar {\n    display: none;\n}\n\n.fqa-wide-article {\n    width: 100%;\n    height: 100%;\n    overflow: visible;\n    column-width: calc((100vw - var(--fqa-wide-margin) * 2 - var(--fqa-wide-gap)) / 2);\n    column-gap: var(--fqa-wide-gap);\n    column-fill: auto;\n    column-rule: 1px solid var(--fqa-wide-line);\n    font-family: var(--fqa-wide-font-family, 'Microsoft YaHei', sans-serif);\n    font-size: var(--fqa-wide-font-size);\n    line-height: var(--fqa-wide-line-height);\n    letter-spacing: 0;\n    text-align: justify;\n    text-justify: inter-ideograph;\n}\n\n.fqa-wide-article h1 {\n    margin: 0 0 1.45em;\n    break-after: avoid;\n    font-size: 1.28em;\n    font-weight: 600;\n    line-height: 1.4;\n}\n\n.fqa-wide-article p {\n    margin: 0 0 0.36em;\n    text-indent: 2em;\n    orphans: 2;\n    widows: 2;\n}\n\n.fqa-wide-article img,\n.fqa-wide-article figure {\n    max-width: 100%;\n    max-height: calc(100% - 24px);\n    break-inside: avoid;\n    object-fit: contain;\n}\n\n.fqa-wide-edge {\n    position: absolute;\n    z-index: 3;\n    top: 58px;\n    bottom: 52px;\n    width: max(44px, calc(var(--fqa-wide-margin) - 12px));\n    border: 0;\n    background: transparent;\n    color: var(--fqa-wide-muted);\n    cursor: pointer;\n    opacity: 0;\n    transition: opacity 0.14s, background-color 0.14s;\n}\n\n.fqa-wide-edge:hover,\n.fqa-wide-edge:focus-visible {\n    opacity: 1;\n    outline: 0;\n    background: color-mix(in srgb, var(--fqa-wide-text) 5%, transparent);\n}\n\n.fqa-wide-edge-left { left: 0; }\n.fqa-wide-edge-right { right: 0; }\n\n.fqa-wide-top-sensor,\n.fqa-wide-bottom-sensor {\n    position: absolute;\n    z-index: 4;\n    right: 0;\n    left: 0;\n    height: 30px;\n}\n\n.fqa-wide-top-sensor { top: 0; }\n.fqa-wide-bottom-sensor { bottom: 0; }\n\n.fqa-wide-controls {\n    position: absolute;\n    z-index: 5;\n    right: 16px;\n    left: 16px;\n    display: flex;\n    align-items: center;\n    min-height: 42px;\n    padding: 4px 8px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 7px;\n    background: color-mix(in srgb, var(--fqa-wide-panel) 96%, transparent);\n    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);\n    opacity: 0;\n    transition: opacity 0.14s, translate 0.14s;\n}\n\n.fqa-wide-top-controls { top: 12px; gap: 4px; translate: 0 -8px; }\n.fqa-wide-bottom-controls { bottom: 12px; justify-content: space-between; translate: 0 8px; }\n\n.fqa-wide-top-sensor:hover + .fqa-wide-top-controls,\n.fqa-wide-top-controls:hover,\n.fqa-wide-top-controls:focus-within,\n.fqa-wide-bottom-sensor:hover + .fqa-wide-bottom-controls,\n.fqa-wide-bottom-controls:hover,\n.fqa-wide-bottom-controls:focus-within {\n    opacity: 1;\n    translate: 0;\n}\n\n.fqa-wide-controls button {\n    min-height: 34px;\n    padding: 6px 10px;\n    border: 0;\n    border-radius: 5px;\n    background: transparent;\n    cursor: pointer;\n}\n\n.fqa-wide-controls button:hover,\n.fqa-wide-controls button:focus-visible {\n    outline: 0;\n    background: color-mix(in srgb, var(--fqa-wide-text) 7%, transparent);\n}\n\n.fqa-wide-title {\n    min-width: 0;\n    margin-left: 6px;\n    overflow: hidden;\n    color: var(--fqa-wide-muted);\n    font-size: 13px;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.fqa-wide-exit { margin-left: auto; }\n\n.fqa-wide-account-button {\n    display: inline-flex;\n    align-items: center;\n    gap: 7px;\n    max-width: 150px;\n}\n\n.fqa-wide-account-button img {\n    width: 24px;\n    height: 24px;\n    border-radius: 50%;\n    object-fit: cover;\n}\n\n.fqa-wide-account-button span {\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.fqa-wide-account-menu {\n    position: absolute;\n    z-index: 7;\n    top: 52px;\n    right: 98px;\n    display: grid;\n    min-width: 176px;\n    overflow: hidden;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 10px;\n    background: var(--fqa-wide-panel);\n    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);\n}\n\n.fqa-wide-account-menu a,\n.fqa-wide-account-menu button {\n    min-height: 40px;\n    padding: 9px 14px;\n    border: 0;\n    border-radius: 0;\n    background: transparent;\n    color: var(--fqa-wide-text);\n    text-align: left;\n    text-decoration: none;\n    cursor: pointer;\n}\n\n.fqa-wide-account-menu a:hover,\n.fqa-wide-account-menu button:hover {\n    background: color-mix(in srgb, var(--fqa-wide-text) 7%, transparent);\n}\n\n.fqa-wide-account-summary {\n    padding: 11px 14px;\n    border-bottom: 1px solid var(--fqa-wide-line);\n    color: var(--fqa-wide-muted);\n    font-size: 12px;\n}\n\n.fqa-wide-indicator {\n    position: absolute;\n    z-index: 2;\n    bottom: 17px;\n    left: 50%;\n    translate: -50%;\n    color: var(--fqa-wide-muted);\n    font-size: 12px;\n    font-variant-numeric: tabular-nums;\n}\n\n.fqa-wide-scrim {\n    position: absolute;\n    z-index: 8;\n    inset: 0;\n    background: rgba(0, 0, 0, 0.18);\n}\n\n.fqa-wide-drawer,\n.fqa-wide-settings {\n    height: 100%;\n    border-right: 1px solid var(--fqa-wide-line);\n    background: var(--fqa-wide-panel);\n    box-shadow: 16px 0 40px rgba(0, 0, 0, 0.12);\n}\n\n.fqa-wide-drawer {\n    display: flex;\n    flex-direction: column;\n    width: min(380px, 88vw);\n    padding: 18px 12px 12px;\n    min-height: 0;\n}\n\n.fqa-wide-panel-heading {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    margin-bottom: 14px;\n    padding: 0 6px;\n}\n\n.fqa-wide-close {\n    display: grid;\n    width: 32px;\n    min-width: 32px;\n    height: 32px;\n    padding: 0;\n    place-items: center;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 50%;\n    background: color-mix(in srgb, var(--fqa-wide-text) 4%, transparent);\n    color: var(--fqa-wide-muted);\n    font-size: 21px;\n    line-height: 1;\n    cursor: pointer;\n    transition: rotate 0.16s, color 0.16s, background-color 0.16s;\n}\n\n.fqa-wide-close:hover,\n.fqa-wide-close:focus-visible {\n    outline: 0;\n    rotate: 90deg;\n    background: color-mix(in srgb, var(--fqa-wide-accent) 12%, transparent);\n    color: var(--fqa-wide-accent);\n}\n\n.fqa-wide-search {\n    width: calc(100% - 12px);\n    min-height: 38px;\n    margin: 0 6px 12px;\n    padding: 0 10px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 5px;\n    background: transparent;\n}\n\n.fqa-wide-directory-list {\n    flex: 1;\n    min-height: 0;\n    overflow: auto;\n    overscroll-behavior: contain;\n    scrollbar-color: var(--fqa-wide-muted) transparent;\n}\n\n.fqa-wide-directory-list a {\n    display: block;\n    overflow: hidden;\n    padding: 9px 10px;\n    border-bottom: 1px solid var(--fqa-wide-line);\n    color: var(--fqa-wide-text);\n    text-decoration: none;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.fqa-wide-directory-list a[aria-current='page'] {\n    padding-left: 8px;\n    border-left: 2px solid var(--fqa-wide-accent);\n    color: var(--fqa-wide-accent);\n}\n\n.fqa-wide-settings {\n    width: min(360px, 88vw);\n    padding: 18px;\n}\n\n.fqa-wide-field {\n    display: grid;\n    grid-template-columns: 90px 1fr 48px;\n    align-items: center;\n    gap: 8px;\n    margin: 15px 0;\n    font-size: 13px;\n}\n\n.fqa-wide-field input { width: 100%; accent-color: var(--fqa-wide-accent); }\n.fqa-wide-field output { color: var(--fqa-wide-muted); text-align: right; }\n\n.fqa-wide-themes {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    gap: 7px;\n    margin-top: 12px;\n    border: 0;\n}\n\n.fqa-wide-themes button {\n    min-height: 34px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 7px;\n    background: var(--fqa-wide-panel);\n    cursor: pointer;\n}\n\n.fqa-wide-themes button[aria-pressed='true'] { background: var(--fqa-wide-accent); color: #fff; }\n\n.fqa-wide-themes button::before {\n    content: '';\n    display: inline-block;\n    width: 10px;\n    height: 10px;\n    margin-right: 6px;\n    border: 1px solid rgba(0, 0, 0, 0.14);\n    border-radius: 50%;\n    vertical-align: -1px;\n    background: #f6f3ed;\n}\n\n.fqa-wide-themes button[data-theme='paper']::before { background: #e9dfc7; }\n.fqa-wide-themes button[data-theme='green']::before { background: #dce8d5; }\n.fqa-wide-themes button[data-theme='gray']::before { background: #dfe2e5; }\n.fqa-wide-themes button[data-theme='dark']::before { background: #191916; }\n\n.fqa-wide-fonts {\n    display: grid;\n    grid-template-columns: 90px 1fr;\n    align-items: center;\n    gap: 8px;\n    margin: 18px 0 8px;\n    font-size: 13px;\n}\n\n.fqa-wide-section-label { color: var(--fqa-wide-text); }\n\n.fqa-wide-select {\n    min-height: 36px;\n    padding: 0 10px;\n    border: 1px solid var(--fqa-wide-line);\n    border-radius: 6px;\n    background: var(--fqa-wide-panel);\n}\n\n.fqa-wide-motion-next { animation: fqa-wide-next 0.15s ease-out; }\n.fqa-wide-motion-previous { animation: fqa-wide-previous 0.15s ease-out; }\n\n@keyframes fqa-wide-next {\n    from { opacity: 0.76; translate: 7px; }\n    to { opacity: 1; translate: 0; }\n}\n\n@keyframes fqa-wide-previous {\n    from { opacity: 0.76; translate: -7px; }\n    to { opacity: 1; translate: 0; }\n}\n\n@media (max-width: 919px) {\n    .fqa-wide-frame {\n        right: max(32px, min(var(--fqa-wide-margin), 8vw));\n        left: max(32px, min(var(--fqa-wide-margin), 8vw));\n    }\n\n    .fqa-wide-article {\n        column-width: calc(100vw - max(64px, min(var(--fqa-wide-margin) * 2, 16vw)));\n        column-rule: 0;\n    }\n}\n\n@media (prefers-reduced-motion: reduce) {\n    #fqa-wide-reader-root *,\n    #fqa-wide-reader-root *::before,\n    #fqa-wide-reader-root *::after {\n        transition-duration: 1ms !important;\n        animation-duration: 1ms !important;\n    }\n}\n";
   function createReaderChapterUrl(itemId) {
     return `/reader/${encodeURIComponent(itemId)}?enter_from=reader`;
   }
   function replaceReaderChapter(history, itemId) {
     history.replaceState(history.state, "", createReaderChapterUrl(itemId));
   }
-  const ROOT_ID = "fqa-wide-reader-root";
-  const ENTRY_ID = "fqa-wide-reader-entry";
-  const POSITION_PREFIX = "wide-reader-position:";
-  let runtime = null;
-  let lastSnapshot = null;
-  let styleInjected = false;
-  let previousDocumentOverflow = null;
-  function syncWideReader(snapshot) {
-    lastSnapshot = snapshot;
-    if (!settings$1.wideReaderEnabled || snapshot.comic) {
-      removeWideReaderEntry();
-      unmountWideReader();
-      return;
-    }
-    mountWideReader(snapshot);
-  }
-  function beginWideReaderTransition() {
-    if (!runtime) return;
-    runtime.root.dataset.loading = "true";
-    runtime.root.setAttribute("aria-busy", "true");
-    runtime.indicator.textContent = "正在加载章节…";
-  }
-  function failWideReaderTransition() {
-    if (!runtime) return;
-    runtime.root.removeAttribute("data-loading");
-    runtime.root.removeAttribute("aria-busy");
-    runtime.indicator.textContent = "章节加载失败，请重试";
-  }
-  function leaveWideReaderPage() {
-    lastSnapshot = null;
-    removeWideReaderEntry();
-    unmountWideReader();
-  }
-  function unmountWideReader() {
-    if (!runtime) return;
-    runtime.cleanup.forEach((dispose) => dispose());
-    runtime.root.remove();
-    runtime = null;
-    if (previousDocumentOverflow === null) document.documentElement.style.removeProperty("overflow");
-    else document.documentElement.style.overflow = previousDocumentOverflow;
-    previousDocumentOverflow = null;
-  }
-  function ensureWideReaderStyle() {
-    if (styleInjected) return;
-    GM_addStyle(wideReaderCss);
-    styleInjected = true;
-  }
-  function mountWideReader(snapshot) {
-    unmountWideReader();
-    removeWideReaderEntry();
-    ensureWideReaderStyle();
-    const root = document.createElement("main");
-    root.id = ROOT_ID;
-    root.dataset.theme = settings$1.wideReaderTheme;
-    root.setAttribute("aria-label", "沉浸式分页阅读器");
-    applyReaderVariables(root);
-    const topSensor = createElement("div", "fqa-wide-top-sensor");
-    const topControls = createElement("header", "fqa-wide-controls fqa-wide-top-controls");
-    const directoryButton = createButton("目录", "打开目录");
-    const settingsButton = createButton("显示", "打开显示设置");
-    const title = createElement("span", "fqa-wide-title");
-    title.textContent = snapshot.title;
-    const exitButton = createButton("退出分页", "退出沉浸式分页阅读");
-    exitButton.classList.add("fqa-wide-exit");
-    topControls.append(directoryButton, settingsButton, title, exitButton);
-    const leftButton = createButton("‹", "上一页");
-    leftButton.className = "fqa-wide-edge fqa-wide-edge-left";
-    const rightButton = createButton("›", "下一页");
-    rightButton.className = "fqa-wide-edge fqa-wide-edge-right";
-    const frame = createElement("div", "fqa-wide-frame");
-    const article = createElement("article", "fqa-wide-article");
-    article.setAttribute("aria-label", snapshot.title);
-    const heading = document.createElement("h1");
-    heading.textContent = snapshot.title;
-    heading.dataset.blockIndex = "0";
-    article.append(heading);
-    appendChapterContent(article, snapshot.source);
-    bindFootnoteInteraction(article);
-    frame.append(article);
-    const indicator = document.createElement("output");
-    indicator.className = "fqa-wide-indicator";
-    indicator.textContent = "1/1";
-    const bottomSensor = createElement("div", "fqa-wide-bottom-sensor");
-    const bottomControls = createElement("footer", "fqa-wide-controls fqa-wide-bottom-controls");
-    const previousChapterButton = createButton("‹ 上一章", "上一章");
-    const chapterStatus = createElement("span", "fqa-wide-title");
-    chapterStatus.textContent = snapshot.title;
-    const nextChapterButton = createButton("下一章 ›", "下一章");
-    bottomControls.append(previousChapterButton, chapterStatus, nextChapterButton);
-    root.append(
-      topSensor,
-      topControls,
-      leftButton,
-      frame,
-      rightButton,
-      indicator,
-      bottomSensor,
-      bottomControls
-    );
-    document.body.append(root);
-    previousDocumentOverflow = document.documentElement.style.overflow || null;
-    document.documentElement.style.overflow = "hidden";
-    const nextRuntime = {
-      root,
-      frame,
-      article,
-      indicator,
-      snapshot,
-      spread: 0,
-      layout: { columnsPerSpread: 2, totalSpreads: 1, spreadStep: 1 },
-      cleanup: []
-    };
-    runtime = nextRuntime;
-    bindReaderEvents(nextRuntime, {
-      directoryButton,
-      settingsButton,
-      exitButton,
-      leftButton,
-      rightButton,
-      previousChapterButton,
-      nextChapterButton
-    });
-    requestAnimationFrame(() => {
-      if (runtime !== nextRuntime) return;
-      measureAndRestore(nextRuntime);
-    });
-  }
-  function appendChapterContent(article, source) {
-    const fragment = document.createDocumentFragment();
-    const sourceArticle = source.querySelector(":scope > article");
-    const children = [...(sourceArticle ?? source).children];
-    children.forEach((child, index) => {
-      const clone = child.cloneNode(true);
-      clone.dataset.blockIndex = String(index + 1);
-      fragment.append(clone);
-    });
-    article.append(fragment);
-  }
-  function bindReaderEvents(current, controls) {
-    const turnPrevious = () => turnPage(current, "previous");
-    const turnNext = () => turnPage(current, "next");
-    controls.leftButton.addEventListener("click", turnPrevious);
-    controls.rightButton.addEventListener("click", turnNext);
-    controls.previousChapterButton.addEventListener("click", () => navigateChapter(current, "previous"));
-    controls.nextChapterButton.addEventListener("click", () => navigateChapter(current, "next"));
-    controls.directoryButton.addEventListener("click", () => openDirectory(current));
-    controls.settingsButton.addEventListener("click", () => openReaderSettings(current));
-    controls.exitButton.addEventListener("click", () => {
-      unmountWideReader();
-      showWideReaderEntry();
-    });
-    let wheelTotal = 0;
-    let wheelLockedUntil = 0;
-    const onWheel = (event) => {
-      event.preventDefault();
-      const dominantDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-      wheelTotal += dominantDelta;
-      const now = performance.now();
-      if (now < wheelLockedUntil || Math.abs(wheelTotal) < 80) return;
-      wheelLockedUntil = now + 420;
-      const direction = wheelTotal > 0 ? "next" : "previous";
-      wheelTotal = 0;
-      turnPage(current, direction);
-    };
-    current.root.addEventListener("wheel", onWheel, { passive: false });
-    const onKeyDown = (event) => {
-      if (event.defaultPrevented || isEditableTarget(event.target)) return;
-      if (event.key === "ArrowRight" || event.key === "PageDown") {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        turnPage(current, "next");
-      } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        turnPage(current, "previous");
-      }
-    };
-    window.addEventListener("keydown", onKeyDown, true);
-    const observer2 = new ResizeObserver(() => measureAndRestore(current, capturePosition(current)));
-    observer2.observe(current.frame);
-    observer2.observe(current.article);
-    current.cleanup.push(
-      () => controls.leftButton.removeEventListener("click", turnPrevious),
-      () => controls.rightButton.removeEventListener("click", turnNext),
-      () => current.root.removeEventListener("wheel", onWheel),
-      () => window.removeEventListener("keydown", onKeyDown, true),
-      () => observer2.disconnect()
-    );
-  }
-  function measureAndRestore(current, position) {
-    if (runtime !== current) return;
-    const layout = measureLayout(current.frame, current.article);
-    current.layout = layout;
-    const openAtEnd = sessionStorage.getItem("fqa-wide-reader-open-at-end") === current.snapshot.itemId;
-    if (openAtEnd) {
-      current.spread = layout.totalSpreads - 1;
-      sessionStorage.removeItem("fqa-wide-reader-open-at-end");
-      paintSpread(current);
-      return;
-    }
-    const saved = position ?? loadPosition(current.snapshot.itemId);
-    const target = saved ? current.article.querySelector(`[data-block-index="${saved.blockIndex}"]`) : null;
-    const targetSpread = target ? Math.floor(Math.max(0, target.offsetLeft) / Math.max(1, layout.spreadStep)) : current.spread;
-    current.spread = clamp(targetSpread, 0, layout.totalSpreads - 1);
-    paintSpread(current);
-  }
-  function measureLayout(frame, article) {
-    const columnsPerSpread = frame.clientWidth >= 920 ? 2 : 1;
-    const computed2 = getComputedStyle(article);
-    const gap = Number.parseFloat(computed2.columnGap) || 0;
-    const fallbackWidth = (frame.clientWidth - gap * (columnsPerSpread - 1)) / columnsPerSpread;
-    const columnWidth = Number.parseFloat(computed2.columnWidth) || fallbackWidth;
-    const columnStep = Math.max(1, columnWidth + gap);
-    const blocks = article.querySelectorAll("[data-block-index]");
-    const last = blocks[blocks.length - 1];
-    let extent = Math.max(frame.scrollWidth, article.scrollWidth, frame.clientWidth);
-    if (last) extent = Math.max(extent, last.offsetLeft + Math.max(1, last.offsetWidth));
-    const totalColumns = Math.max(1, Math.round((extent + gap * 0.25) / columnStep));
-    return {
-      columnsPerSpread,
-      totalSpreads: Math.max(1, Math.ceil(totalColumns / columnsPerSpread)),
-      spreadStep: columnsPerSpread * columnStep
-    };
-  }
-  function turnPage(current, direction) {
-    if (runtime !== current || current.root.querySelector(".fqa-wide-scrim")) return;
-    const delta = direction === "next" ? 1 : -1;
-    const candidate = current.spread + delta;
-    if (candidate < 0 || candidate >= current.layout.totalSpreads) {
-      navigateChapter(current, direction);
-      return;
-    }
-    current.spread = candidate;
-    animatePage(current, direction);
-    paintSpread(current);
-    savePosition(current);
-  }
-  function paintSpread(current) {
-    current.frame.scrollTo({ left: current.spread * current.layout.spreadStep, behavior: "instant" });
-    current.indicator.textContent = `${current.spread + 1}/${current.layout.totalSpreads}`;
-  }
-  function animatePage(current, direction) {
-    current.frame.classList.remove("fqa-wide-motion-next", "fqa-wide-motion-previous");
-    void current.frame.offsetWidth;
-    current.frame.classList.add(`fqa-wide-motion-${direction}`);
-  }
-  function navigateChapter(current, direction) {
-    var _a;
-    const chapters = ((_a = current.snapshot.book) == null ? void 0 : _a.chapter_list) ?? [];
-    const index = chapters.findIndex((chapter) => chapter.item_id === current.snapshot.itemId);
-    const target = index >= 0 ? chapters[index + (direction === "next" ? 1 : -1)] : void 0;
-    if (!target) return;
-    if (direction === "previous") sessionStorage.setItem("fqa-wide-reader-open-at-end", target.item_id);
-    navigateToChapter(current, target.item_id);
-  }
-  function navigateToChapter(current, itemId) {
-    if (runtime !== current || itemId === current.snapshot.itemId) return;
-    beginWideReaderTransition();
-    replaceReaderChapter(unsafeWindow.history, itemId);
-  }
-  function openDirectory(current) {
-    var _a;
-    const chapters = ((_a = current.snapshot.book) == null ? void 0 : _a.chapter_list) ?? [];
-    const scrim = createScrim();
-    const drawer = createElement("aside", "fqa-wide-drawer");
-    const heading = createElement("div", "fqa-wide-panel-heading");
-    const headingText = document.createElement("strong");
-    headingText.textContent = `目录 · ${chapters.length} 章`;
-    const closeButton = createButton("关闭", "关闭目录");
-    heading.append(headingText, closeButton);
-    const search2 = document.createElement("input");
-    search2.className = "fqa-wide-search";
-    search2.placeholder = "搜索章节";
-    search2.setAttribute("aria-label", "搜索章节");
-    const nav = createElement("nav", "fqa-wide-directory-list");
-    drawer.append(heading, search2, nav);
-    scrim.append(drawer);
-    current.root.append(scrim);
-    const render = () => renderDirectory(current, nav, chapters, current.snapshot.itemId, search2.value);
-    closeButton.addEventListener("click", () => scrim.remove());
-    scrim.addEventListener("mousedown", (event) => {
-      if (event.target === scrim) scrim.remove();
-    });
-    search2.addEventListener("input", render);
-    render();
-    requestAnimationFrame(() => {
-      var _a2;
-      search2.focus();
-      (_a2 = nav.querySelector('[aria-current="page"]')) == null ? void 0 : _a2.scrollIntoView({ block: "center" });
-    });
-  }
-  function renderDirectory(current, nav, chapters, currentItemId, query) {
-    nav.replaceChildren();
-    const keyword = query.trim().toLocaleLowerCase();
-    const visible = keyword ? chapters.filter((chapter) => chapter.title.toLocaleLowerCase().includes(keyword)) : chapters;
-    if (visible.length === 0) {
-      const empty = document.createElement("p");
-      empty.textContent = chapters.length === 0 ? "目录尚未加载" : "没有匹配章节";
-      nav.append(empty);
-      return;
-    }
-    const fragment = document.createDocumentFragment();
-    visible.forEach((chapter) => {
-      const link = document.createElement("a");
-      link.href = createReaderChapterUrl(chapter.item_id);
-      link.textContent = chapter.title;
-      if (chapter.item_id === currentItemId) link.setAttribute("aria-current", "page");
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        navigateToChapter(current, chapter.item_id);
-      });
-      fragment.append(link);
-    });
-    nav.append(fragment);
-  }
-  function openReaderSettings(current) {
-    const scrim = createScrim();
-    const panel = createElement("section", "fqa-wide-settings");
-    const heading = createElement("div", "fqa-wide-panel-heading");
-    const headingText = document.createElement("strong");
-    headingText.textContent = "显示设置";
-    const closeButton = createButton("关闭", "关闭显示设置");
-    heading.append(headingText, closeButton);
-    panel.append(heading);
-    const themes = createElement("div", "fqa-wide-themes");
-    ["light", "dark", "system"].forEach((theme) => {
-      const label = theme === "light" ? "浅色" : theme === "dark" ? "深色" : "跟随系统";
-      const button = createButton(label, `切换为${label}`);
-      button.setAttribute("aria-pressed", String(settings$1.wideReaderTheme === theme));
-      button.addEventListener("click", () => {
-        settings$1.wideReaderTheme = theme;
-        current.root.dataset.theme = theme;
-        themes.querySelectorAll("button").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-      });
-      themes.append(button);
-    });
-    panel.append(themes);
-    panel.append(
-      createRangeField("字号", 16, 24, 1, () => settings$1.wideReaderFontSize, (value) => {
-        settings$1.wideReaderFontSize = value;
-        reflowAfterSettings(current);
-      }),
-      createRangeField("行高", 1.4, 2.6, 0.05, () => settings$1.wideReaderLineHeight, (value) => {
-        settings$1.wideReaderLineHeight = value;
-        reflowAfterSettings(current);
-      }),
-      createRangeField("栏间距", 32, 112, 4, () => settings$1.wideReaderColumnGap, (value) => {
-        settings$1.wideReaderColumnGap = value;
-        reflowAfterSettings(current);
-      }),
-      createRangeField("页边距", 32, 120, 4, () => settings$1.wideReaderPageMargin, (value) => {
-        settings$1.wideReaderPageMargin = value;
-        reflowAfterSettings(current);
-      })
-    );
-    scrim.append(panel);
-    current.root.append(scrim);
-    closeButton.addEventListener("click", () => scrim.remove());
-    scrim.addEventListener("mousedown", (event) => {
-      if (event.target === scrim) scrim.remove();
-    });
-  }
-  function createRangeField(label, min, max, step, readValue, writeValue) {
-    const field = createElement("label", "fqa-wide-field");
-    const text = document.createElement("span");
-    text.textContent = label;
-    const input = document.createElement("input");
-    input.type = "range";
-    input.min = String(min);
-    input.max = String(max);
-    input.step = String(step);
-    input.value = String(readValue());
-    const output = document.createElement("output");
-    output.textContent = input.value;
-    input.addEventListener("input", () => {
-      const value = Number(input.value);
-      output.textContent = Number.isInteger(value) ? String(value) : value.toFixed(2);
-      writeValue(value);
-    });
-    field.append(text, input, output);
-    return field;
-  }
-  function reflowAfterSettings(current) {
-    const position = capturePosition(current);
-    applyReaderVariables(current.root);
-    requestAnimationFrame(() => measureAndRestore(current, position));
-  }
-  function applyReaderVariables(root) {
-    root.style.setProperty("--fqa-wide-font-size", `${settings$1.wideReaderFontSize}px`);
-    root.style.setProperty("--fqa-wide-line-height", String(settings$1.wideReaderLineHeight));
-    root.style.setProperty("--fqa-wide-gap", `${settings$1.wideReaderColumnGap}px`);
-    root.style.setProperty("--fqa-wide-margin", `${settings$1.wideReaderPageMargin}px`);
-    root.style.setProperty("--fqa-wide-font-family", settings$1.readerFont || "'Microsoft YaHei', sans-serif");
-  }
-  function savePosition(current) {
-    const position = capturePosition(current);
-    if (!position) return;
-    GM_setValue(`${POSITION_PREFIX}${current.snapshot.itemId}`, JSON.stringify(position));
-  }
-  function capturePosition(current) {
-    const logicalLeft = current.spread * current.layout.spreadStep;
-    const blocks = [...current.article.querySelectorAll("[data-block-index]")];
-    const visible = blocks.find((block) => block.offsetLeft + block.offsetWidth >= logicalLeft - 1) ?? blocks[blocks.length - 1];
-    const blockIndex = Number(visible == null ? void 0 : visible.dataset.blockIndex);
-    return Number.isInteger(blockIndex) ? { blockIndex } : null;
-  }
-  function loadPosition(itemId) {
-    try {
-      const raw = GM_getValue(`${POSITION_PREFIX}${itemId}`);
-      if (typeof raw !== "string") return null;
-      const value = JSON.parse(raw);
-      return Number.isInteger(value.blockIndex) ? { blockIndex: value.blockIndex } : null;
-    } catch {
-      return null;
-    }
-  }
-  function createScrim() {
-    return createElement("div", "fqa-wide-scrim");
-  }
-  function createElement(tag, className) {
-    const element = document.createElement(tag);
-    element.className = className;
-    return element;
-  }
-  function createButton(text, label) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = text;
-    button.setAttribute("aria-label", label);
-    button.title = label;
-    return button;
-  }
-  function showWideReaderEntry() {
-    if (document.getElementById(ENTRY_ID) || !settings$1.wideReaderEnabled || !lastSnapshot || lastSnapshot.comic) return;
-    ensureWideReaderStyle();
-    const button = createButton("分页阅读", "重新进入沉浸式分页阅读");
-    button.id = ENTRY_ID;
-    button.addEventListener("click", () => {
-      if (lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot);
-    });
-    document.body.append(button);
-  }
-  function removeWideReaderEntry() {
-    var _a;
-    (_a = document.getElementById(ENTRY_ID)) == null ? void 0 : _a.remove();
-  }
-  function isEditableTarget(target) {
-    return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target instanceof HTMLElement && target.isContentEditable;
-  }
-  function clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value));
-  }
-  vue.watch(
-    () => settings$1.wideReaderEnabled,
-    (enabled) => {
-      if (!enabled) {
-        removeWideReaderEntry();
-        unmountWideReader();
-      } else if (lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot);
-    }
-  );
-  let currentBook = null;
-  let latestItemId = null;
-  const SCRIPT_CONTAINER_ID = "fqa-reader-content";
-  let comicObserver = null;
-  function ensureScriptContainer(readerContainer, comic) {
-    let scriptContainer = document.getElementById(SCRIPT_CONTAINER_ID);
-    if (!scriptContainer) {
-      scriptContainer = cloneElement(readerContainer);
-      scriptContainer.id = SCRIPT_CONTAINER_ID;
-      scriptContainer.classList.add("fqa");
-      readerContainer.insertAdjacentElement("beforebegin", scriptContainer);
-    }
-    scriptContainer.classList.toggle("fqa-comic-reader", comic);
-    if (settings$1.allowCopy) scriptContainer.classList.remove("noselect");
-    comicObserver == null ? void 0 : comicObserver.disconnect();
-    comicObserver = null;
-    scriptContainer.innerHTML = "";
-    readerContainer.classList.add("fqa-hide");
-    return scriptContainer;
-  }
-  async function insertContent() {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o;
-    const itemId = ((_a = window.location.pathname.split("/").pop()) == null ? void 0 : _a.substring(0, 19)) || "";
-    if (!itemId) {
-      console.warn("No item_id found in URL");
-      return;
-    }
-    latestItemId = itemId;
-    beginWideReaderTransition();
-    let chapter;
-    try {
-      chapter = await getChapter(itemId);
-    } catch (error) {
-      failWideReaderTransition();
-      throw error;
-    }
-    if (!chapter) {
-      console.warn("No chapter found for item_id:", itemId);
-      failWideReaderTransition();
-      return;
-    }
-    if (latestItemId !== itemId) {
-      console.debug("Stale chapter response discarded:", itemId);
-      return;
-    }
-    console.log("Chapter:", chapter);
-    const pageState = unsafeWindow.__INITIAL_STATE__;
-    const chapterTitle = ((_b = chapter.novel_data) == null ? void 0 : _b.title) || ((_d = (_c = pageState == null ? void 0 : pageState.reader) == null ? void 0 : _c.chapterData) == null ? void 0 : _d.title);
-    if (typeof chapter.content === "string") {
-      void applyBookCss((_e = chapter.novel_data) == null ? void 0 : _e.css_map, "#fqa-reader-content");
-      const dp = new DOMParser();
-      const doc = dp.parseFromString(chapter.content, "text/html");
-      const body = doc.body;
-      body.querySelectorAll('link[rel="stylesheet"]').forEach((el) => el.remove());
-      let article = body.querySelector("article");
-      let toProcess = article || body;
-      processFootnotes(toProcess);
-      for (let i2 = 0; i2 < toProcess.childNodes.length; i2++) {
-        if (i2 < 2 && ((_g = (_f = toProcess.childNodes[i2]) == null ? void 0 : _f.innerHTML) == null ? void 0 : _g.includes(chapterTitle))) {
-          toProcess.removeChild(toProcess.childNodes[i2]);
-          break;
-        }
-      }
-      if (!article) {
-        article = document.createElement("article");
-        article.innerHTML = toProcess.innerHTML;
-        toProcess = article;
-      }
-      const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)");
-      if (readerContainer) {
-        const scriptContainer = ensureScriptContainer(readerContainer, false);
-        scriptContainer.appendChild(toProcess);
-        bindFootnoteInteraction(scriptContainer);
-      }
-    } else if (chapter.content.picInfos) {
-      if (chapter.content.encrypt) {
-        const imgs = [];
-        for (let i2 = 0; i2 < chapter.content.picInfos.length; i2++) {
-          const picInfo = chapter.content.picInfos[i2];
-          const img = document.createElement("img");
-          img.className = "fqa-comic-img fqa-comic-encrypted";
-          img.alt = `第${i2 + 1}页`;
-          img.dataset.encryptedUrl = picInfo.picUrl;
-          img.dataset.encryptKey = chapter.content.encrypt_key;
-          img.dataset.pageIndex = i2.toString();
-          img.style.minHeight = "500px";
-          img.style.backgroundColor = "#f0f0f0";
-          imgs.push(img);
-        }
-        const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)");
-        if (readerContainer) {
-          const scriptContainer = ensureScriptContainer(readerContainer, true);
-          imgs.forEach((img) => scriptContainer.appendChild(img));
-          const observer2 = new IntersectionObserver(
-            async (entries) => {
-              for (const entry of entries) {
-                if (entry.isIntersecting) {
-                  const img = entry.target;
-                  if (img.dataset.encryptedUrl && img.dataset.encryptKey && !img.src) {
-                    observer2.unobserve(img);
-                    try {
-                      const encryptedBuffer = await fetchArrayBuffer(
-                        img.dataset.encryptedUrl
-                      );
-                      const decryptedBuffer = await decryptComicImage(
-                        encryptedBuffer,
-                        img.dataset.encryptKey
-                      );
-                      const blob = new Blob([decryptedBuffer], { type: "image/jpeg" });
-                      const blobUrl = URL.createObjectURL(blob);
-                      img.src = blobUrl;
-                      img.style.minHeight = "";
-                      img.style.backgroundColor = "";
-                      img.onload = () => {
-                        URL.revokeObjectURL(blobUrl);
-                      };
-                    } catch (error) {
-                      console.error(`解密图片失败 (页 ${img.dataset.pageIndex}):`, error);
-                      img.alt = `第${Number(img.dataset.pageIndex) + 1}页 - 解密失败`;
-                      img.style.backgroundColor = "#ffebee";
-                    }
-                  }
-                }
-              }
-            },
-            {
-              rootMargin: "200px"
-            }
-          );
-          comicObserver = observer2;
-          imgs.forEach((img) => observer2.observe(img));
-        }
-      } else {
-        const imgs = [];
-        for (let i2 = 0; i2 < chapter.content.picInfos.length; i2++) {
-          const picInfo = chapter.content.picInfos[i2];
-          const img = document.createElement("img");
-          img.className = "fqa-comic-img";
-          img.alt = `第${i2 + 1}页`;
-          img.src = picInfo.picUrl;
-          imgs.push(img);
-        }
-        const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)");
-        if (readerContainer) {
-          const scriptContainer = ensureScriptContainer(readerContainer, true);
-          imgs.forEach((img) => scriptContainer.appendChild(img));
-        }
-      }
-    }
-    const muyeReaderTitle = document.querySelector("h1.muye-reader-title");
-    let muyeReaderSubtitle = document.querySelector("div.muye-reader-subtitle");
-    (_h = document.querySelector("#fqa-subtitle")) == null ? void 0 : _h.remove();
-    if (muyeReaderSubtitle) {
-      let _cloned = cloneElement(muyeReaderSubtitle);
-      muyeReaderSubtitle.classList.add("fqa-hide");
-      _cloned.id = "fqa-subtitle";
-      muyeReaderSubtitle.insertAdjacentElement("afterend", _cloned);
-      muyeReaderSubtitle = _cloned;
-      _cloned.classList.remove("fqa-hide");
-      console.log("clone subtitle: ", _cloned);
-    }
-    if (muyeReaderTitle) {
-      muyeReaderTitle.textContent = chapterTitle;
-    }
-    console.log("Current book:", currentBook);
-    const chapterBookId = ((_i = chapter.novel_data) == null ? void 0 : _i.book_id) || ((_k = (_j = pageState == null ? void 0 : pageState.reader) == null ? void 0 : _j.chapterData) == null ? void 0 : _k.bookId);
-    if (chapterBookId && (!currentBook || currentBook.book_id !== chapterBookId)) {
-      try {
-        currentBook = await getBookInfoAndCatalog(chapterBookId);
-      } catch (error) {
-        console.warn("[fqa:目录] 书籍详情加载失败，改用当前页面信息和目录后备", error);
-        try {
-          const catalog = await getCatalog(chapterBookId);
-          currentBook = {
-            book_id: chapterBookId,
-            title: ((_m = (_l = pageState == null ? void 0 : pageState.reader) == null ? void 0 : _l.chapterData) == null ? void 0 : _m.bookName) || "当前书籍",
-            author: ((_o = (_n = pageState == null ? void 0 : pageState.reader) == null ? void 0 : _n.chapterData) == null ? void 0 : _o.author) || "",
-            cover_url: "",
-            summary: "",
-            update_time: "",
-            status: "未知",
-            volume_list: catalog.volume_list,
-            chapter_list: catalog.chapter_list,
-            all_item_ids: catalog.all_item_ids
-          };
-        } catch (catalogError) {
-          console.warn("[fqa:目录] 所有目录来源均不可用，正文仍保持可读", catalogError);
-          currentBook = null;
-        }
-      }
-      console.log("Current book:", currentBook);
-    }
-    if (currentBook && currentBook.chapter_list) {
-      const currentChapterItem = currentBook.chapter_list.find((c) => c.item_id === itemId);
-      if (currentChapterItem) {
-        console.log("Current chapter:", currentChapterItem);
-        document.title = currentChapterItem.title + " - " + currentBook.title + " - 番茄小说";
-        if (document.getElementById("fqa-current-chapter-volume")) {
-          const c = document.getElementById("fqa-current-chapter-volume");
-          if (c) {
-            c.textContent = currentChapterItem.volume_title;
-          }
-        } else {
-          const volSpan = document.createElement("span");
-          volSpan.className = "desc-item";
-          volSpan.id = "fqa-current-chapter-volume";
-          volSpan.textContent = currentChapterItem.volume_title;
-          const c = muyeReaderSubtitle == null ? void 0 : muyeReaderSubtitle.firstChild;
-          if (c) {
-            c.insertAdjacentElement("beforebegin", volSpan);
-          }
-        }
-        let updateTimeSpans = (muyeReaderSubtitle == null ? void 0 : muyeReaderSubtitle.querySelectorAll("span.desc-item")) || [];
-        if (updateTimeSpans.length >= 2) {
-          let updateTimeSpan = updateTimeSpans[updateTimeSpans.length - 1];
-          let uttspan = updateTimeSpan.firstChild;
-          uttspan == null ? void 0 : uttspan.remove();
-          updateTimeSpan.innerHTML = "更新时间：" + currentChapterItem.update_time;
-        } else {
-          let updateTimeSpan = document.createElement("span");
-          updateTimeSpan.className = "desc-item";
-          updateTimeSpan.textContent = `更新时间：${currentChapterItem.update_time}`;
-        }
-      }
-    }
-    const enhancedContent = document.getElementById(SCRIPT_CONTAINER_ID);
-    if (enhancedContent) {
-      syncWideReader({
-        itemId,
-        title: chapterTitle || "当前章节",
-        book: currentBook,
-        source: enhancedContent,
-        comic: typeof chapter.content !== "string"
-      });
-    }
-  }
-  async function onUrlChange$1(_previous) {
-    await insertContent();
-  }
-  async function onReaderRouteChange(_previous) {
-    if (!readerFilter(window.location.pathname, new URLSearchParams(window.location.search))) {
-      leaveWideReaderPage();
-    }
-  }
-  async function onHashChange$1(_previous) {
-  }
-  async function onLoad$1() {
-    document.querySelector("div.muye-reader-btns");
-    await insertContent();
-  }
-  function readerFilter(path, _query, _hash) {
-    return path.startsWith("/reader") || path.startsWith("reader");
-  }
-  const _exports$4 = [
-    {
-      id: "readerHook_leave",
-      event: "onUrlChange",
-      handler: onReaderRouteChange,
-      filter: () => true
-    },
-    {
-      id: "readerHook_load",
-      event: "load",
-      handler: onLoad$1,
-      filter: readerFilter
-    },
-    {
-      id: "readerHook_urlChange",
-      event: "onUrlChange",
-      handler: onUrlChange$1,
-      filter: readerFilter
-    },
-    {
-      id: "readerHook_hashChange",
-      event: "onHashChange",
-      handler: onHashChange$1,
-      filter: readerFilter
-    }
-  ];
-  const blackList = [
-    "mcs.zijieapi.com",
-    "vcs.zijieapi.com/vc/setting",
-    "mon.zijieapi.com",
-    "mssdk.bytedance.com/web/common",
-    "hm.baidu.com"
-  ];
-  const BLOCKED_BODY = JSON.stringify({
-    e: 0,
-    sc: 10,
-    tc: 10
-  });
-  function checkBlack(url) {
-    if (!settings$1.blockReport) return false;
-    return blackList.some((black) => url.includes(black));
-  }
-  const originalFetch = unsafeWindow.fetch.bind(unsafeWindow);
-  unsafeWindow.fetch = function fetch2(input, init2) {
-    let url;
-    if (input instanceof Request) {
-      url = input.url;
-    } else if (input instanceof URL) {
-      url = input.href;
-    } else {
-      url = input;
-    }
-    if (checkBlack(url)) {
-      console.log("blocked request: " + url);
-      return Promise.resolve(new Response(BLOCKED_BODY, {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
-      }));
-    }
-    return originalFetch(input, init2);
-  };
-  const originalXMLHttpRequest = unsafeWindow.XMLHttpRequest;
-  unsafeWindow.XMLHttpRequest = class XMLHttpRequest extends originalXMLHttpRequest {
-    constructor() {
-      super(...arguments);
-      __publicField(this, "_blockedUrl");
-    }
-    open(method, url, async = true, user, password) {
-      if (checkBlack(url)) {
-        console.log("blocked request: " + url);
-        this._blockedUrl = url;
-        return;
-      }
-      this._blockedUrl = void 0;
-      super.open(method, url, async, user, password);
-    }
-    setRequestHeader(name2, value) {
-      if (this._blockedUrl !== void 0) return;
-      super.setRequestHeader(name2, value);
-    }
-    send(body) {
-      if (this._blockedUrl === void 0) {
-        super.send(body);
-        return;
-      }
-      const url = this._blockedUrl;
-      const shadow = (prop, value) => Object.defineProperty(this, prop, { configurable: true, get: () => value });
-      setTimeout(() => {
-        shadow("readyState", 4);
-        shadow("status", 200);
-        shadow("statusText", "OK");
-        shadow("responseURL", url);
-        shadow("responseText", this.responseType === "" || this.responseType === "text" ? BLOCKED_BODY : "");
-        shadow("response", this.responseType === "json" ? {
-          "e": 0,
-          "sc": 10,
-          "tc": 10
-        } : BLOCKED_BODY);
-        this.dispatchEvent(new Event("readystatechange"));
-        this.dispatchEvent(new ProgressEvent("load"));
-        this.dispatchEvent(new ProgressEvent("loadend"));
-      }, 0);
-    }
-    abort() {
-      if (this._blockedUrl !== void 0) return;
-      super.abort();
-    }
-    getAllResponseHeaders() {
-      if (this._blockedUrl !== void 0) return "content-type: application/json\r\n";
-      return super.getAllResponseHeaders();
-    }
-    getResponseHeader(name2) {
-      if (this._blockedUrl !== void 0) {
-        return name2.toLowerCase() === "content-type" ? "application/json" : null;
-      }
-      return super.getResponseHeader(name2);
-    }
-  };
-  const _exports$3 = [];
   let userState = {
     isLogin: false,
     userInfo: null
@@ -3022,8 +2218,6 @@
       console.log("Hello, ", (_a = userState == null ? void 0 : userState.userInfo) == null ? void 0 : _a.username);
     }
   }
-  const bookshelf = '<svg xmlns="http://www.w3.org/2000/svg"\r\n     width="24"\r\n     height="24"\r\n     viewBox="0 0 24 24"\r\n     fill="none"\r\n     stroke="currentColor"\r\n     stroke-width="1.2"\r\n     stroke-linecap="round"\r\n     stroke-linejoin="round">\r\n  <path d="M3.5 20h17"/>\r\n  <rect x="5" y="7" width="3.5" height="13" rx="0.8"/>\r\n  <rect x="8.5" y="5" width="4" height="15" rx="0.8"/>\r\n  <path d="M15.1 6.2 18 5.5l3.1 13.6-2.9.7z"/>\r\n  <path d="M9.8 8h1.4M6.1 10h1.3M17 8.8l1.3-.3"/>\r\n</svg>';
-  const settings = '<?xml version="1.0" encoding="utf-8"?>\r\n<svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\r\n    <path fill-rule="evenodd" clip-rule="evenodd"\r\n        d="M12 8.25C9.92894 8.25 8.25 9.92893 8.25 12C8.25 14.0711 9.92894 15.75 12 15.75C14.0711 15.75 15.75 14.0711 15.75 12C15.75 9.92893 14.0711 8.25 12 8.25ZM9.75 12C9.75 10.7574 10.7574 9.75 12 9.75C13.2426 9.75 14.25 10.7574 14.25 12C14.25 13.2426 13.2426 14.25 12 14.25C10.7574 14.25 9.75 13.2426 9.75 12Z"\r\n        fill="#000000" />\r\n    <path fill-rule="evenodd" clip-rule="evenodd"\r\n        d="M11.9747 1.25C11.5303 1.24999 11.1592 1.24999 10.8546 1.27077C10.5375 1.29241 10.238 1.33905 9.94761 1.45933C9.27379 1.73844 8.73843 2.27379 8.45932 2.94762C8.31402 3.29842 8.27467 3.66812 8.25964 4.06996C8.24756 4.39299 8.08454 4.66251 7.84395 4.80141C7.60337 4.94031 7.28845 4.94673 7.00266 4.79568C6.64714 4.60777 6.30729 4.45699 5.93083 4.40743C5.20773 4.31223 4.47642 4.50819 3.89779 4.95219C3.64843 5.14353 3.45827 5.3796 3.28099 5.6434C3.11068 5.89681 2.92517 6.21815 2.70294 6.60307L2.67769 6.64681C2.45545 7.03172 2.26993 7.35304 2.13562 7.62723C1.99581 7.91267 1.88644 8.19539 1.84541 8.50701C1.75021 9.23012 1.94617 9.96142 2.39016 10.5401C2.62128 10.8412 2.92173 11.0602 3.26217 11.2741C3.53595 11.4461 3.68788 11.7221 3.68786 12C3.68785 12.2778 3.53592 12.5538 3.26217 12.7258C2.92169 12.9397 2.62121 13.1587 2.39007 13.4599C1.94607 14.0385 1.75012 14.7698 1.84531 15.4929C1.88634 15.8045 1.99571 16.0873 2.13552 16.3727C2.26983 16.6469 2.45535 16.9682 2.67758 17.3531L2.70284 17.3969C2.92507 17.7818 3.11058 18.1031 3.28089 18.3565C3.45817 18.6203 3.64833 18.8564 3.89769 19.0477C4.47632 19.4917 5.20763 19.6877 5.93073 19.5925C6.30717 19.5429 6.647 19.3922 7.0025 19.2043C7.28833 19.0532 7.60329 19.0596 7.8439 19.1986C8.08452 19.3375 8.24756 19.607 8.25964 19.9301C8.27467 20.3319 8.31403 20.7016 8.45932 21.0524C8.73843 21.7262 9.27379 22.2616 9.94761 22.5407C10.238 22.661 10.5375 22.7076 10.8546 22.7292C11.1592 22.75 11.5303 22.75 11.9747 22.75H12.0252C12.4697 22.75 12.8407 22.75 13.1454 22.7292C13.4625 22.7076 13.762 22.661 14.0524 22.5407C14.7262 22.2616 15.2616 21.7262 15.5407 21.0524C15.686 20.7016 15.7253 20.3319 15.7403 19.93C15.7524 19.607 15.9154 19.3375 16.156 19.1985C16.3966 19.0596 16.7116 19.0532 16.9974 19.2042C17.3529 19.3921 17.6927 19.5429 18.0692 19.5924C18.7923 19.6876 19.5236 19.4917 20.1022 19.0477C20.3516 18.8563 20.5417 18.6203 20.719 18.3565C20.8893 18.1031 21.0748 17.7818 21.297 17.3969L21.3223 17.3531C21.5445 16.9682 21.7301 16.6468 21.8644 16.3726C22.0042 16.0872 22.1135 15.8045 22.1546 15.4929C22.2498 14.7697 22.0538 14.0384 21.6098 13.4598C21.3787 13.1586 21.0782 12.9397 20.7378 12.7258C20.464 12.5538 20.3121 12.2778 20.3121 11.9999C20.3121 11.7221 20.464 11.4462 20.7377 11.2742C21.0783 11.0603 21.3788 10.8414 21.6099 10.5401C22.0539 9.96149 22.2499 9.23019 22.1547 8.50708C22.1136 8.19546 22.0043 7.91274 21.8645 7.6273C21.7302 7.35313 21.5447 7.03183 21.3224 6.64695L21.2972 6.60318C21.0749 6.21825 20.8894 5.89688 20.7191 5.64347C20.5418 5.37967 20.3517 5.1436 20.1023 4.95225C19.5237 4.50826 18.7924 4.3123 18.0692 4.4075C17.6928 4.45706 17.353 4.60782 16.9975 4.79572C16.7117 4.94679 16.3967 4.94036 16.1561 4.80144C15.9155 4.66253 15.7524 4.39297 15.7403 4.06991C15.7253 3.66808 15.686 3.2984 15.5407 2.94762C15.2616 2.27379 14.7262 1.73844 14.0524 1.45933C13.762 1.33905 13.4625 1.29241 13.1454 1.27077C12.8407 1.24999 12.4697 1.24999 12.0252 1.25H11.9747ZM10.5216 2.84515C10.5988 2.81319 10.716 2.78372 10.9567 2.76729C11.2042 2.75041 11.5238 2.75 12 2.75C12.4762 2.75 12.7958 2.75041 13.0432 2.76729C13.284 2.78372 13.4012 2.81319 13.4783 2.84515C13.7846 2.97202 14.028 3.21536 14.1548 3.52165C14.1949 3.61826 14.228 3.76887 14.2414 4.12597C14.271 4.91835 14.68 5.68129 15.4061 6.10048C16.1321 6.51968 16.9974 6.4924 17.6984 6.12188C18.0143 5.9549 18.1614 5.90832 18.265 5.89467C18.5937 5.8514 18.9261 5.94047 19.1891 6.14228C19.2554 6.19312 19.3395 6.27989 19.4741 6.48016C19.6125 6.68603 19.7726 6.9626 20.0107 7.375C20.2488 7.78741 20.4083 8.06438 20.5174 8.28713C20.6235 8.50382 20.6566 8.62007 20.6675 8.70287C20.7108 9.03155 20.6217 9.36397 20.4199 9.62698C20.3562 9.70995 20.2424 9.81399 19.9397 10.0041C19.2684 10.426 18.8122 11.1616 18.8121 11.9999C18.8121 12.8383 19.2683 13.574 19.9397 13.9959C20.2423 14.186 20.3561 14.29 20.4198 14.373C20.6216 14.636 20.7107 14.9684 20.6674 15.2971C20.6565 15.3799 20.6234 15.4961 20.5173 15.7128C20.4082 15.9355 20.2487 16.2125 20.0106 16.6249C19.7725 17.0373 19.6124 17.3139 19.474 17.5198C19.3394 17.72 19.2553 17.8068 19.189 17.8576C18.926 18.0595 18.5936 18.1485 18.2649 18.1053C18.1613 18.0916 18.0142 18.045 17.6983 17.8781C16.9973 17.5075 16.132 17.4803 15.4059 17.8995C14.68 18.3187 14.271 19.0816 14.2414 19.874C14.228 20.2311 14.1949 20.3817 14.1548 20.4784C14.028 20.7846 13.7846 21.028 13.4783 21.1549C13.4012 21.1868 13.284 21.2163 13.0432 21.2327C12.7958 21.2496 12.4762 21.25 12 21.25C11.5238 21.25 11.2042 21.2496 10.9567 21.2327C10.716 21.2163 10.5988 21.1868 10.5216 21.1549C10.2154 21.028 9.97201 20.7846 9.84514 20.4784C9.80512 20.3817 9.77195 20.2311 9.75859 19.874C9.72896 19.0817 9.31997 18.3187 8.5939 17.8995C7.86784 17.4803 7.00262 17.5076 6.30158 17.8781C5.98565 18.0451 5.83863 18.0917 5.73495 18.1053C5.40626 18.1486 5.07385 18.0595 4.81084 17.8577C4.74458 17.8069 4.66045 17.7201 4.52586 17.5198C4.38751 17.314 4.22736 17.0374 3.98926 16.625C3.75115 16.2126 3.59171 15.9356 3.4826 15.7129C3.37646 15.4962 3.34338 15.3799 3.33248 15.2971C3.28921 14.9684 3.37828 14.636 3.5801 14.373C3.64376 14.2901 3.75761 14.186 4.0602 13.9959C4.73158 13.5741 5.18782 12.8384 5.18786 12.0001C5.18791 11.1616 4.73165 10.4259 4.06021 10.004C3.75769 9.81389 3.64385 9.70987 3.58019 9.62691C3.37838 9.3639 3.28931 9.03149 3.33258 8.7028C3.34348 8.62001 3.37656 8.50375 3.4827 8.28707C3.59181 8.06431 3.75125 7.78734 3.98935 7.37493C4.22746 6.96253 4.3876 6.68596 4.52596 6.48009C4.66055 6.27983 4.74468 6.19305 4.81093 6.14222C5.07395 5.9404 5.40636 5.85133 5.73504 5.8946C5.83873 5.90825 5.98576 5.95483 6.30173 6.12184C7.00273 6.49235 7.86791 6.51962 8.59394 6.10045C9.31998 5.68128 9.72896 4.91837 9.75859 4.12602C9.77195 3.76889 9.80512 3.61827 9.84514 3.52165C9.97201 3.21536 10.2154 2.97202 10.5216 2.84515Z"\r\n        fill="#000000" />\r\n</svg>';
   const FIXED_STRING = b64decode(
     "TdTC5rgxYgkOUrPHpnM7pByyRiuCmrWKGWs521cXdST0m69/COjWjSanLjfBqVovHwWlGJKu8pSXMrYqOKrdWA=="
   );
@@ -3410,7 +2604,7 @@
     }
   }
   const name = "fanqie-assistant-wide-reader";
-  const version = "0.1.1";
+  const version = "0.2.0";
   const _hoisted_1$8 = {
     class: "fqa-set-dialog",
     role: "dialog",
@@ -3424,13 +2618,13 @@
   const _hoisted_6$7 = { class: "fqa-set-row" };
   const _hoisted_7$5 = { class: "fqa-set-row" };
   const _hoisted_8$5 = { class: "fqa-set-row" };
-  const _hoisted_9$5 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_10$5 = { class: "fqa-set-radios" };
-  const _hoisted_11$5 = { class: "fqa-set-radio" };
-  const _hoisted_12$5 = { class: "fqa-set-radio" };
-  const _hoisted_13$4 = { class: "fqa-set-radio" };
-  const _hoisted_14$4 = { class: "fqa-set-row" };
-  const _hoisted_15$2 = { class: "fqa-set-label" };
+  const _hoisted_9$5 = { class: "fqa-set-row" };
+  const _hoisted_10$5 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_11$5 = { class: "fqa-set-radios" };
+  const _hoisted_12$5 = ["value"];
+  const _hoisted_13$4 = { class: "fqa-set-row" };
+  const _hoisted_14$4 = { class: "fqa-set-label" };
+  const _hoisted_15$2 = { class: "fqa-set-row fqa-set-row-col" };
   const _hoisted_16$1 = { class: "fqa-set-row" };
   const _hoisted_17$1 = { class: "fqa-set-label" };
   const _hoisted_18$1 = { class: "fqa-set-row fqa-set-row-col" };
@@ -3583,45 +2777,47 @@
                     [vue.vModelCheckbox, vue.unref(settings$1).wideReaderEnabled]
                   ])
                 ]),
-                vue.createElementVNode("div", _hoisted_9$5, [
-                  _cache[28] || (_cache[28] = vue.createElementVNode("span", { class: "fqa-set-label" }, "分页阅读主题", -1)),
-                  vue.createElementVNode("div", _hoisted_10$5, [
-                    vue.createElementVNode("label", _hoisted_11$5, [
-                      vue.withDirectives(vue.createElementVNode("input", {
-                        "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => vue.unref(settings$1).wideReaderTheme = $event),
-                        type: "radio",
-                        value: "system"
-                      }, null, 512), [
-                        [vue.vModelRadio, vue.unref(settings$1).wideReaderTheme]
-                      ]),
-                      _cache[25] || (_cache[25] = vue.createElementVNode("span", null, "跟随系统", -1))
-                    ]),
-                    vue.createElementVNode("label", _hoisted_12$5, [
-                      vue.withDirectives(vue.createElementVNode("input", {
-                        "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => vue.unref(settings$1).wideReaderTheme = $event),
-                        type: "radio",
-                        value: "light"
-                      }, null, 512), [
-                        [vue.vModelRadio, vue.unref(settings$1).wideReaderTheme]
-                      ]),
-                      _cache[26] || (_cache[26] = vue.createElementVNode("span", null, "浅色", -1))
-                    ]),
-                    vue.createElementVNode("label", _hoisted_13$4, [
-                      vue.withDirectives(vue.createElementVNode("input", {
-                        "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => vue.unref(settings$1).wideReaderTheme = $event),
-                        type: "radio",
-                        value: "dark"
-                      }, null, 512), [
-                        [vue.vModelRadio, vue.unref(settings$1).wideReaderTheme]
-                      ]),
-                      _cache[27] || (_cache[27] = vue.createElementVNode("span", null, "深色", -1))
-                    ])
+                vue.createElementVNode("label", _hoisted_9$5, [
+                  _cache[25] || (_cache[25] = vue.createElementVNode("span", { class: "fqa-set-label" }, "当前进入分页模式", -1)),
+                  vue.withDirectives(vue.createElementVNode("input", {
+                    "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => vue.unref(settings$1).wideReaderActive = $event),
+                    type: "checkbox",
+                    class: "fqa-set-switch"
+                  }, null, 512), [
+                    [vue.vModelCheckbox, vue.unref(settings$1).wideReaderActive]
                   ])
                 ]),
-                vue.createElementVNode("label", _hoisted_14$4, [
-                  vue.createElementVNode("span", _hoisted_15$2, "分页字号（" + vue.toDisplayString(vue.unref(settings$1).wideReaderFontSize) + "px）", 1),
+                vue.createElementVNode("div", _hoisted_10$5, [
+                  _cache[26] || (_cache[26] = vue.createElementVNode("span", { class: "fqa-set-label" }, "分页阅读主题", -1)),
+                  vue.createElementVNode("div", _hoisted_11$5, [
+                    (vue.openBlock(), vue.createElementBlock(vue.Fragment, null, vue.renderList([
+                      ["system", "跟随系统"],
+                      ["light", "明亮"],
+                      ["paper", "羊皮纸"],
+                      ["green", "护眼绿"],
+                      ["gray", "雾灰"],
+                      ["dark", "深夜"]
+                    ], (theme) => {
+                      return vue.createElementVNode("label", {
+                        key: theme[0],
+                        class: "fqa-set-radio"
+                      }, [
+                        vue.withDirectives(vue.createElementVNode("input", {
+                          "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => vue.unref(settings$1).wideReaderTheme = $event),
+                          type: "radio",
+                          value: theme[0]
+                        }, null, 8, _hoisted_12$5), [
+                          [vue.vModelRadio, vue.unref(settings$1).wideReaderTheme]
+                        ]),
+                        vue.createElementVNode("span", null, vue.toDisplayString(theme[1]), 1)
+                      ]);
+                    }), 64))
+                  ])
+                ]),
+                vue.createElementVNode("label", _hoisted_13$4, [
+                  vue.createElementVNode("span", _hoisted_14$4, "分页字号（" + vue.toDisplayString(vue.unref(settings$1).wideReaderFontSize) + "px）", 1),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => vue.unref(settings$1).wideReaderFontSize = $event),
+                    "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => vue.unref(settings$1).wideReaderFontSize = $event),
                     type: "range",
                     min: "16",
                     max: "24",
@@ -3633,6 +2829,17 @@
                       void 0,
                       { number: true }
                     ]
+                  ])
+                ]),
+                vue.createElementVNode("div", _hoisted_15$2, [
+                  _cache[28] || (_cache[28] = vue.createElementVNode("span", { class: "fqa-set-label" }, "分页正文字体", -1)),
+                  vue.withDirectives(vue.createElementVNode("select", {
+                    "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => vue.unref(settings$1).wideReaderFont = $event),
+                    class: "fqa-set-input"
+                  }, [..._cache[27] || (_cache[27] = [
+                    vue.createStaticVNode('<option value="system">跟随助手字体</option><option value="sans">现代黑体</option><option value="serif">系统衬线</option><option value="song">宋体</option><option value="kai">楷体</option><option value="fangsong">仿宋</option>', 6)
+                  ])], 512), [
+                    [vue.vModelSelect, vue.unref(settings$1).wideReaderFont]
                   ])
                 ]),
                 vue.createElementVNode("label", _hoisted_16$1, [
@@ -3865,6 +3072,1016 @@
     };
     app$2.mount(container$2);
   }
+  function shouldTurnPageForWheel(target) {
+    var _a;
+    const candidate = target;
+    return !((_a = candidate == null ? void 0 : candidate.closest) == null ? void 0 : _a.call(candidate, ".fqa-wide-scrim"));
+  }
+  const ROOT_ID = "fqa-wide-reader-root";
+  const ENTRY_ID = "fqa-wide-reader-entry";
+  const POSITION_PREFIX = "wide-reader-position:";
+  let runtime = null;
+  let lastSnapshot = null;
+  let styleInjected = false;
+  let previousDocumentOverflow = null;
+  function syncWideReader(snapshot) {
+    lastSnapshot = snapshot;
+    if (!settings$1.wideReaderEnabled || !settings$1.wideReaderActive || snapshot.comic) {
+      removeWideReaderEntry();
+      unmountWideReader();
+      if (settings$1.wideReaderEnabled && !snapshot.comic) showWideReaderEntry();
+      return;
+    }
+    mountWideReader(snapshot);
+  }
+  function beginWideReaderTransition() {
+    if (!runtime) return;
+    runtime.root.dataset.loading = "true";
+    runtime.root.setAttribute("aria-busy", "true");
+    runtime.indicator.textContent = "正在加载章节…";
+  }
+  function failWideReaderTransition() {
+    if (!runtime) return;
+    runtime.root.removeAttribute("data-loading");
+    runtime.root.removeAttribute("aria-busy");
+    runtime.indicator.textContent = "章节加载失败，请重试";
+  }
+  function leaveWideReaderPage() {
+    lastSnapshot = null;
+    removeWideReaderEntry();
+    unmountWideReader();
+  }
+  function unmountWideReader() {
+    if (!runtime) return;
+    runtime.cleanup.forEach((dispose) => dispose());
+    runtime.root.remove();
+    runtime = null;
+    if (previousDocumentOverflow === null) document.documentElement.style.removeProperty("overflow");
+    else document.documentElement.style.overflow = previousDocumentOverflow;
+    previousDocumentOverflow = null;
+  }
+  function ensureWideReaderStyle() {
+    if (styleInjected) return;
+    GM_addStyle(wideReaderCss);
+    styleInjected = true;
+  }
+  function mountWideReader(snapshot) {
+    unmountWideReader();
+    removeWideReaderEntry();
+    ensureWideReaderStyle();
+    const root = document.createElement("main");
+    root.id = ROOT_ID;
+    root.dataset.theme = settings$1.wideReaderTheme;
+    root.setAttribute("aria-label", "沉浸式分页阅读器");
+    applyReaderVariables(root);
+    const topSensor = createElement("div", "fqa-wide-top-sensor");
+    const topControls = createElement("header", "fqa-wide-controls fqa-wide-top-controls");
+    const directoryButton = createButton("目录", "打开目录");
+    const settingsButton = createButton("显示", "打开显示设置");
+    const accountButton = createAccountButton();
+    const title = createElement("span", "fqa-wide-title");
+    title.textContent = snapshot.title;
+    const exitButton = createButton("退出分页", "退出沉浸式分页阅读");
+    exitButton.classList.add("fqa-wide-exit");
+    topControls.append(directoryButton, settingsButton, title, accountButton, exitButton);
+    const leftButton = createButton("‹", "上一页");
+    leftButton.className = "fqa-wide-edge fqa-wide-edge-left";
+    const rightButton = createButton("›", "下一页");
+    rightButton.className = "fqa-wide-edge fqa-wide-edge-right";
+    const frame = createElement("div", "fqa-wide-frame");
+    const article = createElement("article", "fqa-wide-article");
+    article.setAttribute("aria-label", snapshot.title);
+    const heading = document.createElement("h1");
+    heading.textContent = snapshot.title;
+    heading.dataset.blockIndex = "0";
+    article.append(heading);
+    appendChapterContent(article, snapshot.source);
+    bindFootnoteInteraction(article);
+    frame.append(article);
+    const indicator = document.createElement("output");
+    indicator.className = "fqa-wide-indicator";
+    indicator.textContent = "1/1";
+    const bottomSensor = createElement("div", "fqa-wide-bottom-sensor");
+    const bottomControls = createElement("footer", "fqa-wide-controls fqa-wide-bottom-controls");
+    const previousChapterButton = createButton("‹ 上一章", "上一章");
+    const chapterStatus = createElement("span", "fqa-wide-title");
+    chapterStatus.textContent = snapshot.title;
+    const nextChapterButton = createButton("下一章 ›", "下一章");
+    bottomControls.append(previousChapterButton, chapterStatus, nextChapterButton);
+    root.append(
+      topSensor,
+      topControls,
+      leftButton,
+      frame,
+      rightButton,
+      indicator,
+      bottomSensor,
+      bottomControls
+    );
+    document.body.append(root);
+    previousDocumentOverflow = document.documentElement.style.overflow || null;
+    document.documentElement.style.overflow = "hidden";
+    const nextRuntime = {
+      root,
+      frame,
+      article,
+      indicator,
+      snapshot,
+      spread: 0,
+      layout: { columnsPerSpread: 2, totalSpreads: 1, spreadStep: 1 },
+      cleanup: []
+    };
+    runtime = nextRuntime;
+    bindReaderEvents(nextRuntime, {
+      directoryButton,
+      settingsButton,
+      accountButton,
+      exitButton,
+      leftButton,
+      rightButton,
+      previousChapterButton,
+      nextChapterButton
+    });
+    requestAnimationFrame(() => {
+      if (runtime !== nextRuntime) return;
+      measureAndRestore(nextRuntime);
+    });
+  }
+  function appendChapterContent(article, source) {
+    const fragment = document.createDocumentFragment();
+    const sourceArticle = source.querySelector(":scope > article");
+    const children = [...(sourceArticle ?? source).children];
+    children.forEach((child, index) => {
+      const clone = child.cloneNode(true);
+      clone.dataset.blockIndex = String(index + 1);
+      fragment.append(clone);
+    });
+    article.append(fragment);
+  }
+  function bindReaderEvents(current, controls) {
+    const turnPrevious = () => turnPage(current, "previous");
+    const turnNext = () => turnPage(current, "next");
+    controls.leftButton.addEventListener("click", turnPrevious);
+    controls.rightButton.addEventListener("click", turnNext);
+    controls.previousChapterButton.addEventListener("click", () => navigateChapter(current, "previous"));
+    controls.nextChapterButton.addEventListener("click", () => navigateChapter(current, "next"));
+    controls.directoryButton.addEventListener("click", () => openDirectory(current));
+    controls.settingsButton.addEventListener("click", () => openReaderSettings(current));
+    controls.accountButton.addEventListener("click", () => void openAccountMenu(current, controls.accountButton));
+    controls.exitButton.addEventListener("click", () => {
+      settings$1.wideReaderActive = false;
+      flushSettings();
+      unmountWideReader();
+      showWideReaderEntry();
+    });
+    let wheelTotal = 0;
+    let wheelLockedUntil = 0;
+    const onWheel = (event) => {
+      if (!shouldTurnPageForWheel(event.target)) return;
+      event.preventDefault();
+      const dominantDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      wheelTotal += dominantDelta;
+      const now = performance.now();
+      if (now < wheelLockedUntil || Math.abs(wheelTotal) < 80) return;
+      wheelLockedUntil = now + 420;
+      const direction = wheelTotal > 0 ? "next" : "previous";
+      wheelTotal = 0;
+      turnPage(current, direction);
+    };
+    current.root.addEventListener("wheel", onWheel, { passive: false });
+    const onKeyDown = (event) => {
+      if (event.defaultPrevented || isEditableTarget(event.target)) return;
+      if (event.key === "ArrowRight" || event.key === "PageDown") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        turnPage(current, "next");
+      } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        turnPage(current, "previous");
+      }
+    };
+    window.addEventListener("keydown", onKeyDown, true);
+    const observer2 = new ResizeObserver(() => measureAndRestore(current, capturePosition(current)));
+    observer2.observe(current.frame);
+    observer2.observe(current.article);
+    current.cleanup.push(
+      () => controls.leftButton.removeEventListener("click", turnPrevious),
+      () => controls.rightButton.removeEventListener("click", turnNext),
+      () => current.root.removeEventListener("wheel", onWheel),
+      () => window.removeEventListener("keydown", onKeyDown, true),
+      () => observer2.disconnect()
+    );
+  }
+  function measureAndRestore(current, position) {
+    if (runtime !== current) return;
+    const layout = measureLayout(current.frame, current.article);
+    current.layout = layout;
+    const openAtEnd = sessionStorage.getItem("fqa-wide-reader-open-at-end") === current.snapshot.itemId;
+    if (openAtEnd) {
+      current.spread = layout.totalSpreads - 1;
+      sessionStorage.removeItem("fqa-wide-reader-open-at-end");
+      paintSpread(current);
+      return;
+    }
+    const saved = position ?? loadPosition(current.snapshot.itemId);
+    const target = saved ? current.article.querySelector(`[data-block-index="${saved.blockIndex}"]`) : null;
+    const targetSpread = target ? Math.floor(Math.max(0, target.offsetLeft) / Math.max(1, layout.spreadStep)) : current.spread;
+    current.spread = clamp(targetSpread, 0, layout.totalSpreads - 1);
+    paintSpread(current);
+  }
+  function measureLayout(frame, article) {
+    const columnsPerSpread = frame.clientWidth >= 920 ? 2 : 1;
+    const computed2 = getComputedStyle(article);
+    const gap = Number.parseFloat(computed2.columnGap) || 0;
+    const fallbackWidth = (frame.clientWidth - gap * (columnsPerSpread - 1)) / columnsPerSpread;
+    const columnWidth = Number.parseFloat(computed2.columnWidth) || fallbackWidth;
+    const columnStep = Math.max(1, columnWidth + gap);
+    const blocks = article.querySelectorAll("[data-block-index]");
+    const last = blocks[blocks.length - 1];
+    let extent = Math.max(frame.scrollWidth, article.scrollWidth, frame.clientWidth);
+    if (last) extent = Math.max(extent, last.offsetLeft + Math.max(1, last.offsetWidth));
+    const totalColumns = Math.max(1, Math.round((extent + gap * 0.25) / columnStep));
+    return {
+      columnsPerSpread,
+      totalSpreads: Math.max(1, Math.ceil(totalColumns / columnsPerSpread)),
+      spreadStep: columnsPerSpread * columnStep
+    };
+  }
+  function turnPage(current, direction) {
+    if (runtime !== current || current.root.querySelector(".fqa-wide-scrim")) return;
+    const delta = direction === "next" ? 1 : -1;
+    const candidate = current.spread + delta;
+    if (candidate < 0 || candidate >= current.layout.totalSpreads) {
+      navigateChapter(current, direction);
+      return;
+    }
+    current.spread = candidate;
+    animatePage(current, direction);
+    paintSpread(current);
+    savePosition(current);
+  }
+  function paintSpread(current) {
+    current.frame.scrollTo({ left: current.spread * current.layout.spreadStep, behavior: "instant" });
+    current.indicator.textContent = `${current.spread + 1}/${current.layout.totalSpreads}`;
+  }
+  function animatePage(current, direction) {
+    current.frame.classList.remove("fqa-wide-motion-next", "fqa-wide-motion-previous");
+    void current.frame.offsetWidth;
+    current.frame.classList.add(`fqa-wide-motion-${direction}`);
+  }
+  function navigateChapter(current, direction) {
+    var _a;
+    const chapters = ((_a = current.snapshot.book) == null ? void 0 : _a.chapter_list) ?? [];
+    const index = chapters.findIndex((chapter) => chapter.item_id === current.snapshot.itemId);
+    const target = index >= 0 ? chapters[index + (direction === "next" ? 1 : -1)] : void 0;
+    if (!target) return;
+    if (direction === "previous") sessionStorage.setItem("fqa-wide-reader-open-at-end", target.item_id);
+    navigateToChapter(current, target.item_id);
+  }
+  function navigateToChapter(current, itemId) {
+    if (runtime !== current || itemId === current.snapshot.itemId) return;
+    beginWideReaderTransition();
+    replaceReaderChapter(unsafeWindow.history, itemId);
+  }
+  function openDirectory(current) {
+    var _a;
+    const chapters = ((_a = current.snapshot.book) == null ? void 0 : _a.chapter_list) ?? [];
+    const scrim = createScrim();
+    const drawer = createElement("aside", "fqa-wide-drawer");
+    const heading = createElement("div", "fqa-wide-panel-heading");
+    const headingText = document.createElement("strong");
+    headingText.textContent = `目录 · ${chapters.length} 章`;
+    const closeButton = createCloseButton("关闭目录");
+    heading.append(headingText, closeButton);
+    const search2 = document.createElement("input");
+    search2.className = "fqa-wide-search";
+    search2.placeholder = "搜索章节";
+    search2.setAttribute("aria-label", "搜索章节");
+    const nav = createElement("nav", "fqa-wide-directory-list");
+    drawer.append(heading, search2, nav);
+    scrim.append(drawer);
+    current.root.append(scrim);
+    const render = () => renderDirectory(current, nav, chapters, current.snapshot.itemId, search2.value);
+    closeButton.addEventListener("click", () => scrim.remove());
+    scrim.addEventListener("mousedown", (event) => {
+      if (event.target === scrim) scrim.remove();
+    });
+    search2.addEventListener("input", render);
+    render();
+    requestAnimationFrame(() => {
+      var _a2;
+      search2.focus();
+      (_a2 = nav.querySelector('[aria-current="page"]')) == null ? void 0 : _a2.scrollIntoView({ block: "center" });
+    });
+  }
+  function renderDirectory(current, nav, chapters, currentItemId, query) {
+    nav.replaceChildren();
+    const keyword = query.trim().toLocaleLowerCase();
+    const visible = keyword ? chapters.filter((chapter) => chapter.title.toLocaleLowerCase().includes(keyword)) : chapters;
+    if (visible.length === 0) {
+      const empty = document.createElement("p");
+      empty.textContent = chapters.length === 0 ? "目录尚未加载" : "没有匹配章节";
+      nav.append(empty);
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    visible.forEach((chapter) => {
+      const link = document.createElement("a");
+      link.href = createReaderChapterUrl(chapter.item_id);
+      link.textContent = chapter.title;
+      if (chapter.item_id === currentItemId) link.setAttribute("aria-current", "page");
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        navigateToChapter(current, chapter.item_id);
+      });
+      fragment.append(link);
+    });
+    nav.append(fragment);
+  }
+  function openReaderSettings(current) {
+    const scrim = createScrim();
+    const panel = createElement("section", "fqa-wide-settings");
+    const heading = createElement("div", "fqa-wide-panel-heading");
+    const headingText = document.createElement("strong");
+    headingText.textContent = "显示设置";
+    const closeButton = createCloseButton("关闭显示设置");
+    heading.append(headingText, closeButton);
+    panel.append(heading);
+    const themes = createElement("div", "fqa-wide-themes");
+    const themeOptions = [
+      { value: "system", label: "跟随系统" },
+      { value: "light", label: "明亮" },
+      { value: "paper", label: "羊皮纸" },
+      { value: "green", label: "护眼绿" },
+      { value: "gray", label: "雾灰" },
+      { value: "dark", label: "深夜" }
+    ];
+    themeOptions.forEach(({ value: theme, label }) => {
+      const button = createButton(label, `切换为${label}`);
+      button.dataset.theme = theme;
+      button.setAttribute("aria-pressed", String(settings$1.wideReaderTheme === theme));
+      button.addEventListener("click", () => {
+        settings$1.wideReaderTheme = theme;
+        flushSettings();
+        current.root.dataset.theme = theme;
+        themes.querySelectorAll("button").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      });
+      themes.append(button);
+    });
+    const fonts = createElement("div", "fqa-wide-fonts");
+    const fontLabel = createElement("span", "fqa-wide-section-label");
+    fontLabel.textContent = "正文字体";
+    const fontSelect = document.createElement("select");
+    fontSelect.className = "fqa-wide-select";
+    const fontOptions = [
+      { value: "system", label: "跟随助手设置" },
+      { value: "sans", label: "现代黑体" },
+      { value: "serif", label: "系统衬线" },
+      { value: "song", label: "宋体" },
+      { value: "kai", label: "楷体" },
+      { value: "fangsong", label: "仿宋" }
+    ];
+    fontOptions.forEach(({ value, label }) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      option.selected = settings$1.wideReaderFont === value;
+      fontSelect.append(option);
+    });
+    fontSelect.addEventListener("change", () => {
+      settings$1.wideReaderFont = fontSelect.value;
+      flushSettings();
+      reflowAfterSettings(current);
+    });
+    fonts.append(fontLabel, fontSelect);
+    panel.append(themes, fonts);
+    panel.append(
+      createRangeField("字号", 16, 24, 1, () => settings$1.wideReaderFontSize, (value) => {
+        settings$1.wideReaderFontSize = value;
+        reflowAfterSettings(current);
+      }),
+      createRangeField("行高", 1.4, 2.6, 0.05, () => settings$1.wideReaderLineHeight, (value) => {
+        settings$1.wideReaderLineHeight = value;
+        reflowAfterSettings(current);
+      }),
+      createRangeField("栏间距", 32, 112, 4, () => settings$1.wideReaderColumnGap, (value) => {
+        settings$1.wideReaderColumnGap = value;
+        reflowAfterSettings(current);
+      }),
+      createRangeField("页边距", 32, 120, 4, () => settings$1.wideReaderPageMargin, (value) => {
+        settings$1.wideReaderPageMargin = value;
+        reflowAfterSettings(current);
+      })
+    );
+    scrim.append(panel);
+    current.root.append(scrim);
+    closeButton.addEventListener("click", () => scrim.remove());
+    scrim.addEventListener("mousedown", (event) => {
+      if (event.target === scrim) scrim.remove();
+    });
+  }
+  function createRangeField(label, min, max, step, readValue, writeValue) {
+    const field = createElement("label", "fqa-wide-field");
+    const text = document.createElement("span");
+    text.textContent = label;
+    const input = document.createElement("input");
+    input.type = "range";
+    input.min = String(min);
+    input.max = String(max);
+    input.step = String(step);
+    input.value = String(readValue());
+    const output = document.createElement("output");
+    output.textContent = input.value;
+    input.addEventListener("input", () => {
+      const value = Number(input.value);
+      output.textContent = Number.isInteger(value) ? String(value) : value.toFixed(2);
+      writeValue(value);
+    });
+    field.append(text, input, output);
+    return field;
+  }
+  function reflowAfterSettings(current) {
+    const position = capturePosition(current);
+    applyReaderVariables(current.root);
+    requestAnimationFrame(() => measureAndRestore(current, position));
+  }
+  function applyReaderVariables(root) {
+    root.style.setProperty("--fqa-wide-font-size", `${settings$1.wideReaderFontSize}px`);
+    root.style.setProperty("--fqa-wide-line-height", String(settings$1.wideReaderLineHeight));
+    root.style.setProperty("--fqa-wide-gap", `${settings$1.wideReaderColumnGap}px`);
+    root.style.setProperty("--fqa-wide-margin", `${settings$1.wideReaderPageMargin}px`);
+    root.style.setProperty("--fqa-wide-font-family", resolveReaderFont());
+  }
+  function resolveReaderFont() {
+    const fonts = {
+      system: settings$1.readerFont || "'Microsoft YaHei', system-ui, sans-serif",
+      sans: "'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif",
+      serif: "'Noto Serif SC', 'Source Han Serif SC', serif",
+      song: "SimSun, 'Songti SC', 'Noto Serif SC', serif",
+      kai: "KaiTi, STKaiti, 'Kaiti SC', serif",
+      fangsong: "FangSong, STFangsong, 'Fangsong SC', serif"
+    };
+    return fonts[settings$1.wideReaderFont];
+  }
+  function savePosition(current) {
+    const position = capturePosition(current);
+    if (!position) return;
+    GM_setValue(`${POSITION_PREFIX}${current.snapshot.itemId}`, JSON.stringify(position));
+  }
+  function capturePosition(current) {
+    const logicalLeft = current.spread * current.layout.spreadStep;
+    const blocks = [...current.article.querySelectorAll("[data-block-index]")];
+    const visible = blocks.find((block) => block.offsetLeft + block.offsetWidth >= logicalLeft - 1) ?? blocks[blocks.length - 1];
+    const blockIndex = Number(visible == null ? void 0 : visible.dataset.blockIndex);
+    return Number.isInteger(blockIndex) ? { blockIndex } : null;
+  }
+  function loadPosition(itemId) {
+    try {
+      const raw = GM_getValue(`${POSITION_PREFIX}${itemId}`);
+      if (typeof raw !== "string") return null;
+      const value = JSON.parse(raw);
+      return Number.isInteger(value.blockIndex) ? { blockIndex: value.blockIndex } : null;
+    } catch {
+      return null;
+    }
+  }
+  function createScrim() {
+    return createElement("div", "fqa-wide-scrim");
+  }
+  function createElement(tag, className) {
+    const element = document.createElement(tag);
+    element.className = className;
+    return element;
+  }
+  function createButton(text, label) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = text;
+    button.setAttribute("aria-label", label);
+    button.title = label;
+    return button;
+  }
+  function createCloseButton(label) {
+    const button = createButton("×", label);
+    button.className = "fqa-wide-close";
+    return button;
+  }
+  function createAccountButton() {
+    var _a, _b;
+    const button = createButton("", "打开账户与助手菜单");
+    button.className = "fqa-wide-account-button";
+    const avatar = (_a = userState.userInfo) == null ? void 0 : _a.avatar;
+    if (avatar) {
+      const image = document.createElement("img");
+      image.src = avatar;
+      image.alt = "";
+      button.append(image);
+    }
+    const name2 = document.createElement("span");
+    name2.textContent = ((_b = userState.userInfo) == null ? void 0 : _b.username) || "账户";
+    button.append(name2);
+    return button;
+  }
+  async function openAccountMenu(current, anchor) {
+    var _a;
+    (_a = current.root.querySelector(".fqa-wide-account-menu")) == null ? void 0 : _a.remove();
+    const menu = createElement("div", "fqa-wide-account-menu");
+    menu.setAttribute("role", "menu");
+    if (userState.isLogin && userState.userInfo) {
+      const summary = createElement("div", "fqa-wide-account-summary");
+      summary.textContent = `${userState.userInfo.username} · 正在读取统计…`;
+      menu.append(summary);
+      appendAccountLink(menu, "我的书架", "/bookshelf");
+      appendAccountAction(menu, "兑换会员", () => triggerNativeUserAction("兑换会员"));
+      appendAccountAction(menu, "退出登录", () => triggerNativeUserAction("退出登录"));
+      try {
+        const detail = await getDetailedUserInfo();
+        if (detail && menu.isConnected) {
+          summary.textContent = `${detail.username} · 阅读 ${detail.read_book_num ?? 0} 本 · ${formatReadingTime$1(detail.read_book_time ?? 0n)}`;
+        }
+      } catch (error) {
+        console.warn("[fqa:分页菜单] 阅读统计加载失败", error);
+        summary.textContent = userState.userInfo.username;
+      }
+    } else {
+      appendAccountLink(menu, "登录 / 注册", "/login");
+    }
+    const settingsButton = createButton("助手设置", "打开助手设置");
+    settingsButton.setAttribute("role", "menuitem");
+    settingsButton.addEventListener("click", () => {
+      menu.remove();
+      openSettings();
+    });
+    menu.append(settingsButton);
+    anchor.insertAdjacentElement("afterend", menu);
+  }
+  function formatReadingTime$1(milliseconds) {
+    const totalMinutes = milliseconds / 60000n;
+    return `${totalMinutes / 60n} 时 ${totalMinutes % 60n} 分`;
+  }
+  function appendAccountLink(menu, label, href) {
+    const link = document.createElement("a");
+    link.href = href;
+    link.textContent = label;
+    link.setAttribute("role", "menuitem");
+    menu.append(link);
+  }
+  function appendAccountAction(menu, label, action) {
+    const button = createButton(label, label);
+    button.setAttribute("role", "menuitem");
+    button.addEventListener("click", () => void action());
+    menu.append(button);
+  }
+  async function triggerNativeUserAction(label) {
+    const findAction = () => [...document.querySelectorAll('a, button, [role="menuitem"]')].find((element) => {
+      var _a;
+      return !element.closest(`#${ROOT_ID}`) && ((_a = element.textContent) == null ? void 0 : _a.trim()) === label;
+    }) ?? null;
+    let action = findAction();
+    if (!action) {
+      const avatar = document.querySelector('.slogin-user-avatar, [class*="user-avatar"]');
+      avatar == null ? void 0 : avatar.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+      avatar == null ? void 0 : avatar.click();
+      await new Promise((resolve) => window.setTimeout(resolve, 120));
+      action = findAction();
+    }
+    if (action) action.click();
+    else console.warn(`[fqa:分页菜单] 未找到原站“${label}”入口`);
+  }
+  function showWideReaderEntry() {
+    if (document.getElementById(ENTRY_ID) || !settings$1.wideReaderEnabled || !lastSnapshot || lastSnapshot.comic) return;
+    ensureWideReaderStyle();
+    const button = createButton("分页阅读", "重新进入沉浸式分页阅读");
+    button.id = ENTRY_ID;
+    button.addEventListener("click", () => {
+      settings$1.wideReaderActive = true;
+      flushSettings();
+      if (lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot);
+    });
+    document.body.append(button);
+  }
+  function removeWideReaderEntry() {
+    var _a;
+    (_a = document.getElementById(ENTRY_ID)) == null ? void 0 : _a.remove();
+  }
+  function isEditableTarget(target) {
+    return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target instanceof HTMLElement && target.isContentEditable;
+  }
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+  vue.watch(
+    () => settings$1.wideReaderEnabled,
+    (enabled) => {
+      if (!enabled) {
+        removeWideReaderEntry();
+        unmountWideReader();
+      } else if (settings$1.wideReaderActive && lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot);
+      else showWideReaderEntry();
+    }
+  );
+  vue.watch(
+    () => settings$1.wideReaderActive,
+    (active) => {
+      if (!active) {
+        unmountWideReader();
+        showWideReaderEntry();
+      } else if (settings$1.wideReaderEnabled && lastSnapshot && !lastSnapshot.comic) {
+        mountWideReader(lastSnapshot);
+      }
+    }
+  );
+  vue.watch(
+    () => [
+      settings$1.wideReaderTheme,
+      settings$1.wideReaderFont,
+      settings$1.readerFont,
+      settings$1.wideReaderFontSize,
+      settings$1.wideReaderLineHeight,
+      settings$1.wideReaderColumnGap,
+      settings$1.wideReaderPageMargin
+    ],
+    () => {
+      if (!runtime) return;
+      runtime.root.dataset.theme = settings$1.wideReaderTheme;
+      reflowAfterSettings(runtime);
+    }
+  );
+  let currentBook = null;
+  let latestItemId = null;
+  const SCRIPT_CONTAINER_ID = "fqa-reader-content";
+  let comicObserver = null;
+  function ensureScriptContainer(readerContainer, comic) {
+    let scriptContainer = document.getElementById(SCRIPT_CONTAINER_ID);
+    if (!scriptContainer) {
+      scriptContainer = cloneElement(readerContainer);
+      scriptContainer.id = SCRIPT_CONTAINER_ID;
+      scriptContainer.classList.add("fqa");
+      readerContainer.insertAdjacentElement("beforebegin", scriptContainer);
+    }
+    scriptContainer.classList.toggle("fqa-comic-reader", comic);
+    if (settings$1.allowCopy) scriptContainer.classList.remove("noselect");
+    comicObserver == null ? void 0 : comicObserver.disconnect();
+    comicObserver = null;
+    scriptContainer.innerHTML = "";
+    readerContainer.classList.add("fqa-hide");
+    return scriptContainer;
+  }
+  async function insertContent() {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o;
+    const itemId = ((_a = window.location.pathname.split("/").pop()) == null ? void 0 : _a.substring(0, 19)) || "";
+    if (!itemId) {
+      console.warn("No item_id found in URL");
+      return;
+    }
+    latestItemId = itemId;
+    beginWideReaderTransition();
+    let chapter;
+    try {
+      chapter = await getChapter(itemId);
+    } catch (error) {
+      failWideReaderTransition();
+      throw error;
+    }
+    if (!chapter) {
+      console.warn("No chapter found for item_id:", itemId);
+      failWideReaderTransition();
+      return;
+    }
+    if (latestItemId !== itemId) {
+      console.debug("Stale chapter response discarded:", itemId);
+      return;
+    }
+    console.log("Chapter:", chapter);
+    const pageState = unsafeWindow.__INITIAL_STATE__;
+    const chapterTitle = ((_b = chapter.novel_data) == null ? void 0 : _b.title) || ((_d = (_c = pageState == null ? void 0 : pageState.reader) == null ? void 0 : _c.chapterData) == null ? void 0 : _d.title);
+    if (typeof chapter.content === "string") {
+      void applyBookCss((_e = chapter.novel_data) == null ? void 0 : _e.css_map, "#fqa-reader-content");
+      const dp = new DOMParser();
+      const doc = dp.parseFromString(chapter.content, "text/html");
+      const body = doc.body;
+      body.querySelectorAll('link[rel="stylesheet"]').forEach((el) => el.remove());
+      let article = body.querySelector("article");
+      let toProcess = article || body;
+      processFootnotes(toProcess);
+      for (let i2 = 0; i2 < toProcess.childNodes.length; i2++) {
+        if (i2 < 2 && ((_g = (_f = toProcess.childNodes[i2]) == null ? void 0 : _f.innerHTML) == null ? void 0 : _g.includes(chapterTitle))) {
+          toProcess.removeChild(toProcess.childNodes[i2]);
+          break;
+        }
+      }
+      if (!article) {
+        article = document.createElement("article");
+        article.innerHTML = toProcess.innerHTML;
+        toProcess = article;
+      }
+      const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)");
+      if (readerContainer) {
+        const scriptContainer = ensureScriptContainer(readerContainer, false);
+        scriptContainer.appendChild(toProcess);
+        bindFootnoteInteraction(scriptContainer);
+      }
+    } else if (chapter.content.picInfos) {
+      if (chapter.content.encrypt) {
+        const imgs = [];
+        for (let i2 = 0; i2 < chapter.content.picInfos.length; i2++) {
+          const picInfo = chapter.content.picInfos[i2];
+          const img = document.createElement("img");
+          img.className = "fqa-comic-img fqa-comic-encrypted";
+          img.alt = `第${i2 + 1}页`;
+          img.dataset.encryptedUrl = picInfo.picUrl;
+          img.dataset.encryptKey = chapter.content.encrypt_key;
+          img.dataset.pageIndex = i2.toString();
+          img.style.minHeight = "500px";
+          img.style.backgroundColor = "#f0f0f0";
+          imgs.push(img);
+        }
+        const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)");
+        if (readerContainer) {
+          const scriptContainer = ensureScriptContainer(readerContainer, true);
+          imgs.forEach((img) => scriptContainer.appendChild(img));
+          const observer2 = new IntersectionObserver(
+            async (entries) => {
+              for (const entry of entries) {
+                if (entry.isIntersecting) {
+                  const img = entry.target;
+                  if (img.dataset.encryptedUrl && img.dataset.encryptKey && !img.src) {
+                    observer2.unobserve(img);
+                    try {
+                      const encryptedBuffer = await fetchArrayBuffer(
+                        img.dataset.encryptedUrl
+                      );
+                      const decryptedBuffer = await decryptComicImage(
+                        encryptedBuffer,
+                        img.dataset.encryptKey
+                      );
+                      const blob = new Blob([decryptedBuffer], { type: "image/jpeg" });
+                      const blobUrl = URL.createObjectURL(blob);
+                      img.src = blobUrl;
+                      img.style.minHeight = "";
+                      img.style.backgroundColor = "";
+                      img.onload = () => {
+                        URL.revokeObjectURL(blobUrl);
+                      };
+                    } catch (error) {
+                      console.error(`解密图片失败 (页 ${img.dataset.pageIndex}):`, error);
+                      img.alt = `第${Number(img.dataset.pageIndex) + 1}页 - 解密失败`;
+                      img.style.backgroundColor = "#ffebee";
+                    }
+                  }
+                }
+              }
+            },
+            {
+              rootMargin: "200px"
+            }
+          );
+          comicObserver = observer2;
+          imgs.forEach((img) => observer2.observe(img));
+        }
+      } else {
+        const imgs = [];
+        for (let i2 = 0; i2 < chapter.content.picInfos.length; i2++) {
+          const picInfo = chapter.content.picInfos[i2];
+          const img = document.createElement("img");
+          img.className = "fqa-comic-img";
+          img.alt = `第${i2 + 1}页`;
+          img.src = picInfo.picUrl;
+          imgs.push(img);
+        }
+        const readerContainer = document.querySelector("div.muye-reader-content:not(.fqa)");
+        if (readerContainer) {
+          const scriptContainer = ensureScriptContainer(readerContainer, true);
+          imgs.forEach((img) => scriptContainer.appendChild(img));
+        }
+      }
+    }
+    const muyeReaderTitle = document.querySelector("h1.muye-reader-title");
+    let muyeReaderSubtitle = document.querySelector("div.muye-reader-subtitle");
+    (_h = document.querySelector("#fqa-subtitle")) == null ? void 0 : _h.remove();
+    if (muyeReaderSubtitle) {
+      let _cloned = cloneElement(muyeReaderSubtitle);
+      muyeReaderSubtitle.classList.add("fqa-hide");
+      _cloned.id = "fqa-subtitle";
+      muyeReaderSubtitle.insertAdjacentElement("afterend", _cloned);
+      muyeReaderSubtitle = _cloned;
+      _cloned.classList.remove("fqa-hide");
+      console.log("clone subtitle: ", _cloned);
+    }
+    if (muyeReaderTitle) {
+      muyeReaderTitle.textContent = chapterTitle;
+    }
+    console.log("Current book:", currentBook);
+    const chapterBookId = ((_i = chapter.novel_data) == null ? void 0 : _i.book_id) || ((_k = (_j = pageState == null ? void 0 : pageState.reader) == null ? void 0 : _j.chapterData) == null ? void 0 : _k.bookId);
+    if (chapterBookId && (!currentBook || currentBook.book_id !== chapterBookId)) {
+      try {
+        currentBook = await getBookInfoAndCatalog(chapterBookId);
+      } catch (error) {
+        console.warn("[fqa:目录] 书籍详情加载失败，改用当前页面信息和目录后备", error);
+        try {
+          const catalog = await getCatalog(chapterBookId);
+          currentBook = {
+            book_id: chapterBookId,
+            title: ((_m = (_l = pageState == null ? void 0 : pageState.reader) == null ? void 0 : _l.chapterData) == null ? void 0 : _m.bookName) || "当前书籍",
+            author: ((_o = (_n = pageState == null ? void 0 : pageState.reader) == null ? void 0 : _n.chapterData) == null ? void 0 : _o.author) || "",
+            cover_url: "",
+            summary: "",
+            update_time: "",
+            status: "未知",
+            volume_list: catalog.volume_list,
+            chapter_list: catalog.chapter_list,
+            all_item_ids: catalog.all_item_ids
+          };
+        } catch (catalogError) {
+          console.warn("[fqa:目录] 所有目录来源均不可用，正文仍保持可读", catalogError);
+          currentBook = null;
+        }
+      }
+      console.log("Current book:", currentBook);
+    }
+    if (currentBook && currentBook.chapter_list) {
+      const currentChapterItem = currentBook.chapter_list.find((c) => c.item_id === itemId);
+      if (currentChapterItem) {
+        console.log("Current chapter:", currentChapterItem);
+        document.title = currentChapterItem.title + " - " + currentBook.title + " - 番茄小说";
+        if (document.getElementById("fqa-current-chapter-volume")) {
+          const c = document.getElementById("fqa-current-chapter-volume");
+          if (c) {
+            c.textContent = currentChapterItem.volume_title;
+          }
+        } else {
+          const volSpan = document.createElement("span");
+          volSpan.className = "desc-item";
+          volSpan.id = "fqa-current-chapter-volume";
+          volSpan.textContent = currentChapterItem.volume_title;
+          const c = muyeReaderSubtitle == null ? void 0 : muyeReaderSubtitle.firstChild;
+          if (c) {
+            c.insertAdjacentElement("beforebegin", volSpan);
+          }
+        }
+        let updateTimeSpans = (muyeReaderSubtitle == null ? void 0 : muyeReaderSubtitle.querySelectorAll("span.desc-item")) || [];
+        if (updateTimeSpans.length >= 2) {
+          let updateTimeSpan = updateTimeSpans[updateTimeSpans.length - 1];
+          let uttspan = updateTimeSpan.firstChild;
+          uttspan == null ? void 0 : uttspan.remove();
+          updateTimeSpan.innerHTML = "更新时间：" + currentChapterItem.update_time;
+        } else {
+          let updateTimeSpan = document.createElement("span");
+          updateTimeSpan.className = "desc-item";
+          updateTimeSpan.textContent = `更新时间：${currentChapterItem.update_time}`;
+        }
+      }
+    }
+    const enhancedContent = document.getElementById(SCRIPT_CONTAINER_ID);
+    if (enhancedContent) {
+      syncWideReader({
+        itemId,
+        title: chapterTitle || "当前章节",
+        book: currentBook,
+        source: enhancedContent,
+        comic: typeof chapter.content !== "string"
+      });
+    }
+  }
+  async function onUrlChange$1(_previous) {
+    await insertContent();
+  }
+  async function onReaderRouteChange(_previous) {
+    if (!readerFilter(window.location.pathname, new URLSearchParams(window.location.search))) {
+      leaveWideReaderPage();
+    }
+  }
+  async function onHashChange$1(_previous) {
+  }
+  async function onLoad$1() {
+    document.querySelector("div.muye-reader-btns");
+    await insertContent();
+  }
+  function readerFilter(path, _query, _hash) {
+    return path.startsWith("/reader") || path.startsWith("reader");
+  }
+  const _exports$4 = [
+    {
+      id: "readerHook_leave",
+      event: "onUrlChange",
+      handler: onReaderRouteChange,
+      filter: () => true
+    },
+    {
+      id: "readerHook_load",
+      event: "load",
+      handler: onLoad$1,
+      filter: readerFilter
+    },
+    {
+      id: "readerHook_urlChange",
+      event: "onUrlChange",
+      handler: onUrlChange$1,
+      filter: readerFilter
+    },
+    {
+      id: "readerHook_hashChange",
+      event: "onHashChange",
+      handler: onHashChange$1,
+      filter: readerFilter
+    }
+  ];
+  const blackList = [
+    "mcs.zijieapi.com",
+    "vcs.zijieapi.com/vc/setting",
+    "mon.zijieapi.com",
+    "mssdk.bytedance.com/web/common",
+    "hm.baidu.com"
+  ];
+  const BLOCKED_BODY = JSON.stringify({
+    e: 0,
+    sc: 10,
+    tc: 10
+  });
+  function checkBlack(url) {
+    if (!settings$1.blockReport) return false;
+    return blackList.some((black) => url.includes(black));
+  }
+  const originalFetch = unsafeWindow.fetch.bind(unsafeWindow);
+  unsafeWindow.fetch = function fetch2(input, init2) {
+    let url;
+    if (input instanceof Request) {
+      url = input.url;
+    } else if (input instanceof URL) {
+      url = input.href;
+    } else {
+      url = input;
+    }
+    if (checkBlack(url)) {
+      console.log("blocked request: " + url);
+      return Promise.resolve(new Response(BLOCKED_BODY, {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      }));
+    }
+    return originalFetch(input, init2);
+  };
+  const originalXMLHttpRequest = unsafeWindow.XMLHttpRequest;
+  unsafeWindow.XMLHttpRequest = class XMLHttpRequest extends originalXMLHttpRequest {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "_blockedUrl");
+    }
+    open(method, url, async = true, user, password) {
+      if (checkBlack(url)) {
+        console.log("blocked request: " + url);
+        this._blockedUrl = url;
+        return;
+      }
+      this._blockedUrl = void 0;
+      super.open(method, url, async, user, password);
+    }
+    setRequestHeader(name2, value) {
+      if (this._blockedUrl !== void 0) return;
+      super.setRequestHeader(name2, value);
+    }
+    send(body) {
+      if (this._blockedUrl === void 0) {
+        super.send(body);
+        return;
+      }
+      const url = this._blockedUrl;
+      const shadow = (prop, value) => Object.defineProperty(this, prop, { configurable: true, get: () => value });
+      setTimeout(() => {
+        shadow("readyState", 4);
+        shadow("status", 200);
+        shadow("statusText", "OK");
+        shadow("responseURL", url);
+        shadow("responseText", this.responseType === "" || this.responseType === "text" ? BLOCKED_BODY : "");
+        shadow("response", this.responseType === "json" ? {
+          "e": 0,
+          "sc": 10,
+          "tc": 10
+        } : BLOCKED_BODY);
+        this.dispatchEvent(new Event("readystatechange"));
+        this.dispatchEvent(new ProgressEvent("load"));
+        this.dispatchEvent(new ProgressEvent("loadend"));
+      }, 0);
+    }
+    abort() {
+      if (this._blockedUrl !== void 0) return;
+      super.abort();
+    }
+    getAllResponseHeaders() {
+      if (this._blockedUrl !== void 0) return "content-type: application/json\r\n";
+      return super.getAllResponseHeaders();
+    }
+    getResponseHeader(name2) {
+      if (this._blockedUrl !== void 0) {
+        return name2.toLowerCase() === "content-type" ? "application/json" : null;
+      }
+      return super.getResponseHeader(name2);
+    }
+  };
+  const _exports$3 = [];
+  const bookshelf = '<svg xmlns="http://www.w3.org/2000/svg"\r\n     width="24"\r\n     height="24"\r\n     viewBox="0 0 24 24"\r\n     fill="none"\r\n     stroke="currentColor"\r\n     stroke-width="1.2"\r\n     stroke-linecap="round"\r\n     stroke-linejoin="round">\r\n  <path d="M3.5 20h17"/>\r\n  <rect x="5" y="7" width="3.5" height="13" rx="0.8"/>\r\n  <rect x="8.5" y="5" width="4" height="15" rx="0.8"/>\r\n  <path d="M15.1 6.2 18 5.5l3.1 13.6-2.9.7z"/>\r\n  <path d="M9.8 8h1.4M6.1 10h1.3M17 8.8l1.3-.3"/>\r\n</svg>';
+  const settings = '<?xml version="1.0" encoding="utf-8"?>\r\n<svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\r\n    <path fill-rule="evenodd" clip-rule="evenodd"\r\n        d="M12 8.25C9.92894 8.25 8.25 9.92893 8.25 12C8.25 14.0711 9.92894 15.75 12 15.75C14.0711 15.75 15.75 14.0711 15.75 12C15.75 9.92893 14.0711 8.25 12 8.25ZM9.75 12C9.75 10.7574 10.7574 9.75 12 9.75C13.2426 9.75 14.25 10.7574 14.25 12C14.25 13.2426 13.2426 14.25 12 14.25C10.7574 14.25 9.75 13.2426 9.75 12Z"\r\n        fill="#000000" />\r\n    <path fill-rule="evenodd" clip-rule="evenodd"\r\n        d="M11.9747 1.25C11.5303 1.24999 11.1592 1.24999 10.8546 1.27077C10.5375 1.29241 10.238 1.33905 9.94761 1.45933C9.27379 1.73844 8.73843 2.27379 8.45932 2.94762C8.31402 3.29842 8.27467 3.66812 8.25964 4.06996C8.24756 4.39299 8.08454 4.66251 7.84395 4.80141C7.60337 4.94031 7.28845 4.94673 7.00266 4.79568C6.64714 4.60777 6.30729 4.45699 5.93083 4.40743C5.20773 4.31223 4.47642 4.50819 3.89779 4.95219C3.64843 5.14353 3.45827 5.3796 3.28099 5.6434C3.11068 5.89681 2.92517 6.21815 2.70294 6.60307L2.67769 6.64681C2.45545 7.03172 2.26993 7.35304 2.13562 7.62723C1.99581 7.91267 1.88644 8.19539 1.84541 8.50701C1.75021 9.23012 1.94617 9.96142 2.39016 10.5401C2.62128 10.8412 2.92173 11.0602 3.26217 11.2741C3.53595 11.4461 3.68788 11.7221 3.68786 12C3.68785 12.2778 3.53592 12.5538 3.26217 12.7258C2.92169 12.9397 2.62121 13.1587 2.39007 13.4599C1.94607 14.0385 1.75012 14.7698 1.84531 15.4929C1.88634 15.8045 1.99571 16.0873 2.13552 16.3727C2.26983 16.6469 2.45535 16.9682 2.67758 17.3531L2.70284 17.3969C2.92507 17.7818 3.11058 18.1031 3.28089 18.3565C3.45817 18.6203 3.64833 18.8564 3.89769 19.0477C4.47632 19.4917 5.20763 19.6877 5.93073 19.5925C6.30717 19.5429 6.647 19.3922 7.0025 19.2043C7.28833 19.0532 7.60329 19.0596 7.8439 19.1986C8.08452 19.3375 8.24756 19.607 8.25964 19.9301C8.27467 20.3319 8.31403 20.7016 8.45932 21.0524C8.73843 21.7262 9.27379 22.2616 9.94761 22.5407C10.238 22.661 10.5375 22.7076 10.8546 22.7292C11.1592 22.75 11.5303 22.75 11.9747 22.75H12.0252C12.4697 22.75 12.8407 22.75 13.1454 22.7292C13.4625 22.7076 13.762 22.661 14.0524 22.5407C14.7262 22.2616 15.2616 21.7262 15.5407 21.0524C15.686 20.7016 15.7253 20.3319 15.7403 19.93C15.7524 19.607 15.9154 19.3375 16.156 19.1985C16.3966 19.0596 16.7116 19.0532 16.9974 19.2042C17.3529 19.3921 17.6927 19.5429 18.0692 19.5924C18.7923 19.6876 19.5236 19.4917 20.1022 19.0477C20.3516 18.8563 20.5417 18.6203 20.719 18.3565C20.8893 18.1031 21.0748 17.7818 21.297 17.3969L21.3223 17.3531C21.5445 16.9682 21.7301 16.6468 21.8644 16.3726C22.0042 16.0872 22.1135 15.8045 22.1546 15.4929C22.2498 14.7697 22.0538 14.0384 21.6098 13.4598C21.3787 13.1586 21.0782 12.9397 20.7378 12.7258C20.464 12.5538 20.3121 12.2778 20.3121 11.9999C20.3121 11.7221 20.464 11.4462 20.7377 11.2742C21.0783 11.0603 21.3788 10.8414 21.6099 10.5401C22.0539 9.96149 22.2499 9.23019 22.1547 8.50708C22.1136 8.19546 22.0043 7.91274 21.8645 7.6273C21.7302 7.35313 21.5447 7.03183 21.3224 6.64695L21.2972 6.60318C21.0749 6.21825 20.8894 5.89688 20.7191 5.64347C20.5418 5.37967 20.3517 5.1436 20.1023 4.95225C19.5237 4.50826 18.7924 4.3123 18.0692 4.4075C17.6928 4.45706 17.353 4.60782 16.9975 4.79572C16.7117 4.94679 16.3967 4.94036 16.1561 4.80144C15.9155 4.66253 15.7524 4.39297 15.7403 4.06991C15.7253 3.66808 15.686 3.2984 15.5407 2.94762C15.2616 2.27379 14.7262 1.73844 14.0524 1.45933C13.762 1.33905 13.4625 1.29241 13.1454 1.27077C12.8407 1.24999 12.4697 1.24999 12.0252 1.25H11.9747ZM10.5216 2.84515C10.5988 2.81319 10.716 2.78372 10.9567 2.76729C11.2042 2.75041 11.5238 2.75 12 2.75C12.4762 2.75 12.7958 2.75041 13.0432 2.76729C13.284 2.78372 13.4012 2.81319 13.4783 2.84515C13.7846 2.97202 14.028 3.21536 14.1548 3.52165C14.1949 3.61826 14.228 3.76887 14.2414 4.12597C14.271 4.91835 14.68 5.68129 15.4061 6.10048C16.1321 6.51968 16.9974 6.4924 17.6984 6.12188C18.0143 5.9549 18.1614 5.90832 18.265 5.89467C18.5937 5.8514 18.9261 5.94047 19.1891 6.14228C19.2554 6.19312 19.3395 6.27989 19.4741 6.48016C19.6125 6.68603 19.7726 6.9626 20.0107 7.375C20.2488 7.78741 20.4083 8.06438 20.5174 8.28713C20.6235 8.50382 20.6566 8.62007 20.6675 8.70287C20.7108 9.03155 20.6217 9.36397 20.4199 9.62698C20.3562 9.70995 20.2424 9.81399 19.9397 10.0041C19.2684 10.426 18.8122 11.1616 18.8121 11.9999C18.8121 12.8383 19.2683 13.574 19.9397 13.9959C20.2423 14.186 20.3561 14.29 20.4198 14.373C20.6216 14.636 20.7107 14.9684 20.6674 15.2971C20.6565 15.3799 20.6234 15.4961 20.5173 15.7128C20.4082 15.9355 20.2487 16.2125 20.0106 16.6249C19.7725 17.0373 19.6124 17.3139 19.474 17.5198C19.3394 17.72 19.2553 17.8068 19.189 17.8576C18.926 18.0595 18.5936 18.1485 18.2649 18.1053C18.1613 18.0916 18.0142 18.045 17.6983 17.8781C16.9973 17.5075 16.132 17.4803 15.4059 17.8995C14.68 18.3187 14.271 19.0816 14.2414 19.874C14.228 20.2311 14.1949 20.3817 14.1548 20.4784C14.028 20.7846 13.7846 21.028 13.4783 21.1549C13.4012 21.1868 13.284 21.2163 13.0432 21.2327C12.7958 21.2496 12.4762 21.25 12 21.25C11.5238 21.25 11.2042 21.2496 10.9567 21.2327C10.716 21.2163 10.5988 21.1868 10.5216 21.1549C10.2154 21.028 9.97201 20.7846 9.84514 20.4784C9.80512 20.3817 9.77195 20.2311 9.75859 19.874C9.72896 19.0817 9.31997 18.3187 8.5939 17.8995C7.86784 17.4803 7.00262 17.5076 6.30158 17.8781C5.98565 18.0451 5.83863 18.0917 5.73495 18.1053C5.40626 18.1486 5.07385 18.0595 4.81084 17.8577C4.74458 17.8069 4.66045 17.7201 4.52586 17.5198C4.38751 17.314 4.22736 17.0374 3.98926 16.625C3.75115 16.2126 3.59171 15.9356 3.4826 15.7129C3.37646 15.4962 3.34338 15.3799 3.33248 15.2971C3.28921 14.9684 3.37828 14.636 3.5801 14.373C3.64376 14.2901 3.75761 14.186 4.0602 13.9959C4.73158 13.5741 5.18782 12.8384 5.18786 12.0001C5.18791 11.1616 4.73165 10.4259 4.06021 10.004C3.75769 9.81389 3.64385 9.70987 3.58019 9.62691C3.37838 9.3639 3.28931 9.03149 3.33258 8.7028C3.34348 8.62001 3.37656 8.50375 3.4827 8.28707C3.59181 8.06431 3.75125 7.78734 3.98935 7.37493C4.22746 6.96253 4.3876 6.68596 4.52596 6.48009C4.66055 6.27983 4.74468 6.19305 4.81093 6.14222C5.07395 5.9404 5.40636 5.85133 5.73504 5.8946C5.83873 5.90825 5.98576 5.95483 6.30173 6.12184C7.00273 6.49235 7.86791 6.51962 8.59394 6.10045C9.31998 5.68128 9.72896 4.91837 9.75859 4.12602C9.77195 3.76889 9.80512 3.61827 9.84514 3.52165C9.97201 3.21536 10.2154 2.97202 10.5216 2.84515Z"\r\n        fill="#000000" />\r\n</svg>';
   function formatReadingTime(readBookTime) {
     let minutes = readBookTime / 60000n;
     const hours = minutes / 60n;
