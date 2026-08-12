@@ -8,6 +8,7 @@ import { getDetailedUserInfo, userState } from './api/user'
 import { openSettings } from './settingsPanel'
 import type { WideReaderFont, WideReaderTheme } from './wideReaderPreferences'
 import { shouldTurnPageForWheel } from './wideReaderInteraction'
+import { calculateSpreadOffset } from './wideReaderPaging'
 
 /** 分页阅读器同步时需要的章节快照。 */
 export interface WideReaderSnapshot {
@@ -135,11 +136,13 @@ function mountWideReader(snapshot: WideReaderSnapshot): void {
     const directoryButton = createButton('目录', '打开目录')
     const settingsButton = createButton('显示', '打开显示设置')
     const accountButton = createAccountButton()
+    const accountContainer = createElement('div', 'fqa-wide-account')
+    accountContainer.append(accountButton)
     const title = createElement('span', 'fqa-wide-title')
     title.textContent = snapshot.title
     const exitButton = createButton('退出分页', '退出沉浸式分页阅读')
     exitButton.classList.add('fqa-wide-exit')
-    topControls.append(directoryButton, settingsButton, title, accountButton, exitButton)
+    topControls.append(directoryButton, settingsButton, title, accountContainer, exitButton)
 
     const leftButton = createButton('‹', '上一页')
     leftButton.className = 'fqa-wide-edge fqa-wide-edge-left'
@@ -347,9 +350,10 @@ function turnPage(current: WideReaderRuntime, direction: 'previous' | 'next'): v
     savePosition(current)
 }
 
-/** 将当前页应用到滚动容器并刷新数字页码。 */
+/** 将当前页应用到正文横向位移并刷新数字页码。 */
 function paintSpread(current: WideReaderRuntime): void {
-    current.frame.scrollTo({ left: current.spread * current.layout.spreadStep, behavior: 'instant' })
+    // scrollLeft 在奇数栏末页会被最大滚动距离钳制半栏，正文位移可准确显示“末栏 + 空白栏”。
+    current.article.style.transform = `translate3d(${calculateSpreadOffset(current.spread, current.layout.spreadStep)}px, 0, 0)`
     current.indicator.textContent = `${current.spread + 1}/${current.layout.totalSpreads}`
 }
 
@@ -482,6 +486,7 @@ function openReaderSettings(current: WideReaderRuntime): void {
     fontSelect.className = 'fqa-wide-select'
     const fontOptions: Array<{ value: WideReaderFont; label: string }> = [
         { value: 'system', label: '跟随助手设置' },
+        { value: 'yahei', label: '微软雅黑' },
         { value: 'sans', label: '现代黑体' },
         { value: 'serif', label: '系统衬线' },
         { value: 'song', label: '宋体' },
@@ -577,6 +582,7 @@ function applyReaderVariables(root: HTMLElement): void {
 function resolveReaderFont(): string {
     const fonts: Record<WideReaderFont, string> = {
         system: settings.readerFont || "'Microsoft YaHei', system-ui, sans-serif",
+        yahei: "'Microsoft YaHei', '微软雅黑', sans-serif",
         sans: "'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif",
         serif: "'Noto Serif SC', 'Source Han Serif SC', serif",
         song: "SimSun, 'Songti SC', 'Noto Serif SC', serif",
@@ -666,22 +672,14 @@ async function openAccountMenu(current: WideReaderRuntime, anchor: HTMLElement):
     current.root.querySelector('.fqa-wide-account-menu')?.remove()
     const menu = createElement('div', 'fqa-wide-account-menu')
     menu.setAttribute('role', 'menu')
+    let summary: HTMLElement | null = null
     if (userState.isLogin && userState.userInfo) {
-        const summary = createElement('div', 'fqa-wide-account-summary')
-        summary.textContent = `${userState.userInfo.username} · 正在读取统计…`
+        summary = createElement('div', 'fqa-wide-account-summary')
+        summary.textContent = formatAccountSummary(userState.userInfo)
         menu.append(summary)
         appendAccountLink(menu, '我的书架', '/bookshelf')
         appendAccountAction(menu, '兑换会员', () => triggerNativeUserAction('兑换会员'))
         appendAccountAction(menu, '退出登录', () => triggerNativeUserAction('退出登录'))
-        try {
-            const detail = await getDetailedUserInfo()
-            if (detail && menu.isConnected) {
-                summary.textContent = `${detail.username} · 阅读 ${detail.read_book_num ?? 0} 本 · ${formatReadingTime(detail.read_book_time ?? 0n)}`
-            }
-        } catch (error) {
-            console.warn('[fqa:分页菜单] 阅读统计加载失败', error)
-            summary.textContent = userState.userInfo.username
-        }
     } else {
         appendAccountLink(menu, '登录 / 注册', '/login')
     }
@@ -692,12 +690,45 @@ async function openAccountMenu(current: WideReaderRuntime, anchor: HTMLElement):
         openSettings()
     })
     menu.append(settingsButton)
-    anchor.insertAdjacentElement('afterend', menu)
+    anchor.parentElement?.append(menu)
+
+    // 菜单先立即显示；统计在后台补全，慢接口不会阻塞入口展示。
+    if (summary) {
+        try {
+            const detail = await withTimeout(getDetailedUserInfo(), 2500)
+            if (detail && summary.isConnected) summary.textContent = formatAccountSummary(detail)
+        } catch (error) {
+            console.warn('[fqa:分页菜单] 阅读统计加载失败', error)
+        }
+    }
+}
+
+/** 生成账户菜单摘要；统计尚未缓存时只显示用户名，不展示永久加载文案。 */
+function formatAccountSummary(user: typeof userState.userInfo): string {
+    if (!user) return '账户'
+    if (user.read_book_num === undefined || user.read_book_time === undefined) return user.username
+    return `${user.username} · 阅读 ${user.read_book_num} 本 · ${formatReadingTime(user.read_book_time)}`
+}
+
+/** 为用户统计请求增加超时兜底，防止菜单长期停留在等待状态。 */
+async function withTimeout<T>(task: Promise<T>, timeoutMilliseconds: number): Promise<T | null> {
+    let timer: number | undefined
+    const timeout = new Promise<null>((resolve) => {
+        timer = window.setTimeout(() => resolve(null), timeoutMilliseconds)
+    })
+    try {
+        return await Promise.race([task, timeout])
+    } finally {
+        if (timer !== undefined) window.clearTimeout(timer)
+    }
 }
 
 /** 将毫秒阅读时长格式化为紧凑的小时分钟文本。 */
-function formatReadingTime(milliseconds: bigint): string {
-    const totalMinutes = milliseconds / 60_000n
+function formatReadingTime(milliseconds: bigint | number): string {
+    const safeMilliseconds = typeof milliseconds === 'bigint'
+        ? milliseconds
+        : BigInt(Math.max(0, Math.trunc(milliseconds)))
+    const totalMinutes = safeMilliseconds / 60_000n
     return `${totalMinutes / 60n} 时 ${totalMinutes % 60n} 分`
 }
 

@@ -149,6 +149,7 @@ const GITHUB = 'https://github.com/Kira3864/fanqie-assistant-wide-reader'
                         <span class="fqa-set-label">分页正文字体</span>
                         <select v-model="settings.wideReaderFont" class="fqa-set-input">
                             <option value="system">跟随助手字体</option>
+                            <option value="yahei">微软雅黑</option>
                             <option value="sans">现代黑体</option>
                             <option value="serif">系统衬线</option>
                             <option value="song">宋体</option>

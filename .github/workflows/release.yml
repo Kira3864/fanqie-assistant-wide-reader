@@ -32,6 +32,9 @@ jobs:
       - name: 构建 Userscript
         run: npm run build
 
+      - name: 准备带版本号的安装脚本
+        run: cp dist/fanqie-assistant-wide-reader.user.js "fanqie-assistant-wide-reader-${GITHUB_REF_NAME}.user.js"
+
       - name: 打包源码
         run: git archive --format=zip --prefix="fanqie-assistant-wide-reader-${GITHUB_REF_NAME}/" -o "fanqie-assistant-wide-reader-${GITHUB_REF_NAME}-source.zip" HEAD
 
@@ -40,7 +43,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: >-
           gh release create "$GITHUB_REF_NAME"
-          dist/fanqie-assistant-wide-reader.user.js
+          "fanqie-assistant-wide-reader-${GITHUB_REF_NAME}.user.js"
           "fanqie-assistant-wide-reader-${GITHUB_REF_NAME}-source.zip"
           --generate-notes
           --title "番茄小说助手・宽屏阅读版 $GITHUB_REF_NAME"

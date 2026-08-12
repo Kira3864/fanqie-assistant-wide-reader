@@ -17,7 +17,7 @@ describe('分页显示偏好', () => {
 
     /** 应包含六种字体方案，并拒绝未知字体。 */
     it('校验内置字体', () => {
-        expect(WIDE_READER_FONTS).toEqual(['system', 'sans', 'serif', 'song', 'kai', 'fangsong'])
+        expect(WIDE_READER_FONTS).toEqual(['system', 'yahei', 'sans', 'serif', 'song', 'kai', 'fangsong'])
         expect(WIDE_READER_FONTS.every(isWideReaderFont)).toBe(true)
         expect(isWideReaderFont('comic-sans')).toBe(false)
     })

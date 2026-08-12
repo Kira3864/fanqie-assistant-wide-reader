@@ -2,7 +2,7 @@
 export type WideReaderTheme = 'system' | 'light' | 'paper' | 'green' | 'gray' | 'dark'
 
 /** 分页阅读器内置字体方案。 */
-export type WideReaderFont = 'system' | 'sans' | 'serif' | 'song' | 'kai' | 'fangsong'
+export type WideReaderFont = 'system' | 'yahei' | 'sans' | 'serif' | 'song' | 'kai' | 'fangsong'
 
 /** 分页阅读器支持的全部主题，供设置归一化和测试复用。 */
 export const WIDE_READER_THEMES: readonly WideReaderTheme[] = [
@@ -11,7 +11,7 @@ export const WIDE_READER_THEMES: readonly WideReaderTheme[] = [
 
 /** 分页阅读器支持的全部字体方案，供设置归一化和测试复用。 */
 export const WIDE_READER_FONTS: readonly WideReaderFont[] = [
-    'system', 'sans', 'serif', 'song', 'kai', 'fangsong',
+    'system', 'yahei', 'sans', 'serif', 'song', 'kai', 'fangsong',
 ]
 
 /** 判断未知值是否为受支持的分页主题。 */

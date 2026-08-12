@@ -272,6 +272,11 @@
     max-width: 150px;
 }
 
+.fqa-wide-account {
+    position: relative;
+    flex: 0 0 auto;
+}
+
 .fqa-wide-account-button img {
     width: 24px;
     height: 24px;
@@ -288,8 +293,8 @@
 .fqa-wide-account-menu {
     position: absolute;
     z-index: 7;
-    top: 52px;
-    right: 98px;
+    top: calc(100% + 8px);
+    right: 0;
     display: grid;
     min-width: 176px;
     overflow: hidden;
