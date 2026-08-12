@@ -19,9 +19,11 @@
 > **项目处于快速开发期。** 核心功能已基本稳定，但仍可能随时调整接口和目录结构。欢迎试用和反馈。  
 > **这是我的第一个 TypeScript 项目。** 属于边学边写，代码质量可能不高，有问题欢迎指正。
 
-## 脚本发布地址:  
-[GitHub](https://github.com/naiyQAQ/fanqie-assistant) | 如果觉得好用，去点点 star 吧！  
-[GreasyFork](https://greasyfork.org/zh-CN/scripts/589115-%E7%95%AA%E8%8C%84%E5%B0%8F%E8%AF%B4%E5%8A%A9%E6%89%8B)
+## 脚本发布地址
+
+[安装宽屏阅读版](https://raw.githubusercontent.com/Kira3864/fanqie-assistant-wide-reader/main/dist/fanqie-assistant-wide-reader.user.js) |
+[项目主页](https://github.com/Kira3864/fanqie-assistant-wide-reader) |
+[原版 GreasyFork](https://greasyfork.org/zh-CN/scripts/589115-%E7%95%AA%E8%8C%84%E5%B0%8F%E8%AF%B4%E5%8A%A9%E6%89%8B)
 
 ## 功能特性
 
@@ -80,7 +82,7 @@
 
 需要一个用户脚本管理器，推荐 [Tampermonkey](https://www.tampermonkey.net/)。
 
-安装构建产物 `fanqie-assistant.user.js` 即可。
+点击上方“安装宽屏阅读版”，或手动安装构建产物 `dist/fanqie-assistant-wide-reader.user.js`。
 
 ## 开发
 
@@ -105,7 +107,7 @@ npm run preview  # 预览构建产物
 npm run build
 ```
 
-产物是单文件 `dist/fanqie-assistant.user.js`。`build` 会先跑 `tsc` 做类型检查，类型报错会中断打包。
+产物是单文件 `dist/fanqie-assistant-wide-reader.user.js`。`build` 会先跑 `tsc` 做类型检查，类型报错会中断打包。
 
 ## 项目结构
 
