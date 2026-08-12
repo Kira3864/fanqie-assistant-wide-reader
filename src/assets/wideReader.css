@@ -263,7 +263,14 @@
     white-space: nowrap;
 }
 
-.fqa-wide-exit { margin-left: auto; }
+.fqa-wide-top-controls > .fqa-wide-title {
+    flex: 1 1 auto;
+}
+
+.fqa-wide-exit {
+    flex: 0 0 auto;
+    margin-left: 0;
+}
 
 .fqa-wide-account-button {
     display: inline-flex;
@@ -275,6 +282,7 @@
 .fqa-wide-account {
     position: relative;
     flex: 0 0 auto;
+    margin-left: auto;
 }
 
 .fqa-wide-account-button img {
