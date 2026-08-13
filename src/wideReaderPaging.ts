@@ -87,3 +87,22 @@ export function calculateChapterBreakFill(offsetTop: number, columnHeight: numbe
     if (normalizedOffset <= 1 || columnHeight - normalizedOffset <= 1) return 0
     return columnHeight - normalizedOffset
 }
+
+/** 统计当前屏中已经展示的目标章节页面数。 */
+export function countVisibleChapterPages(
+    firstColumn: number,
+    columnsPerSpread: 1 | 2,
+    pages: ColumnPageMeta[],
+    targetItemId: string,
+): number {
+    let count = 0
+    for (let index = 0; index < columnsPerSpread; index += 1) {
+        if (pages[firstColumn + index]?.itemId === targetItemId) count += 1
+    }
+    return count
+}
+
+/** 根据已预览页数计算新章节首次打开时可跳过的物理栏数。 */
+export function calculateInitialColumnOffset(previewedPages: number, totalPages: number): number {
+    return Math.max(0, Math.min(Math.max(0, totalPages - 1), Math.floor(previewedPages)))
+}

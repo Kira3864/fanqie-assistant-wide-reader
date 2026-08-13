@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         番茄小说助手・宽屏阅读版
 // @namespace    https://github.com/Kira3864/fanqie-assistant-wide-reader
-// @version      0.3.4
+// @version      0.3.5
 // @author       naiyQAQ, Kira3864
 // @description  参考 GreasyFork 与开源项目实现的番茄小说 Userscript，提供正文增强和沉浸式宽屏分页阅读。
 // @license      GPLv3
@@ -2650,7 +2650,7 @@
     }
   }
   const name = "fanqie-assistant-wide-reader";
-  const version = "0.3.4";
+  const version = "0.3.5";
   const _hoisted_1$8 = {
     class: "fqa-set-dialog",
     role: "dialog",
@@ -3161,9 +3161,21 @@
     if (normalizedOffset <= 1 || columnHeight - normalizedOffset <= 1) return 0;
     return columnHeight - normalizedOffset;
   }
+  function countVisibleChapterPages(firstColumn, columnsPerSpread, pages, targetItemId) {
+    var _a;
+    let count = 0;
+    for (let index = 0; index < columnsPerSpread; index += 1) {
+      if (((_a = pages[firstColumn + index]) == null ? void 0 : _a.itemId) === targetItemId) count += 1;
+    }
+    return count;
+  }
+  function calculateInitialColumnOffset(previewedPages, totalPages) {
+    return Math.max(0, Math.min(Math.max(0, totalPages - 1), Math.floor(previewedPages)));
+  }
   const ROOT_ID = "fqa-wide-reader-root";
   const ENTRY_ID = "fqa-wide-reader-entry";
   const POSITION_PREFIX = "wide-reader-position:";
+  const PREVIEW_PREFIX = "fqa-wide-reader-previewed-pages:";
   let runtime = null;
   let lastSnapshot = null;
   let styleInjected = false;
@@ -3283,6 +3295,7 @@
       pageLabels: [leftPageLabel, rightPageLabel],
       snapshot,
       spread: 0,
+      columnOffset: 0,
       layout: {
         columnsPerSpread: 2,
         totalSpreads: 1,
@@ -3413,6 +3426,26 @@
     if (runtime !== current) return;
     const layout = measureLayout(current.frame, current.article);
     current.layout = layout;
+    const previewKey = `${PREVIEW_PREFIX}${current.snapshot.itemId}`;
+    const previewedPages = Number(sessionStorage.getItem(previewKey) ?? 0);
+    const currentTotal = layout.pageMap.filter((page) => (page == null ? void 0 : page.itemId) === current.snapshot.itemId).length;
+    if (previewedPages > 0) {
+      current.columnOffset = calculateInitialColumnOffset(previewedPages, currentTotal);
+      sessionStorage.removeItem(previewKey);
+      current.layout.totalSpreads = calculateCurrentSpreads(
+        currentTotal - current.columnOffset,
+        layout.columnsPerSpread
+      );
+      current.spread = 0;
+      paintSpread(current);
+      return;
+    }
+    if (current.columnOffset > 0) {
+      current.layout.totalSpreads = calculateCurrentSpreads(
+        currentTotal - current.columnOffset,
+        layout.columnsPerSpread
+      );
+    }
     const openAtEnd = sessionStorage.getItem("fqa-wide-reader-open-at-end") === current.snapshot.itemId;
     if (openAtEnd) {
       current.spread = layout.totalSpreads - 1;
@@ -3489,8 +3522,10 @@
     savePosition(current);
   }
   function paintSpread(current) {
-    current.article.style.transform = `translate3d(${calculateSpreadOffset(current.spread, current.layout.spreadStep)}px, 0, 0)`;
-    const firstColumn = current.spread * current.layout.columnsPerSpread;
+    const spreadOffset = calculateSpreadOffset(current.spread, current.layout.spreadStep);
+    const initialOffset = current.columnOffset * current.layout.columnStep;
+    current.article.style.transform = `translate3d(${spreadOffset - initialOffset}px, 0, 0)`;
+    const firstColumn = current.columnOffset + current.spread * current.layout.columnsPerSpread;
     current.pageLabels.forEach((label, index) => {
       if (index >= current.layout.columnsPerSpread) {
         label.textContent = "";
@@ -3521,6 +3556,18 @@
     const target = index >= 0 ? chapters[index + (direction === "next" ? 1 : -1)] : void 0;
     if (!target) return;
     if (direction === "previous") sessionStorage.setItem("fqa-wide-reader-open-at-end", target.item_id);
+    if (direction === "next") {
+      const firstColumn = current.columnOffset + current.spread * current.layout.columnsPerSpread;
+      const previewedPages = countVisibleChapterPages(
+        firstColumn,
+        current.layout.columnsPerSpread,
+        current.layout.pageMap,
+        target.item_id
+      );
+      if (previewedPages > 0) {
+        sessionStorage.setItem(`${PREVIEW_PREFIX}${target.item_id}`, String(previewedPages));
+      }
+    }
     navigateToChapter(current, target.item_id);
   }
   function navigateToChapter(current, itemId) {
@@ -3716,7 +3763,7 @@
     GM_setValue(`${POSITION_PREFIX}${current.snapshot.itemId}`, JSON.stringify(position));
   }
   function capturePosition(current) {
-    const logicalLeft = current.spread * current.layout.spreadStep;
+    const logicalLeft = current.columnOffset * current.layout.columnStep + current.spread * current.layout.spreadStep;
     const blocks = [...current.article.querySelectorAll("[data-block-index]")];
     const visible = blocks.find((block) => block.offsetLeft + block.offsetWidth >= logicalLeft - 1) ?? blocks[blocks.length - 1];
     const blockIndex = Number(visible == null ? void 0 : visible.dataset.blockIndex);

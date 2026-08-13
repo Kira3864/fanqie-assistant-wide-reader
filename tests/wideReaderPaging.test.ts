@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
     buildColumnPageMap,
     calculateChapterBreakFill,
+    calculateInitialColumnOffset,
     calculateCurrentSpreads,
     calculateSpreadOffset,
+    countVisibleChapterPages,
     resolveMeasuredSpread,
 } from '../src/wideReaderPaging'
 
@@ -49,5 +51,18 @@ describe('逐栏页码', () => {
         expect(calculateChapterBreakFill(760, 900)).toBe(140)
         expect(calculateChapterBreakFill(0, 900)).toBe(0)
         expect(calculateChapterBreakFill(900, 900)).toBe(0)
+    })
+
+    /** 末屏右栏已经展示下一章第一页时，正式切章必须从第二页继续。 */
+    it('跳过已经预览的下一章页面', () => {
+        const pages = buildColumnPageMap(10, [
+            { itemId: '121', title: '第121章', startColumn: 0 },
+            { itemId: '122', title: '第122章', startColumn: 9 },
+        ])
+
+        const previewed = countVisibleChapterPages(8, 2, pages, '122')
+        expect(previewed).toBe(1)
+        expect(calculateInitialColumnOffset(previewed, 7)).toBe(1)
+        expect(calculateInitialColumnOffset(0, 7)).toBe(0)
     })
 })
