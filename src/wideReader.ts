@@ -403,7 +403,6 @@ function measureLayout(frame: HTMLElement, article: HTMLElement): WideReaderLayo
     const fallbackWidth = (frame.clientWidth - gap * (columnsPerSpread - 1)) / columnsPerSpread
     const columnWidth = Number.parseFloat(computed.columnWidth) || fallbackWidth
     const columnStep = Math.max(1, columnWidth + gap)
-    const blocks = article.querySelectorAll<HTMLElement>('[data-block-index]')
     const last = article.lastElementChild as HTMLElement | null
     let extent = Math.max(frame.scrollWidth, article.scrollWidth, frame.clientWidth)
     if (last) extent = Math.max(extent, last.offsetLeft + Math.max(1, last.offsetWidth))

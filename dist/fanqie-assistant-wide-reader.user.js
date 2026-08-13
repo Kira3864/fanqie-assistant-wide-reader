@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         番茄小说助手・宽屏阅读版
 // @namespace    https://github.com/Kira3864/fanqie-assistant-wide-reader
-// @version      0.3.0
+// @version      0.3.2
 // @author       naiyQAQ, Kira3864
 // @description  参考 GreasyFork 与开源项目实现的番茄小说 Userscript，提供正文增强和沉浸式宽屏分页阅读。
 // @license      GPLv3
@@ -2650,7 +2650,7 @@
     }
   }
   const name = "fanqie-assistant-wide-reader";
-  const version = "0.3.0";
+  const version = "0.3.2";
   const _hoisted_1$8 = {
     class: "fqa-set-dialog",
     role: "dialog",
@@ -3418,8 +3418,7 @@
     const fallbackWidth = (frame.clientWidth - gap * (columnsPerSpread - 1)) / columnsPerSpread;
     const columnWidth = Number.parseFloat(computed2.columnWidth) || fallbackWidth;
     const columnStep = Math.max(1, columnWidth + gap);
-    const blocks = article.querySelectorAll("[data-block-index]");
-    const last = blocks[blocks.length - 1];
+    const last = article.lastElementChild;
     let extent = Math.max(frame.scrollWidth, article.scrollWidth, frame.clientWidth);
     if (last) extent = Math.max(extent, last.offsetLeft + Math.max(1, last.offsetWidth));
     const totalColumns = Math.max(1, Math.round((extent + gap * 0.25) / columnStep));
