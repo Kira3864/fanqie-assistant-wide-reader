@@ -8,7 +8,12 @@ import { getDetailedUserInfo, userState } from './api/user'
 import { openSettings } from './settingsPanel'
 import type { WideReaderFont, WideReaderTheme } from './wideReaderPreferences'
 import { shouldTurnPageForWheel } from './wideReaderInteraction'
-import { calculateSpreadOffset } from './wideReaderPaging'
+import {
+    buildColumnPageMap,
+    calculateCurrentSpreads,
+    calculateSpreadOffset,
+    type ColumnPageMeta,
+} from './wideReaderPaging'
 
 /** 分页阅读器同步时需要的章节快照。 */
 export interface WideReaderSnapshot {
@@ -19,11 +24,21 @@ export interface WideReaderSnapshot {
     comic: boolean
 }
 
+/** 已提前加载、可与当前章末页并排展示的下一章快照。 */
+export interface WideReaderContinuation {
+    itemId: string
+    title: string
+    source: HTMLElement
+}
+
 /** 阅读器一次布局测量得到的分页几何信息。 */
 interface WideReaderLayout {
     columnsPerSpread: 1 | 2
     totalSpreads: number
     spreadStep: number
+    columnStep: number
+    pageMap: ColumnPageMeta[]
+    terminalColumn: number | null
 }
 
 /** 当前分页阅读器运行时持有的 DOM 和事件清理函数。 */
@@ -31,7 +46,7 @@ interface WideReaderRuntime {
     root: HTMLElement
     frame: HTMLElement
     article: HTMLElement
-    indicator: HTMLOutputElement
+    pageLabels: [HTMLOutputElement, HTMLOutputElement]
     snapshot: WideReaderSnapshot
     spread: number
     layout: WideReaderLayout
@@ -78,12 +93,32 @@ export function syncWideReader(snapshot: WideReaderSnapshot): void {
     mountWideReader(snapshot)
 }
 
+/**
+ * 将下一章或终章尾页附加到仍处于活动状态的当前章节。
+ * 异步预取返回较晚时会核对章节编号，避免污染已经切换后的阅读器。
+ */
+export function syncWideReaderContinuation(
+    currentItemId: string,
+    continuation: WideReaderContinuation | null,
+): void {
+    if (!runtime || runtime.snapshot.itemId !== currentItemId) return
+    runtime.article.querySelectorAll('.fqa-wide-continuation').forEach((element) => element.remove())
+    if (continuation) {
+        appendChapter(runtime.article, continuation.itemId, continuation.title, continuation.source, true)
+    } else {
+        appendTerminalPage(runtime.article)
+    }
+    bindFootnoteInteraction(runtime.article)
+    measureAndRestore(runtime, capturePosition(runtime))
+}
+
 /** 在异步获取新章节期间保留当前分页层，避免短暂露出原网页排版。 */
 export function beginWideReaderTransition(): void {
     if (!runtime) return
     runtime.root.dataset.loading = 'true'
     runtime.root.setAttribute('aria-busy', 'true')
-    runtime.indicator.textContent = '正在加载章节…'
+    runtime.pageLabels[0].textContent = '正在加载章节…'
+    runtime.pageLabels[1].textContent = ''
 }
 
 /** 在章节获取失败时解除加载状态，并在当前分页层提示错误。 */
@@ -91,7 +126,7 @@ export function failWideReaderTransition(): void {
     if (!runtime) return
     runtime.root.removeAttribute('data-loading')
     runtime.root.removeAttribute('aria-busy')
-    runtime.indicator.textContent = '章节加载失败，请重试'
+    runtime.pageLabels[0].textContent = '章节加载失败，请重试'
 }
 
 /** 离开阅读页时清理分页层、恢复入口和章节快照。 */
@@ -152,18 +187,15 @@ function mountWideReader(snapshot: WideReaderSnapshot): void {
     const frame = createElement('div', 'fqa-wide-frame')
     const article = createElement('article', 'fqa-wide-article')
     article.setAttribute('aria-label', snapshot.title)
-    const heading = document.createElement('h1')
-    heading.textContent = snapshot.title
-    heading.dataset.blockIndex = '0'
-    article.append(heading)
-    appendChapterContent(article, snapshot.source)
+    appendChapter(article, snapshot.itemId, snapshot.title, snapshot.source, false)
     // DOM 克隆不会复制事件监听器，因此在分页文章上重新绑定脚注交互。
     bindFootnoteInteraction(article)
     frame.append(article)
 
-    const indicator = document.createElement('output')
-    indicator.className = 'fqa-wide-indicator'
-    indicator.textContent = '1/1'
+    const pageLabelContainer = createElement('div', 'fqa-wide-page-labels')
+    const leftPageLabel = document.createElement('output')
+    const rightPageLabel = document.createElement('output')
+    pageLabelContainer.append(leftPageLabel, rightPageLabel)
 
     const bottomSensor = createElement('div', 'fqa-wide-bottom-sensor')
     const bottomControls = createElement('footer', 'fqa-wide-controls fqa-wide-bottom-controls')
@@ -179,7 +211,7 @@ function mountWideReader(snapshot: WideReaderSnapshot): void {
         leftButton,
         frame,
         rightButton,
-        indicator,
+        pageLabelContainer,
         bottomSensor,
         bottomControls,
     )
@@ -191,10 +223,17 @@ function mountWideReader(snapshot: WideReaderSnapshot): void {
         root,
         frame,
         article,
-        indicator,
+        pageLabels: [leftPageLabel, rightPageLabel],
         snapshot,
         spread: 0,
-        layout: { columnsPerSpread: 2, totalSpreads: 1, spreadStep: 1 },
+        layout: {
+            columnsPerSpread: 2,
+            totalSpreads: 1,
+            spreadStep: 1,
+            columnStep: 1,
+            pageMap: [],
+            terminalColumn: null,
+        },
         cleanup: [],
     }
     runtime = nextRuntime
@@ -226,6 +265,47 @@ function appendChapterContent(article: HTMLElement, source: HTMLElement): void {
         fragment.append(clone)
     })
     article.append(fragment)
+}
+
+/** 将章节标题和正文复制到多栏文章，并标记章节边界供逐栏页码测量。 */
+function appendChapter(
+    article: HTMLElement,
+    itemId: string,
+    title: string,
+    source: HTMLElement,
+    continuation: boolean,
+): void {
+    const heading = document.createElement('h1')
+    heading.textContent = title
+    heading.dataset.blockIndex = '0'
+    heading.dataset.chapterId = itemId
+    heading.dataset.chapterTitle = title
+    heading.className = continuation
+        ? 'fqa-wide-chapter-heading fqa-wide-continuation'
+        : 'fqa-wide-chapter-heading'
+    article.append(heading)
+    const startIndex = article.children.length
+    appendChapterContent(article, source)
+    if (continuation) {
+        for (let index = startIndex; index < article.children.length; index += 1) {
+            const child = article.children.item(index)
+            child?.classList.add('fqa-wide-continuation')
+        }
+    }
+}
+
+/** 在全书末尾追加一个独立、可翻到的完成页。 */
+function appendTerminalPage(article: HTMLElement): void {
+    const terminal = createElement('section', 'fqa-wide-terminal fqa-wide-continuation')
+    terminal.dataset.terminalPage = 'true'
+    const ornament = createElement('span', 'fqa-wide-terminal-ornament')
+    ornament.textContent = '◇'
+    const title = document.createElement('strong')
+    title.textContent = '当前已是最后一章'
+    const description = document.createElement('span')
+    description.textContent = '感谢阅读，愿故事的余韵常在。'
+    terminal.append(ornament, title, description)
+    article.append(terminal)
 }
 
 /** 绑定分页、目录、设置和窗口变化事件。 */
@@ -328,10 +408,25 @@ function measureLayout(frame: HTMLElement, article: HTMLElement): WideReaderLayo
     let extent = Math.max(frame.scrollWidth, article.scrollWidth, frame.clientWidth)
     if (last) extent = Math.max(extent, last.offsetLeft + Math.max(1, last.offsetWidth))
     const totalColumns = Math.max(1, Math.round((extent + gap * 0.25) / columnStep))
+    const chapterStarts = [...article.querySelectorAll<HTMLElement>('[data-chapter-id]')].map((heading) => ({
+        itemId: heading.dataset.chapterId ?? '',
+        title: heading.dataset.chapterTitle ?? '当前章节',
+        startColumn: Math.round(Math.max(0, heading.offsetLeft) / columnStep),
+    }))
+    const terminal = article.querySelector<HTMLElement>('[data-terminal-page]')
+    const terminalColumn = terminal
+        ? Math.round(Math.max(0, terminal.offsetLeft) / columnStep)
+        : null
+    const continuationStart = chapterStarts[1]?.startColumn ?? terminalColumn
+    const currentPages = continuationStart ?? totalColumns
+    const navigableColumns = terminalColumn === null ? currentPages : currentPages + 1
     return {
         columnsPerSpread,
-        totalSpreads: Math.max(1, Math.ceil(totalColumns / columnsPerSpread)),
+        totalSpreads: calculateCurrentSpreads(navigableColumns, columnsPerSpread),
         spreadStep: columnsPerSpread * columnStep,
+        columnStep,
+        pageMap: buildColumnPageMap(terminalColumn ?? totalColumns, chapterStarts),
+        terminalColumn,
     }
 }
 
@@ -354,7 +449,24 @@ function turnPage(current: WideReaderRuntime, direction: 'previous' | 'next'): v
 function paintSpread(current: WideReaderRuntime): void {
     // scrollLeft 在奇数栏末页会被最大滚动距离钳制半栏，正文位移可准确显示“末栏 + 空白栏”。
     current.article.style.transform = `translate3d(${calculateSpreadOffset(current.spread, current.layout.spreadStep)}px, 0, 0)`
-    current.indicator.textContent = `${current.spread + 1}/${current.layout.totalSpreads}`
+    const firstColumn = current.spread * current.layout.columnsPerSpread
+    current.pageLabels.forEach((label, index) => {
+        if (index >= current.layout.columnsPerSpread) {
+            label.textContent = ''
+            label.hidden = true
+            return
+        }
+        label.hidden = false
+        const column = firstColumn + index
+        const page = current.layout.pageMap[column]
+        if (page) {
+            label.textContent = `${page.title}  ${page.page}/${page.total}`
+        } else if (column === current.layout.terminalColumn) {
+            label.textContent = '全书完'
+        } else {
+            label.textContent = ''
+        }
+    })
 }
 
 /** 重启克制的方向性翻页动画。 */

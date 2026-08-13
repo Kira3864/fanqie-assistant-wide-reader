@@ -4,7 +4,10 @@ import { b64decode, b64encode } from '../crypto'
 import { read, write } from '../localStorage'
 import { decryptChapter } from '../crypto/content'
 import { encryptKeyinfoBody, decryptKeyinfoResponse } from '../crypto/registerkey'
+import { ChapterCache } from '../chapterCache'
 
+/** 当前标签页中的章节正文缓存。 */
+const chapterCache = new ChapterCache<any>()
 
 async function refreshKeyinfo(): Promise<void> {
     const b = await encryptKeyinfoBody(config.currentConfig)
@@ -52,7 +55,8 @@ async function ensureKeyinfo(expectedKeyVersion?: number): Promise<void> {
 }
 
 
-export async function getChapter(itemId: string, _retry?: number): Promise<any> {
+/** 从远端获取并解密单章正文，密钥失效时在限定次数内自动刷新重试。 */
+async function fetchChapter(itemId: string, _retry?: number): Promise<any> {
     if (typeof _retry === 'undefined') _retry = 0
     if (_retry > 5) {
         throw new Error(`Failed to get chapter: ${itemId}`)
@@ -64,15 +68,25 @@ export async function getChapter(itemId: string, _retry?: number): Promise<any> 
     const j = res.json()?.data
     if (!j) {
         console.warn('Failed to get chapter: ', itemId, ', response: ', res.responseText)
-        return await getChapter(itemId, _retry + 1)
+        return await fetchChapter(itemId, _retry + 1)
     }
     if (j?.content === 'Invalid' || j?.key_version !== config.currentConfig.key_info?.keyver) { // keyreg expired
         console.warn('Key reg expired, regster again and retrying...')
         await ensureKeyinfo(parseInt(j?.key_version))
-        return await getChapter(itemId, _retry + 1)
+        return await fetchChapter(itemId, _retry + 1)
     }
     j.content = await decryptChapter(j?.content, j, config.currentConfig)
     return j
+}
+
+/** 获取已解密章节；缓存命中时不再发起网络请求。 */
+export async function getChapter(itemId: string): Promise<any> {
+    return chapterCache.get(itemId, () => fetchChapter(itemId))
+}
+
+/** 按当前目录位置保留前三章、当前章及下一章的正文缓存。 */
+export function retainChapterCache(currentItemId: string, orderedItemIds: string[]): void {
+    chapterCache.retainWindow(currentItemId, orderedItemIds)
 }
 
 

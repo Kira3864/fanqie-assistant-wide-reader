@@ -157,6 +157,11 @@
     line-height: 1.4;
 }
 
+/* 预载章节必须从新物理页开始，才能恰好填补奇数页章节的右栏。 */
+.fqa-wide-chapter-heading.fqa-wide-continuation {
+    break-before: column;
+}
+
 .fqa-wide-article p {
     margin: 0 0 0.36em;
     text-indent: 2em;
@@ -337,15 +342,55 @@
     font-size: 12px;
 }
 
-.fqa-wide-indicator {
+.fqa-wide-page-labels {
     position: absolute;
     z-index: 2;
-    bottom: 17px;
-    left: 50%;
-    translate: -50%;
+    right: var(--fqa-wide-margin);
+    bottom: 16px;
+    left: var(--fqa-wide-margin);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--fqa-wide-gap);
     color: var(--fqa-wide-muted);
-    font-size: 12px;
+    font-size: 11px;
     font-variant-numeric: tabular-nums;
+    pointer-events: none;
+}
+
+.fqa-wide-page-labels output {
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 最后一章之后保留完整尾页，避免完成提示被拆到相邻栏。 */
+.fqa-wide-terminal {
+    display: flex;
+    height: 100%;
+    break-before: column;
+    break-inside: avoid;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--fqa-wide-muted);
+    text-align: center;
+}
+
+.fqa-wide-terminal-ornament {
+    color: var(--fqa-wide-accent);
+    font-size: 28px;
+}
+
+.fqa-wide-terminal strong {
+    color: var(--fqa-wide-text);
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.fqa-wide-terminal span:last-child {
+    font-size: 13px;
 }
 
 .fqa-wide-scrim {
@@ -532,6 +577,12 @@
     .fqa-wide-article {
         column-width: calc(100vw - max(64px, min(var(--fqa-wide-margin) * 2, 16vw)));
         column-rule: 0;
+    }
+
+    .fqa-wide-page-labels {
+        right: max(32px, min(var(--fqa-wide-margin), 8vw));
+        left: max(32px, min(var(--fqa-wide-margin), 8vw));
+        grid-template-columns: 1fr;
     }
 }
 

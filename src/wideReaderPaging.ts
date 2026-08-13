@@ -6,3 +6,53 @@ export function calculateSpreadOffset(spread: number, spreadStep: number): numbe
     if (spread <= 0) return 0
     return -Math.max(0, spread) * Math.max(1, spreadStep)
 }
+
+/** 章节在多栏正文中的起始位置。 */
+export interface ChapterColumnStart {
+    itemId: string
+    title: string
+    startColumn: number
+}
+
+/** 单个物理页面对应的章节与章内页码。 */
+export interface ColumnPageMeta {
+    itemId: string
+    title: string
+    page: number
+    total: number
+}
+
+/**
+ * 根据章节起始栏生成逐栏页码。
+ * 左右栏各自是一页；同一屏只负责展示相邻的两个页面，不再共享页码。
+ */
+export function buildColumnPageMap(
+    totalColumns: number,
+    starts: ChapterColumnStart[],
+): ColumnPageMeta[] {
+    const safeTotal = Math.max(1, totalColumns)
+    const normalized = starts
+        .map((start) => ({ ...start, startColumn: Math.max(0, Math.min(safeTotal - 1, start.startColumn)) }))
+        .sort((left, right) => left.startColumn - right.startColumn)
+    if (normalized.length === 0) return []
+
+    const pages: ColumnPageMeta[] = []
+    normalized.forEach((start, index) => {
+        const nextStart = normalized[index + 1]?.startColumn ?? safeTotal
+        const chapterTotal = Math.max(1, nextStart - start.startColumn)
+        for (let column = start.startColumn; column < nextStart; column += 1) {
+            pages[column] = {
+                itemId: start.itemId,
+                title: start.title,
+                page: column - start.startColumn + 1,
+                total: chapterTotal,
+            }
+        }
+    })
+    return pages
+}
+
+/** 计算当前章节需要占用的屏数，预载的下一章不额外增加当前章翻页次数。 */
+export function calculateCurrentSpreads(currentPages: number, columnsPerSpread: 1 | 2): number {
+    return Math.max(1, Math.ceil(Math.max(1, currentPages) / columnsPerSpread))
+}

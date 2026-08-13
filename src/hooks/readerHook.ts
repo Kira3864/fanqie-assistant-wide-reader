@@ -1,5 +1,5 @@
 import { type HookConfig } from '../config'
-import { getChapter } from '../api/content'
+import { getChapter, retainChapterCache } from '../api/content'
 import { getBookInfoAndCatalog } from '../api/book'
 import { getCatalog } from '../api/catalog'
 import { applyBookCss } from '../api/bookcss'
@@ -15,6 +15,7 @@ import {
     failWideReaderTransition,
     leaveWideReaderPage,
     syncWideReader,
+    syncWideReaderContinuation,
 } from '../wideReader'
 // import moment from 'moment'
 
@@ -54,6 +55,54 @@ function ensureScriptContainer(readerContainer: Element, comic: boolean): HTMLDi
     scriptContainer.innerHTML = ''
     readerContainer.classList.add('fqa-hide')
     return scriptContainer
+}
+
+/**
+ * 将已解密文字章节转换为可供分页阅读器克隆的独立正文节点。
+ * 该方法也用于下一章预取，避免把预取内容提前写进番茄原页面。
+ */
+function createTextChapterSource(chapter: any, chapterTitle: string): HTMLElement | null {
+    if (typeof chapter?.content !== 'string') return null
+    const documentNode = new DOMParser().parseFromString(chapter.content, 'text/html')
+    documentNode.body.querySelectorAll('link[rel="stylesheet"]').forEach((element) => element.remove())
+    let source = documentNode.body.querySelector<HTMLElement>('article') ?? documentNode.body
+    processFootnotes(source)
+    for (let index = 0; index < Math.min(2, source.childNodes.length); index += 1) {
+        const child = source.childNodes[index] as HTMLElement
+        if (child?.innerHTML?.includes(chapterTitle)) {
+            child.remove()
+            break
+        }
+    }
+    if (source === documentNode.body) {
+        const article = document.createElement('article')
+        article.innerHTML = source.innerHTML
+        source = article
+    }
+    const container = document.createElement('div')
+    container.append(source)
+    return container
+}
+
+/** 预取目录中的下一章；没有下一章时改为挂载独立终章尾页。 */
+async function preloadWideReaderContinuation(itemId: string, book: Book): Promise<void> {
+    const chapters = book.chapter_list ?? []
+    retainChapterCache(itemId, chapters.map((chapter) => chapter.item_id))
+    const currentIndex = chapters.findIndex((chapter) => chapter.item_id === itemId)
+    const next = currentIndex >= 0 ? chapters[currentIndex + 1] : undefined
+    if (!next) {
+        syncWideReaderContinuation(itemId, null)
+        return
+    }
+    try {
+        const chapter = await getChapter(next.item_id)
+        const source = createTextChapterSource(chapter, next.title)
+        if (!source) return
+        syncWideReaderContinuation(itemId, { itemId: next.item_id, title: next.title, source })
+    } catch (error) {
+        // 预取失败不影响当前章阅读，正常切章时仍会再次尝试加载。
+        console.warn('[fqa:预取] 下一章预加载失败', error)
+    }
 }
 
 async function insertContent() {
@@ -353,6 +402,9 @@ async function insertContent() {
             source: enhancedContent,
             comic: typeof chapter.content !== 'string',
         })
+        if (currentBook && typeof chapter.content === 'string') {
+            void preloadWideReaderContinuation(itemId, currentBook)
+        }
     }
 }
 
