@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         番茄小说助手・宽屏阅读版
 // @namespace    https://github.com/Kira3864/fanqie-assistant-wide-reader
-// @version      0.3.2
+// @version      0.3.3
 // @author       naiyQAQ, Kira3864
 // @description  参考 GreasyFork 与开源项目实现的番茄小说 Userscript，提供正文增强和沉浸式宽屏分页阅读。
 // @license      GPLv3
@@ -181,13 +181,13 @@
     if (!isWideReaderFont(s.wideReaderFont)) {
       s.wideReaderFont = DEFAULT_SETTINGS.wideReaderFont;
     }
-    s.wideReaderFontSize = clamp$1(s.wideReaderFontSize, 16, 24, DEFAULT_SETTINGS.wideReaderFontSize);
-    s.wideReaderLineHeight = clamp$1(s.wideReaderLineHeight, 1.4, 2.6, DEFAULT_SETTINGS.wideReaderLineHeight);
-    s.wideReaderColumnGap = clamp$1(s.wideReaderColumnGap, 32, 112, DEFAULT_SETTINGS.wideReaderColumnGap);
-    s.wideReaderPageMargin = clamp$1(s.wideReaderPageMargin, 32, 120, DEFAULT_SETTINGS.wideReaderPageMargin);
+    s.wideReaderFontSize = clamp(s.wideReaderFontSize, 16, 24, DEFAULT_SETTINGS.wideReaderFontSize);
+    s.wideReaderLineHeight = clamp(s.wideReaderLineHeight, 1.4, 2.6, DEFAULT_SETTINGS.wideReaderLineHeight);
+    s.wideReaderColumnGap = clamp(s.wideReaderColumnGap, 32, 112, DEFAULT_SETTINGS.wideReaderColumnGap);
+    s.wideReaderPageMargin = clamp(s.wideReaderPageMargin, 32, 120, DEFAULT_SETTINGS.wideReaderPageMargin);
     return s;
   }
-  function clamp$1(value, min, max, fallback) {
+  function clamp(value, min, max, fallback) {
     return Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback;
   }
   const settings$1 = vue.reactive(normalize(read(STORE_KEY$1)));
@@ -2650,7 +2650,7 @@
     }
   }
   const name = "fanqie-assistant-wide-reader";
-  const version = "0.3.2";
+  const version = "0.3.3";
   const _hoisted_1$8 = {
     class: "fqa-set-dialog",
     role: "dialog",
@@ -3150,6 +3150,11 @@
   function calculateCurrentSpreads(currentPages, columnsPerSpread) {
     return Math.max(1, Math.ceil(Math.max(1, currentPages) / columnsPerSpread));
   }
+  function resolveMeasuredSpread(currentSpread, totalSpreads, mode, semanticSpread) {
+    const maximum = Math.max(0, totalSpreads - 1);
+    const target = mode === "semantic" && semanticSpread !== void 0 ? semanticSpread : currentSpread;
+    return Math.max(0, Math.min(maximum, target));
+  }
   const ROOT_ID = "fqa-wide-reader-root";
   const ENTRY_ID = "fqa-wide-reader-entry";
   const POSITION_PREFIX = "wide-reader-position:";
@@ -3176,7 +3181,7 @@
       appendTerminalPage(runtime.article);
     }
     bindFootnoteInteraction(runtime.article);
-    measureAndRestore(runtime, capturePosition(runtime));
+    measureAndRestore(runtime, void 0, "spread");
   }
   function beginWideReaderTransition() {
     if (!runtime) return;
@@ -3393,7 +3398,7 @@
       () => observer2.disconnect()
     );
   }
-  function measureAndRestore(current, position) {
+  function measureAndRestore(current, position, restoreMode = "semantic") {
     if (runtime !== current) return;
     const layout = measureLayout(current.frame, current.article);
     current.layout = layout;
@@ -3407,7 +3412,12 @@
     const saved = position ?? loadPosition(current.snapshot.itemId);
     const target = saved ? current.article.querySelector(`[data-block-index="${saved.blockIndex}"]`) : null;
     const targetSpread = target ? Math.floor(Math.max(0, target.offsetLeft) / Math.max(1, layout.spreadStep)) : current.spread;
-    current.spread = clamp(targetSpread, 0, layout.totalSpreads - 1);
+    current.spread = resolveMeasuredSpread(
+      current.spread,
+      layout.totalSpreads,
+      restoreMode,
+      targetSpread
+    );
     paintSpread(current);
   }
   function measureLayout(frame, article) {
@@ -3836,9 +3846,6 @@
   }
   function isEditableTarget(target) {
     return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target instanceof HTMLElement && target.isContentEditable;
-  }
-  function clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value));
   }
   vue.watch(
     () => settings$1.wideReaderEnabled,

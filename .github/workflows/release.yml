@@ -45,5 +45,5 @@ jobs:
           gh release create "$GITHUB_REF_NAME"
           "fanqie-assistant-wide-reader-${GITHUB_REF_NAME}.user.js"
           "fanqie-assistant-wide-reader-${GITHUB_REF_NAME}-source.zip"
-          --generate-notes
+          --notes-file RELEASE_NOTES.md
           --title "番茄小说助手・宽屏阅读版 $GITHUB_REF_NAME"

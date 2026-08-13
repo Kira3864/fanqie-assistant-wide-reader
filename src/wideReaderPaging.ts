@@ -56,3 +56,23 @@ export function buildColumnPageMap(
 export function calculateCurrentSpreads(currentPages: number, columnsPerSpread: 1 | 2): number {
     return Math.max(1, Math.ceil(Math.max(1, currentPages) / columnsPerSpread))
 }
+
+/** 分页重排时可采用的阅读位置恢复策略。 */
+export type SpreadRestoreMode = 'semantic' | 'spread'
+
+/**
+ * 决定重新测量后的屏位置。
+ * 异步追加预载章节时保留屏序号，避免语义块重新定位导致一次跳过整整两栏。
+ */
+export function resolveMeasuredSpread(
+    currentSpread: number,
+    totalSpreads: number,
+    mode: SpreadRestoreMode,
+    semanticSpread?: number,
+): number {
+    const maximum = Math.max(0, totalSpreads - 1)
+    const target = mode === 'semantic' && semanticSpread !== undefined
+        ? semanticSpread
+        : currentSpread
+    return Math.max(0, Math.min(maximum, target))
+}

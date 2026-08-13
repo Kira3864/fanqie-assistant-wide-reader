@@ -12,7 +12,9 @@ import {
     buildColumnPageMap,
     calculateCurrentSpreads,
     calculateSpreadOffset,
+    resolveMeasuredSpread,
     type ColumnPageMeta,
+    type SpreadRestoreMode,
 } from './wideReaderPaging'
 
 /** 分页阅读器同步时需要的章节快照。 */
@@ -109,7 +111,8 @@ export function syncWideReaderContinuation(
         appendTerminalPage(runtime.article)
     }
     bindFootnoteInteraction(runtime.article)
-    measureAndRestore(runtime, capturePosition(runtime))
+    // 追加内容不会改变当前章已有栏位，直接保持屏序号可避免重复块编号造成整屏回退。
+    measureAndRestore(runtime, undefined, 'spread')
 }
 
 /** 在异步获取新章节期间保留当前分页层，避免短暂露出原网页排版。 */
@@ -373,7 +376,11 @@ function bindReaderEvents(
 }
 
 /** 测量 CSS 多栏的实际宽度并恢复指定语义块所在页。 */
-function measureAndRestore(current: WideReaderRuntime, position?: SavedPosition | null): void {
+function measureAndRestore(
+    current: WideReaderRuntime,
+    position?: SavedPosition | null,
+    restoreMode: SpreadRestoreMode = 'semantic',
+): void {
     if (runtime !== current) return
     const layout = measureLayout(current.frame, current.article)
     current.layout = layout
@@ -391,7 +398,12 @@ function measureAndRestore(current: WideReaderRuntime, position?: SavedPosition 
     const targetSpread = target
         ? Math.floor(Math.max(0, target.offsetLeft) / Math.max(1, layout.spreadStep))
         : current.spread
-    current.spread = clamp(targetSpread, 0, layout.totalSpreads - 1)
+    current.spread = resolveMeasuredSpread(
+        current.spread,
+        layout.totalSpreads,
+        restoreMode,
+        targetSpread,
+    )
     paintSpread(current)
 }
 
@@ -904,11 +916,6 @@ function isEditableTarget(target: EventTarget | null): boolean {
         || target instanceof HTMLTextAreaElement
         || target instanceof HTMLSelectElement
         || (target instanceof HTMLElement && target.isContentEditable)
-}
-
-/** 将数值限制在闭区间内。 */
-function clamp(value: number, min: number, max: number): number {
-    return Math.min(max, Math.max(min, value))
 }
 
 // 助手设置面板可能在阅读中关闭或重新开启分页模式，需要即时同步运行时。

@@ -3,6 +3,7 @@ import {
     buildColumnPageMap,
     calculateCurrentSpreads,
     calculateSpreadOffset,
+    resolveMeasuredSpread,
 } from '../src/wideReaderPaging'
 
 /** 验证双栏分页不会在奇数栏末页回退半栏。 */
@@ -31,5 +32,14 @@ describe('逐栏页码', () => {
         expect(pages[4]).toMatchObject({ itemId: '100', page: 5, total: 5 })
         expect(pages[5]).toMatchObject({ itemId: '101', page: 1, total: 3 })
         expect(calculateCurrentSpreads(5, 2)).toBe(3)
+    })
+
+    /** 返回上一章末屏后，下一章预取造成的重排不能让阅读位置倒退一屏。 */
+    it('预取重排时保留当前末屏', () => {
+        const openedAtEnd = 3
+        const staleSemanticResult = 2
+
+        expect(resolveMeasuredSpread(openedAtEnd, 4, 'spread', staleSemanticResult)).toBe(3)
+        expect(resolveMeasuredSpread(openedAtEnd, 4, 'semantic', staleSemanticResult)).toBe(2)
     })
 })
