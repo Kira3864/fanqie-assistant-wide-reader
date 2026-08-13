@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
     buildColumnPageMap,
+    calculateChapterBreakFill,
     calculateCurrentSpreads,
     calculateSpreadOffset,
     resolveMeasuredSpread,
@@ -41,5 +42,12 @@ describe('逐栏页码', () => {
 
         expect(resolveMeasuredSpread(openedAtEnd, 4, 'spread', staleSemanticResult)).toBe(3)
         expect(resolveMeasuredSpread(openedAtEnd, 4, 'semantic', staleSemanticResult)).toBe(2)
+    })
+
+    /** 浏览器忽略强制换栏时，应补齐当前栏剩余高度让新章从页首开始。 */
+    it('计算新章节另起一页所需补白', () => {
+        expect(calculateChapterBreakFill(760, 900)).toBe(140)
+        expect(calculateChapterBreakFill(0, 900)).toBe(0)
+        expect(calculateChapterBreakFill(900, 900)).toBe(0)
     })
 })

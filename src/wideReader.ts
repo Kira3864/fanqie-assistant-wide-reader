@@ -10,6 +10,7 @@ import type { WideReaderFont, WideReaderTheme } from './wideReaderPreferences'
 import { shouldTurnPageForWheel } from './wideReaderInteraction'
 import {
     buildColumnPageMap,
+    calculateChapterBreakFill,
     calculateCurrentSpreads,
     calculateSpreadOffset,
     resolveMeasuredSpread,
@@ -278,6 +279,11 @@ function appendChapter(
     source: HTMLElement,
     continuation: boolean,
 ): void {
+    if (continuation) {
+        const chapterBreak = createElement('div', 'fqa-wide-chapter-break fqa-wide-continuation')
+        chapterBreak.setAttribute('aria-hidden', 'true')
+        article.append(chapterBreak)
+    }
     const heading = document.createElement('h1')
     heading.textContent = title
     heading.dataset.blockIndex = '0'
@@ -410,6 +416,7 @@ function measureAndRestore(
 /** 从多栏容器的实际横向延展计算总页数。 */
 function measureLayout(frame: HTMLElement, article: HTMLElement): WideReaderLayout {
     const columnsPerSpread: 1 | 2 = frame.clientWidth >= 920 ? 2 : 1
+    alignContinuationChapters(frame, article)
     const computed = getComputedStyle(article)
     const gap = Number.parseFloat(computed.columnGap) || 0
     const fallbackWidth = (frame.clientWidth - gap * (columnsPerSpread - 1)) / columnsPerSpread
@@ -439,6 +446,24 @@ function measureLayout(frame: HTMLElement, article: HTMLElement): WideReaderLayo
         pageMap: buildColumnPageMap(terminalColumn ?? totalColumns, chapterStarts),
         terminalColumn,
     }
+}
+
+/**
+ * 确保每个预载章节标题位于物理页顶部。
+ * 优先依赖 CSS 强制换栏；若浏览器忽略规则，则用透明补白填满上一页剩余空间。
+ */
+function alignContinuationChapters(frame: HTMLElement, article: HTMLElement): void {
+    const frameTop = frame.getBoundingClientRect().top
+    const columnHeight = frame.clientHeight
+    article.querySelectorAll<HTMLElement>('.fqa-wide-chapter-heading.fqa-wide-continuation')
+        .forEach((heading) => {
+            const chapterBreak = heading.previousElementSibling as HTMLElement | null
+            if (!chapterBreak?.classList.contains('fqa-wide-chapter-break')) return
+            chapterBreak.style.height = '0px'
+            const offsetTop = heading.getBoundingClientRect().top - frameTop
+            const fill = calculateChapterBreakFill(offsetTop, columnHeight)
+            chapterBreak.style.height = `${fill}px`
+        })
 }
 
 /** 翻到上一页或下一页；到达章节边界时自动切章。 */

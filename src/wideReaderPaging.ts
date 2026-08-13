@@ -76,3 +76,14 @@ export function resolveMeasuredSpread(
         : currentSpread
     return Math.max(0, Math.min(maximum, target))
 }
+
+/**
+ * 计算章节标题到下一物理页顶部所需的补白高度。
+ * 用于兜底处理部分浏览器忽略多栏强制换栏规则的情况。
+ */
+export function calculateChapterBreakFill(offsetTop: number, columnHeight: number): number {
+    if (columnHeight <= 0 || offsetTop <= 1) return 0
+    const normalizedOffset = offsetTop % columnHeight
+    if (normalizedOffset <= 1 || columnHeight - normalizedOffset <= 1) return 0
+    return columnHeight - normalizedOffset
+}

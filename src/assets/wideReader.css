@@ -157,9 +157,20 @@
     line-height: 1.4;
 }
 
-/* 预载章节必须从新物理页开始，才能恰好填补奇数页章节的右栏。 */
+/* 标准规则与 Chromium 旧规则同时声明，确保预载章节从新物理页开始。 */
+.fqa-wide-chapter-break {
+    width: 100%;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    margin: 0;
+    break-after: column;
+    -webkit-column-break-after: always;
+}
+
 .fqa-wide-chapter-heading.fqa-wide-continuation {
     break-before: column;
+    -webkit-column-break-before: always;
 }
 
 .fqa-wide-article p {
