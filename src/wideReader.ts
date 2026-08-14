@@ -91,10 +91,10 @@ let previousDocumentOverflow: string | null = null
  */
 export function syncWideReader(snapshot: WideReaderSnapshot): void {
     lastSnapshot = snapshot
-    if (!settings.wideReaderEnabled || !settings.wideReaderActive || snapshot.comic) {
+    if (!settings.wideReaderActive || snapshot.comic) {
         removeWideReaderEntry()
         unmountWideReader()
-        if (settings.wideReaderEnabled && !snapshot.comic) showWideReaderEntry()
+        if (!snapshot.comic) showWideReaderEntry()
         return
     }
     mountWideReader(snapshot)
@@ -958,7 +958,7 @@ async function triggerNativeUserAction(label: string): Promise<void> {
 
 /** 在原网页右侧创建重新进入分页阅读的固定入口。 */
 function showWideReaderEntry(): void {
-    if (document.getElementById(ENTRY_ID) || !settings.wideReaderEnabled || !lastSnapshot || lastSnapshot.comic) return
+    if (document.getElementById(ENTRY_ID) || !lastSnapshot || lastSnapshot.comic) return
     ensureWideReaderStyle()
     const button = createButton('分页阅读', '重新进入沉浸式分页阅读')
     button.id = ENTRY_ID
@@ -983,27 +983,14 @@ function isEditableTarget(target: EventTarget | null): boolean {
         || (target instanceof HTMLElement && target.isContentEditable)
 }
 
-// 助手设置面板可能在阅读中关闭或重新开启分页模式，需要即时同步运行时。
-watch(
-    () => settings.wideReaderEnabled,
-    (enabled) => {
-        if (!enabled) {
-            removeWideReaderEntry()
-            unmountWideReader()
-        }
-        else if (settings.wideReaderActive && lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot)
-        else showWideReaderEntry()
-    },
-)
-
-// 用户在助手设置中恢复“当前进入分页”时应立即挂载，无需刷新页面。
+// 唯一分页开关同时控制当前状态和持久化偏好，修改后无需刷新页面。
 watch(
     () => settings.wideReaderActive,
     (active) => {
         if (!active) {
             unmountWideReader()
             showWideReaderEntry()
-        } else if (settings.wideReaderEnabled && lastSnapshot && !lastSnapshot.comic) {
+        } else if (lastSnapshot && !lastSnapshot.comic) {
             mountWideReader(lastSnapshot)
         }
     },

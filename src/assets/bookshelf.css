@@ -64,6 +64,32 @@
     color: var(--fqa-text-weak);
 }
 
+#fqa-bookshelf .fqa-bs-columns {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--fqa-text-sub);
+    white-space: nowrap;
+}
+
+#fqa-bookshelf .fqa-bs-columns select {
+    height: 32px;
+    padding: 0 28px 0 10px;
+    border: 1px solid var(--fqa-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fqa-text-sub);
+    font: inherit;
+    cursor: pointer;
+    outline: none;
+}
+
+#fqa-bookshelf .fqa-bs-columns select:hover,
+#fqa-bookshelf .fqa-bs-columns select:focus-visible {
+    border-color: var(--fqa-accent);
+    color: var(--fqa-accent);
+}
+
 #fqa-bookshelf .fqa-btn {
     display: inline-flex;
     align-items: center;
@@ -139,11 +165,11 @@
 
 /* ------------------------------- 书架网格 ------------------------------- */
 
-/* 原站一排最多 4 本；窄屏逐级降到 3 / 2 */
+/* 桌面端使用用户选择的 4～10 列；窄屏仍逐级降到 3 / 2，保证封面可读。 */
 #fqa-bookshelf .fqa-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 28px 24px;
+    grid-template-columns: repeat(var(--fqa-bookshelf-columns, 5), minmax(0, 1fr));
+    gap: 28px clamp(12px, 2vw, 24px);
     align-items: start;
 }
 

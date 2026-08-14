@@ -119,11 +119,6 @@ const GITHUB = 'https://github.com/Kira3864/fanqie-assistant-wide-reader'
 
                     <label class="fqa-set-row">
                         <span class="fqa-set-label">沉浸式分页阅读</span>
-                        <input v-model="settings.wideReaderEnabled" type="checkbox" class="fqa-set-switch" />
-                    </label>
-
-                    <label class="fqa-set-row">
-                        <span class="fqa-set-label">当前进入分页模式</span>
                         <input v-model="settings.wideReaderActive" type="checkbox" class="fqa-set-switch" />
                     </label>
 

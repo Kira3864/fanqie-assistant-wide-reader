@@ -6,6 +6,11 @@ import {
     type WideReaderFont,
     type WideReaderTheme,
 } from './wideReaderPreferences'
+import {
+    DEFAULT_BOOKSHELF_COLUMNS,
+    normalizeBookshelfColumns,
+    resolveWideReaderActive,
+} from './settingsNormalization'
 
 const STORE_KEY = 'settings'
 
@@ -28,10 +33,10 @@ export interface Settings {
     customCssEnabled: boolean
     /** 自定义 CSS 内容。关闭开关时仍然保留，只是不应用 */
     customCss: string
-    /** 是否在文字章节中自动启用沉浸式分页阅读 */
-    wideReaderEnabled: boolean
-    /** 上次是否停留在分页模式；退出后刷新页面仍保持退出状态 */
+    /** 是否进入沉浸式分页阅读；退出后刷新页面仍保持退出状态 */
     wideReaderActive: boolean
+    /** 书架在桌面宽度下每行显示的书籍数量 */
+    bookshelfColumns: number
     /** 沉浸式阅读主题 */
     wideReaderTheme: WideReaderTheme
     /** 沉浸式阅读字体方案 */
@@ -67,8 +72,8 @@ export const DEFAULT_SETTINGS: Settings = {
     readerFont: '',
     customCssEnabled: false,
     customCss: '',
-    wideReaderEnabled: true,
     wideReaderActive: true,
+    bookshelfColumns: DEFAULT_BOOKSHELF_COLUMNS,
     wideReaderTheme: 'system',
     wideReaderFont: 'system',
     wideReaderFontSize: 18,
@@ -102,6 +107,9 @@ function normalize(raw: unknown): Settings {
     if (s.apiPreference !== 'app' && s.apiPreference !== 'redcandle') {
         s.apiPreference = DEFAULT_SETTINGS.apiPreference
     }
+    // 旧版本曾同时保存总开关和当前状态，这里合并迁移为唯一开关。
+    s.wideReaderActive = resolveWideReaderActive(o)
+    s.bookshelfColumns = normalizeBookshelfColumns(o.bookshelfColumns)
     if (!isWideReaderTheme(s.wideReaderTheme)) {
         s.wideReaderTheme = DEFAULT_SETTINGS.wideReaderTheme
     }

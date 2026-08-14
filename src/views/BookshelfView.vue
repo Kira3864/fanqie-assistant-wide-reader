@@ -7,6 +7,8 @@ import ContextMenu from './ContextMenu.vue'
 import { TABS, useBookshelf } from './useBookshelf'
 import { moveToGroup, removeFromBookshelf } from '../api/bookshelf'
 import type { BookShelfEntry, BookShelfGroup, BookShelfTabKey, MenuItem } from '../types'
+import { flushSettings, settings } from '../settings'
+import { MAX_BOOKSHELF_COLUMNS, MIN_BOOKSHELF_COLUMNS } from '../settingsNormalization'
 
 /** 持续悬停多久后展示详情 */
 const HOVER_DELAY = 300
@@ -15,6 +17,17 @@ const HIDE_DELAY = 160
 const HOVER_WIDTH = 280
 const HOVER_GAP = 12
 const VIEWPORT_MARGIN = 8
+
+/** 书架桌面网格可选列数，选项变化会由全局设置自动持久化。 */
+const bookshelfColumnOptions = Array.from(
+    { length: MAX_BOOKSHELF_COLUMNS - MIN_BOOKSHELF_COLUMNS + 1 },
+    (_, index) => MIN_BOOKSHELF_COLUMNS + index,
+)
+
+/** 将列数通过 CSS 变量传给书架网格，避免生成大量重复样式类。 */
+const bookshelfGridStyle = computed(() => ({
+    '--fqa-bookshelf-columns': String(settings.bookshelfColumns),
+}))
 
 const { loading, detailLoading, error, counts, groups, load, ensureDetails, cellsOf, findGroup, PAGE_SIZE } =
     useBookshelf()
@@ -399,6 +412,18 @@ onBeforeUnmount(() => {
             <div class="fqa-bs-title">我的书架</div>
             <div class="fqa-bs-actions">
                 <span v-if="detailLoading">正在补全详情…</span>
+                <label class="fqa-bs-columns">
+                    <span>每行</span>
+                    <select
+                        v-model.number="settings.bookshelfColumns"
+                        aria-label="书架每行显示数量"
+                        @change="flushSettings"
+                    >
+                        <option v-for="count in bookshelfColumnOptions" :key="count" :value="count">
+                            {{ count }} 本
+                        </option>
+                    </select>
+                </label>
                 <button class="fqa-btn" :disabled="loading" @click="refresh">
                     {{ loading ? '刷新中…' : '刷新' }}
                 </button>
@@ -439,7 +464,7 @@ onBeforeUnmount(() => {
         </div>
 
         <template v-else>
-            <div class="fqa-grid">
+            <div class="fqa-grid" :style="bookshelfGridStyle">
                 <template v-if="loading">
                     <div v-for="n in 8" :key="`sk-${n}`" class="fqa-card">
                         <div class="fqa-sk-cover fqa-sk-anim"></div>

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         番茄小说助手・宽屏阅读版
 // @namespace    https://github.com/Kira3864/fanqie-assistant-wide-reader
-// @version      0.3.6
+// @version      0.3.7
 // @author       naiyQAQ, Kira3864
 // @description  参考 GreasyFork 与开源项目实现的番茄小说 Userscript，提供正文增强和沉浸式宽屏分页阅读。
 // @license      GPLv3
@@ -137,6 +137,20 @@
   function isWideReaderFont(value) {
     return typeof value === "string" && WIDE_READER_FONTS.includes(value);
   }
+  const DEFAULT_BOOKSHELF_COLUMNS = 5;
+  const MIN_BOOKSHELF_COLUMNS = 4;
+  const MAX_BOOKSHELF_COLUMNS = 10;
+  function normalizeBookshelfColumns(value) {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) return DEFAULT_BOOKSHELF_COLUMNS;
+    return Math.min(MAX_BOOKSHELF_COLUMNS, Math.max(MIN_BOOKSHELF_COLUMNS, Math.round(parsed)));
+  }
+  function resolveWideReaderActive(raw) {
+    if (raw.wideReaderEnabled === false) return false;
+    if (typeof raw.wideReaderActive === "boolean") return raw.wideReaderActive;
+    if (typeof raw.wideReaderEnabled === "boolean") return raw.wideReaderEnabled;
+    return true;
+  }
   const STORE_KEY$1 = "settings";
   const DEFAULT_SETTINGS = {
     decryptFont: true,
@@ -145,8 +159,8 @@
     readerFont: "",
     customCssEnabled: false,
     customCss: "",
-    wideReaderEnabled: true,
     wideReaderActive: true,
+    bookshelfColumns: DEFAULT_BOOKSHELF_COLUMNS,
     wideReaderTheme: "system",
     wideReaderFont: "system",
     wideReaderFontSize: 18,
@@ -175,6 +189,8 @@
     if (s.apiPreference !== "app" && s.apiPreference !== "redcandle") {
       s.apiPreference = DEFAULT_SETTINGS.apiPreference;
     }
+    s.wideReaderActive = resolveWideReaderActive(o);
+    s.bookshelfColumns = normalizeBookshelfColumns(o.bookshelfColumns);
     if (!isWideReaderTheme(s.wideReaderTheme)) {
       s.wideReaderTheme = DEFAULT_SETTINGS.wideReaderTheme;
     }
@@ -2714,7 +2730,7 @@
     }
   }
   const name = "fanqie-assistant-wide-reader";
-  const version = "0.3.6";
+  const version = "0.3.7";
   const _hoisted_1$8 = {
     class: "fqa-set-dialog",
     role: "dialog",
@@ -2728,46 +2744,45 @@
   const _hoisted_6$7 = { class: "fqa-set-row" };
   const _hoisted_7$5 = { class: "fqa-set-row" };
   const _hoisted_8$5 = { class: "fqa-set-row" };
-  const _hoisted_9$5 = { class: "fqa-set-row" };
-  const _hoisted_10$5 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_11$5 = { class: "fqa-set-radios" };
-  const _hoisted_12$5 = ["value"];
-  const _hoisted_13$4 = { class: "fqa-set-row" };
-  const _hoisted_14$4 = { class: "fqa-set-label" };
-  const _hoisted_15$2 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_16$1 = { class: "fqa-set-row" };
-  const _hoisted_17$1 = { class: "fqa-set-label" };
-  const _hoisted_18$1 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_19$1 = { class: "fqa-set-row" };
-  const _hoisted_20 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_21 = ["disabled"];
-  const _hoisted_22 = { class: "fqa-set-row" };
-  const _hoisted_23 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_24 = {
+  const _hoisted_9$5 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_10$5 = { class: "fqa-set-radios" };
+  const _hoisted_11$5 = ["value"];
+  const _hoisted_12$5 = { class: "fqa-set-row" };
+  const _hoisted_13$4 = { class: "fqa-set-label" };
+  const _hoisted_14$4 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_15$2 = { class: "fqa-set-row" };
+  const _hoisted_16$2 = { class: "fqa-set-label" };
+  const _hoisted_17$1 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_18$1 = { class: "fqa-set-row" };
+  const _hoisted_19$1 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_20 = ["disabled"];
+  const _hoisted_21 = { class: "fqa-set-row" };
+  const _hoisted_22 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_23 = {
     class: "fqa-set-row",
     style: { "padding-top": "0", "border-bottom": "none" }
   };
-  const _hoisted_25 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_26 = { class: "fqa-set-radios" };
+  const _hoisted_24 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_25 = { class: "fqa-set-radios" };
+  const _hoisted_26 = { class: "fqa-set-radio" };
   const _hoisted_27 = { class: "fqa-set-radio" };
-  const _hoisted_28 = { class: "fqa-set-radio" };
-  const _hoisted_29 = { class: "fqa-set-row fqa-set-row-col" };
-  const _hoisted_30 = { class: "fqa-set-field" };
-  const _hoisted_31 = ["placeholder"];
-  const _hoisted_32 = { class: "fqa-set-field" };
-  const _hoisted_33 = ["placeholder"];
-  const _hoisted_34 = { class: "fqa-set-field" };
-  const _hoisted_35 = ["placeholder"];
-  const _hoisted_36 = { class: "fqa-set-actions" };
-  const _hoisted_37 = ["disabled"];
-  const _hoisted_38 = {
+  const _hoisted_28 = { class: "fqa-set-row fqa-set-row-col" };
+  const _hoisted_29 = { class: "fqa-set-field" };
+  const _hoisted_30 = ["placeholder"];
+  const _hoisted_31 = { class: "fqa-set-field" };
+  const _hoisted_32 = ["placeholder"];
+  const _hoisted_33 = { class: "fqa-set-field" };
+  const _hoisted_34 = ["placeholder"];
+  const _hoisted_35 = { class: "fqa-set-actions" };
+  const _hoisted_36 = ["disabled"];
+  const _hoisted_37 = {
     key: 0,
     class: "fqa-set-note"
   };
-  const _hoisted_39 = { class: "fqa-set-note" };
-  const _hoisted_40 = { class: "fqa-set-links" };
-  const _hoisted_41 = { class: "fqa-set-link-row" };
-  const _hoisted_42 = ["href"];
+  const _hoisted_38 = { class: "fqa-set-note" };
+  const _hoisted_39 = { class: "fqa-set-links" };
+  const _hoisted_40 = { class: "fqa-set-link-row" };
+  const _hoisted_41 = ["href"];
   const GREASYFORK = "https://greasyfork.org/zh-CN/scripts/589115-%E7%95%AA%E8%8C%84%E5%B0%8F%E8%AF%B4%E5%8A%A9%E6%89%8B";
   const GITHUB = "https://github.com/Kira3864/fanqie-assistant-wide-reader";
   const _sfc_main$8 = /* @__PURE__ */ vue.defineComponent({
@@ -2830,7 +2845,7 @@
               onClick: close
             }, "✕"),
             vue.createElementVNode("nav", _hoisted_2$8, [
-              _cache[19] || (_cache[19] = vue.createElementVNode("div", { class: "fqa-set-side-title" }, "助手设置", -1)),
+              _cache[18] || (_cache[18] = vue.createElementVNode("div", { class: "fqa-set-side-title" }, "助手设置", -1)),
               (vue.openBlock(), vue.createElementBlock(vue.Fragment, null, vue.renderList(SECTIONS, (s) => {
                 return vue.createElementVNode("div", {
                   key: s.key,
@@ -2844,9 +2859,9 @@
             ]),
             vue.createElementVNode("section", _hoisted_4$7, [
               active.value === "general" ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, [
-                _cache[23] || (_cache[23] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "常规", -1)),
+                _cache[22] || (_cache[22] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "常规", -1)),
                 vue.createElementVNode("label", _hoisted_5$7, [
-                  _cache[20] || (_cache[20] = vue.createElementVNode("span", { class: "fqa-set-label" }, "解密网页端混淆字体", -1)),
+                  _cache[19] || (_cache[19] = vue.createElementVNode("span", { class: "fqa-set-label" }, "解密网页端混淆字体", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
                     "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => vue.unref(settings$1).decryptFont = $event),
                     type: "checkbox",
@@ -2856,7 +2871,7 @@
                   ])
                 ]),
                 vue.createElementVNode("label", _hoisted_6$7, [
-                  _cache[21] || (_cache[21] = vue.createElementVNode("span", { class: "fqa-set-label" }, "拦截网页统计上报（不影响阅读进度同步）", -1)),
+                  _cache[20] || (_cache[20] = vue.createElementVNode("span", { class: "fqa-set-label" }, "拦截网页统计上报（不影响阅读进度同步）", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
                     "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => vue.unref(settings$1).blockReport = $event),
                     type: "checkbox",
@@ -2866,7 +2881,7 @@
                   ])
                 ]),
                 vue.createElementVNode("label", _hoisted_7$5, [
-                  _cache[22] || (_cache[22] = vue.createElementVNode("span", { class: "fqa-set-label" }, "允许阅读器复制文本", -1)),
+                  _cache[21] || (_cache[21] = vue.createElementVNode("span", { class: "fqa-set-label" }, "允许阅读器复制文本", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
                     "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => vue.unref(settings$1).allowCopy = $event),
                     type: "checkbox",
@@ -2876,30 +2891,20 @@
                   ])
                 ])
               ], 64)) : active.value === "ui" ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 1 }, [
-                _cache[33] || (_cache[33] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "界面", -1)),
+                _cache[31] || (_cache[31] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "界面", -1)),
                 vue.createElementVNode("label", _hoisted_8$5, [
-                  _cache[24] || (_cache[24] = vue.createElementVNode("span", { class: "fqa-set-label" }, "沉浸式分页阅读", -1)),
+                  _cache[23] || (_cache[23] = vue.createElementVNode("span", { class: "fqa-set-label" }, "沉浸式分页阅读", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => vue.unref(settings$1).wideReaderEnabled = $event),
-                    type: "checkbox",
-                    class: "fqa-set-switch"
-                  }, null, 512), [
-                    [vue.vModelCheckbox, vue.unref(settings$1).wideReaderEnabled]
-                  ])
-                ]),
-                vue.createElementVNode("label", _hoisted_9$5, [
-                  _cache[25] || (_cache[25] = vue.createElementVNode("span", { class: "fqa-set-label" }, "当前进入分页模式", -1)),
-                  vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => vue.unref(settings$1).wideReaderActive = $event),
+                    "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => vue.unref(settings$1).wideReaderActive = $event),
                     type: "checkbox",
                     class: "fqa-set-switch"
                   }, null, 512), [
                     [vue.vModelCheckbox, vue.unref(settings$1).wideReaderActive]
                   ])
                 ]),
-                vue.createElementVNode("div", _hoisted_10$5, [
-                  _cache[26] || (_cache[26] = vue.createElementVNode("span", { class: "fqa-set-label" }, "分页阅读主题", -1)),
-                  vue.createElementVNode("div", _hoisted_11$5, [
+                vue.createElementVNode("div", _hoisted_9$5, [
+                  _cache[24] || (_cache[24] = vue.createElementVNode("span", { class: "fqa-set-label" }, "分页阅读主题", -1)),
+                  vue.createElementVNode("div", _hoisted_10$5, [
                     (vue.openBlock(), vue.createElementBlock(vue.Fragment, null, vue.renderList([
                       ["system", "跟随系统"],
                       ["light", "明亮"],
@@ -2913,10 +2918,10 @@
                         class: "fqa-set-radio"
                       }, [
                         vue.withDirectives(vue.createElementVNode("input", {
-                          "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => vue.unref(settings$1).wideReaderTheme = $event),
+                          "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => vue.unref(settings$1).wideReaderTheme = $event),
                           type: "radio",
                           value: theme[0]
-                        }, null, 8, _hoisted_12$5), [
+                        }, null, 8, _hoisted_11$5), [
                           [vue.vModelRadio, vue.unref(settings$1).wideReaderTheme]
                         ]),
                         vue.createElementVNode("span", null, vue.toDisplayString(theme[1]), 1)
@@ -2924,10 +2929,10 @@
                     }), 64))
                   ])
                 ]),
-                vue.createElementVNode("label", _hoisted_13$4, [
-                  vue.createElementVNode("span", _hoisted_14$4, "分页字号（" + vue.toDisplayString(vue.unref(settings$1).wideReaderFontSize) + "px）", 1),
+                vue.createElementVNode("label", _hoisted_12$5, [
+                  vue.createElementVNode("span", _hoisted_13$4, "分页字号（" + vue.toDisplayString(vue.unref(settings$1).wideReaderFontSize) + "px）", 1),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => vue.unref(settings$1).wideReaderFontSize = $event),
+                    "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => vue.unref(settings$1).wideReaderFontSize = $event),
                     type: "range",
                     min: "16",
                     max: "24",
@@ -2941,21 +2946,21 @@
                     ]
                   ])
                 ]),
-                vue.createElementVNode("div", _hoisted_15$2, [
-                  _cache[28] || (_cache[28] = vue.createElementVNode("span", { class: "fqa-set-label" }, "分页正文字体", -1)),
+                vue.createElementVNode("div", _hoisted_14$4, [
+                  _cache[26] || (_cache[26] = vue.createElementVNode("span", { class: "fqa-set-label" }, "分页正文字体", -1)),
                   vue.withDirectives(vue.createElementVNode("select", {
-                    "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => vue.unref(settings$1).wideReaderFont = $event),
+                    "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => vue.unref(settings$1).wideReaderFont = $event),
                     class: "fqa-set-input"
-                  }, [..._cache[27] || (_cache[27] = [
+                  }, [..._cache[25] || (_cache[25] = [
                     vue.createStaticVNode('<option value="system">跟随助手字体</option><option value="yahei">微软雅黑</option><option value="sans">现代黑体</option><option value="serif">系统衬线</option><option value="song">宋体</option><option value="kai">楷体</option><option value="fangsong">仿宋</option>', 7)
                   ])], 512), [
                     [vue.vModelSelect, vue.unref(settings$1).wideReaderFont]
                   ])
                 ]),
-                vue.createElementVNode("label", _hoisted_16$1, [
-                  vue.createElementVNode("span", _hoisted_17$1, "分页行高（" + vue.toDisplayString(vue.unref(settings$1).wideReaderLineHeight.toFixed(2)) + "）", 1),
+                vue.createElementVNode("label", _hoisted_15$2, [
+                  vue.createElementVNode("span", _hoisted_16$2, "分页行高（" + vue.toDisplayString(vue.unref(settings$1).wideReaderLineHeight.toFixed(2)) + "）", 1),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => vue.unref(settings$1).wideReaderLineHeight = $event),
+                    "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => vue.unref(settings$1).wideReaderLineHeight = $event),
                     type: "range",
                     min: "1.4",
                     max: "2.6",
@@ -2969,145 +2974,145 @@
                     ]
                   ])
                 ]),
-                _cache[34] || (_cache[34] = vue.createElementVNode("p", { class: "fqa-set-note" }, " 宽屏时使用双栏，窄屏自动切换单栏；支持左右边缘、方向键、PageUp/PageDown、滚轮翻页。 ", -1)),
-                vue.createElementVNode("div", _hoisted_18$1, [
-                  _cache[29] || (_cache[29] = vue.createElementVNode("span", { class: "fqa-set-label" }, "阅读器字体", -1)),
+                _cache[32] || (_cache[32] = vue.createElementVNode("p", { class: "fqa-set-note" }, " 宽屏时使用双栏，窄屏自动切换单栏；支持左右边缘、方向键、PageUp/PageDown、滚轮翻页。 ", -1)),
+                vue.createElementVNode("div", _hoisted_17$1, [
+                  _cache[27] || (_cache[27] = vue.createElementVNode("span", { class: "fqa-set-label" }, "阅读器字体", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => vue.unref(settings$1).readerFont = $event),
+                    "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => vue.unref(settings$1).readerFont = $event),
                     class: "fqa-set-input",
                     type: "text",
                     placeholder: "留空表示使用默认字体"
                   }, null, 512), [
                     [vue.vModelText, vue.unref(settings$1).readerFont]
                   ]),
-                  _cache[30] || (_cache[30] = vue.createElementVNode("p", { class: "fqa-set-note" }, "填写字体名称，例如「思源宋体」。留空则跟随网页默认。", -1))
+                  _cache[28] || (_cache[28] = vue.createElementVNode("p", { class: "fqa-set-note" }, "填写字体名称，例如「思源宋体」。留空则跟随网页默认。", -1))
                 ]),
-                vue.createElementVNode("div", _hoisted_19$1, [
-                  _cache[31] || (_cache[31] = vue.createElementVNode("span", { class: "fqa-set-label" }, "自定义 CSS", -1)),
+                vue.createElementVNode("div", _hoisted_18$1, [
+                  _cache[29] || (_cache[29] = vue.createElementVNode("span", { class: "fqa-set-label" }, "自定义 CSS", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => vue.unref(settings$1).customCssEnabled = $event),
+                    "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => vue.unref(settings$1).customCssEnabled = $event),
                     type: "checkbox",
                     class: "fqa-set-switch"
                   }, null, 512), [
                     [vue.vModelCheckbox, vue.unref(settings$1).customCssEnabled]
                   ])
                 ]),
-                vue.createElementVNode("div", _hoisted_20, [
+                vue.createElementVNode("div", _hoisted_19$1, [
                   vue.withDirectives(vue.createElementVNode("textarea", {
-                    "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => vue.unref(settings$1).customCss = $event),
+                    "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => vue.unref(settings$1).customCss = $event),
                     class: "fqa-set-textarea",
                     disabled: !vue.unref(settings$1).customCssEnabled,
                     spellcheck: "false",
                     placeholder: "/* 自定义 CSS */"
-                  }, null, 8, _hoisted_21), [
+                  }, null, 8, _hoisted_20), [
                     [vue.vModelText, vue.unref(settings$1).customCss]
                   ]),
-                  _cache[32] || (_cache[32] = vue.createElementVNode("p", { class: "fqa-set-note" }, "关闭开关后内容会保留，只是不再应用。", -1))
+                  _cache[30] || (_cache[30] = vue.createElementVNode("p", { class: "fqa-set-note" }, "关闭开关后内容会保留，只是不再应用。", -1))
                 ])
               ], 64)) : active.value === "search" ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 2 }, [
-                _cache[38] || (_cache[38] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "搜索", -1)),
-                vue.createElementVNode("label", _hoisted_22, [
-                  _cache[35] || (_cache[35] = vue.createElementVNode("span", { class: "fqa-set-label" }, "接管搜索界面", -1)),
+                _cache[36] || (_cache[36] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "搜索", -1)),
+                vue.createElementVNode("label", _hoisted_21, [
+                  _cache[33] || (_cache[33] = vue.createElementVNode("span", { class: "fqa-set-label" }, "接管搜索界面", -1)),
                   vue.withDirectives(vue.createElementVNode("input", {
-                    "onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => vue.unref(settings$1).enhanceSearch = $event),
+                    "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => vue.unref(settings$1).enhanceSearch = $event),
                     type: "checkbox",
                     class: "fqa-set-switch"
                   }, null, 512), [
                     [vue.vModelCheckbox, vue.unref(settings$1).enhanceSearch]
                   ])
                 ]),
-                vue.createElementVNode("div", _hoisted_23, [
-                  vue.createElementVNode("label", _hoisted_24, [
-                    _cache[36] || (_cache[36] = vue.createElementVNode("span", { class: "fqa-set-label" }, "个人化推荐", -1)),
+                vue.createElementVNode("div", _hoisted_22, [
+                  vue.createElementVNode("label", _hoisted_23, [
+                    _cache[34] || (_cache[34] = vue.createElementVNode("span", { class: "fqa-set-label" }, "个人化推荐", -1)),
                     vue.withDirectives(vue.createElementVNode("input", {
-                      "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => vue.unref(settings$1).searchPersonalized = $event),
+                      "onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => vue.unref(settings$1).searchPersonalized = $event),
                       type: "checkbox",
                       class: "fqa-set-switch"
                     }, null, 512), [
                       [vue.vModelCheckbox, vue.unref(settings$1).searchPersonalized]
                     ])
                   ]),
-                  _cache[37] || (_cache[37] = vue.createElementVNode("p", { class: "fqa-set-note" }, " 开启后搜索走同源请求，由浏览器自动带上你的登录 Cookie，番茄据此按阅读偏好排序。 凭据不经过脚本，也不会发往番茄以外的任何地方。关闭时走匿名请求。 ", -1))
+                  _cache[35] || (_cache[35] = vue.createElementVNode("p", { class: "fqa-set-note" }, " 开启后搜索走同源请求，由浏览器自动带上你的登录 Cookie，番茄据此按阅读偏好排序。 凭据不经过脚本，也不会发往番茄以外的任何地方。关闭时走匿名请求。 ", -1))
                 ])
               ], 64)) : active.value === "protocol" ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 3 }, [
-                _cache[48] || (_cache[48] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "协议", -1)),
-                vue.createElementVNode("div", _hoisted_25, [
-                  _cache[41] || (_cache[41] = vue.createElementVNode("span", { class: "fqa-set-label" }, "API 偏好", -1)),
-                  vue.createElementVNode("div", _hoisted_26, [
-                    vue.createElementVNode("label", _hoisted_27, [
+                _cache[46] || (_cache[46] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "协议", -1)),
+                vue.createElementVNode("div", _hoisted_24, [
+                  _cache[39] || (_cache[39] = vue.createElementVNode("span", { class: "fqa-set-label" }, "API 偏好", -1)),
+                  vue.createElementVNode("div", _hoisted_25, [
+                    vue.createElementVNode("label", _hoisted_26, [
                       vue.withDirectives(vue.createElementVNode("input", {
-                        "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => vue.unref(settings$1).apiPreference = $event),
+                        "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => vue.unref(settings$1).apiPreference = $event),
                         type: "radio",
                         value: "app"
                       }, null, 512), [
                         [vue.vModelRadio, vue.unref(settings$1).apiPreference]
                       ]),
-                      _cache[39] || (_cache[39] = vue.createElementVNode("span", null, "番茄 APP", -1))
+                      _cache[37] || (_cache[37] = vue.createElementVNode("span", null, "番茄 APP", -1))
                     ]),
-                    vue.createElementVNode("label", _hoisted_28, [
+                    vue.createElementVNode("label", _hoisted_27, [
                       vue.withDirectives(vue.createElementVNode("input", {
-                        "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => vue.unref(settings$1).apiPreference = $event),
+                        "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => vue.unref(settings$1).apiPreference = $event),
                         type: "radio",
                         value: "redcandle"
                       }, null, 512), [
                         [vue.vModelRadio, vue.unref(settings$1).apiPreference]
                       ]),
-                      _cache[40] || (_cache[40] = vue.createElementVNode("span", null, "红烛 APP", -1))
+                      _cache[38] || (_cache[38] = vue.createElementVNode("span", null, "红烛 APP", -1))
                     ])
                   ]),
-                  _cache[42] || (_cache[42] = vue.createElementVNode("p", { class: "fqa-set-note" }, "如果某协议数据不全，脚本可能会选择其他接口作为补充。", -1))
+                  _cache[40] || (_cache[40] = vue.createElementVNode("p", { class: "fqa-set-note" }, "如果某协议数据不全，脚本可能会选择其他接口作为补充。", -1))
                 ]),
-                vue.createElementVNode("div", _hoisted_29, [
-                  _cache[46] || (_cache[46] = vue.createElementVNode("span", { class: "fqa-set-label" }, "设备信息", -1)),
-                  _cache[47] || (_cache[47] = vue.createElementVNode("p", { class: "fqa-set-warn" }, " 如果不知道这是什么，请保持默认。乱填可能导致脚本功能异常。 ", -1)),
-                  vue.createElementVNode("label", _hoisted_30, [
-                    _cache[43] || (_cache[43] = vue.createElementVNode("span", null, "device_id", -1)),
+                vue.createElementVNode("div", _hoisted_28, [
+                  _cache[44] || (_cache[44] = vue.createElementVNode("span", { class: "fqa-set-label" }, "设备信息", -1)),
+                  _cache[45] || (_cache[45] = vue.createElementVNode("p", { class: "fqa-set-warn" }, " 如果不知道这是什么，请保持默认。乱填可能导致脚本功能异常。 ", -1)),
+                  vue.createElementVNode("label", _hoisted_29, [
+                    _cache[41] || (_cache[41] = vue.createElementVNode("span", null, "device_id", -1)),
                     vue.withDirectives(vue.createElementVNode("input", {
-                      "onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => vue.unref(settings$1).deviceId = $event),
+                      "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => vue.unref(settings$1).deviceId = $event),
                       class: "fqa-set-input",
                       type: "text",
                       placeholder: currentDevice.value.device_id || "自动注册"
-                    }, null, 8, _hoisted_31), [
+                    }, null, 8, _hoisted_30), [
                       [vue.vModelText, vue.unref(settings$1).deviceId]
                     ])
                   ]),
-                  vue.createElementVNode("label", _hoisted_32, [
-                    _cache[44] || (_cache[44] = vue.createElementVNode("span", null, "install_id (iid)", -1)),
+                  vue.createElementVNode("label", _hoisted_31, [
+                    _cache[42] || (_cache[42] = vue.createElementVNode("span", null, "install_id (iid)", -1)),
                     vue.withDirectives(vue.createElementVNode("input", {
-                      "onUpdate:modelValue": _cache[17] || (_cache[17] = ($event) => vue.unref(settings$1).installId = $event),
+                      "onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => vue.unref(settings$1).installId = $event),
                       class: "fqa-set-input",
                       type: "text",
                       placeholder: currentDevice.value.install_id || "自动注册"
-                    }, null, 8, _hoisted_33), [
+                    }, null, 8, _hoisted_32), [
                       [vue.vModelText, vue.unref(settings$1).installId]
                     ])
                   ]),
-                  vue.createElementVNode("label", _hoisted_34, [
-                    _cache[45] || (_cache[45] = vue.createElementVNode("span", null, "device_type", -1)),
+                  vue.createElementVNode("label", _hoisted_33, [
+                    _cache[43] || (_cache[43] = vue.createElementVNode("span", null, "device_type", -1)),
                     vue.withDirectives(vue.createElementVNode("input", {
-                      "onUpdate:modelValue": _cache[18] || (_cache[18] = ($event) => vue.unref(settings$1).deviceType = $event),
+                      "onUpdate:modelValue": _cache[17] || (_cache[17] = ($event) => vue.unref(settings$1).deviceType = $event),
                       class: "fqa-set-input",
                       type: "text",
                       placeholder: currentDevice.value.device_type || "自动注册"
-                    }, null, 8, _hoisted_35), [
+                    }, null, 8, _hoisted_34), [
                       [vue.vModelText, vue.unref(settings$1).deviceType]
                     ])
                   ]),
-                  vue.createElementVNode("div", _hoisted_36, [
+                  vue.createElementVNode("div", _hoisted_35, [
                     vue.createElementVNode("button", {
                       class: "fqa-set-btn",
                       disabled: registering.value,
                       onClick: reRegister
-                    }, vue.toDisplayString(registering.value ? "注册中…" : "重新注册"), 9, _hoisted_37),
-                    registerMsg.value ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_38, vue.toDisplayString(registerMsg.value), 1)) : vue.createCommentVNode("", true)
+                    }, vue.toDisplayString(registering.value ? "注册中…" : "重新注册"), 9, _hoisted_36),
+                    registerMsg.value ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_37, vue.toDisplayString(registerMsg.value), 1)) : vue.createCommentVNode("", true)
                   ])
                 ])
               ], 64)) : (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 4 }, [
-                _cache[53] || (_cache[53] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "关于", -1)),
-                vue.createElementVNode("p", _hoisted_39, "番茄小说助手 v" + vue.toDisplayString(vue.unref(version)), 1),
-                vue.createElementVNode("div", _hoisted_40, [
+                _cache[51] || (_cache[51] = vue.createElementVNode("h3", { class: "fqa-set-h" }, "关于", -1)),
+                vue.createElementVNode("p", _hoisted_38, "番茄小说助手 v" + vue.toDisplayString(vue.unref(version)), 1),
+                vue.createElementVNode("div", _hoisted_39, [
                   vue.createElementVNode("div", { class: "fqa-set-link-row" }, [
-                    _cache[49] || (_cache[49] = vue.createElementVNode("span", null, "GreasyFork 地址：", -1)),
+                    _cache[47] || (_cache[47] = vue.createElementVNode("span", null, "GreasyFork 地址：", -1)),
                     vue.createElementVNode("a", {
                       href: GREASYFORK,
                       target: "_blank",
@@ -3115,31 +3120,31 @@
                     }, "跳转")
                   ]),
                   vue.createElementVNode("div", { class: "fqa-set-link-row" }, [
-                    _cache[50] || (_cache[50] = vue.createElementVNode("span", null, "GitHub 地址：", -1)),
+                    _cache[48] || (_cache[48] = vue.createElementVNode("span", null, "GitHub 地址：", -1)),
                     vue.createElementVNode("a", {
                       href: GITHUB,
                       target: "_blank",
                       rel: "noreferrer noopener"
                     }, "跳转")
                   ]),
-                  vue.createElementVNode("div", _hoisted_41, [
-                    _cache[52] || (_cache[52] = vue.createElementVNode("span", null, "问题反馈：", -1)),
+                  vue.createElementVNode("div", _hoisted_40, [
+                    _cache[50] || (_cache[50] = vue.createElementVNode("span", null, "问题反馈：", -1)),
                     vue.createElementVNode("a", {
                       href: FEEDBACK,
                       target: "_blank",
                       rel: "noreferrer noopener"
                     }, "GreasyFork"),
                     vue.createElementVNode("span", null, [
-                      _cache[51] || (_cache[51] = vue.createTextVNode(" 或 ", -1)),
+                      _cache[49] || (_cache[49] = vue.createTextVNode(" 或 ", -1)),
                       vue.createElementVNode("a", {
                         href: `${GITHUB}/issues`,
                         target: "_blank",
                         rel: "noreferrer noopener"
-                      }, " GitHub Issues ", 8, _hoisted_42)
+                      }, " GitHub Issues ", 8, _hoisted_41)
                     ])
                   ])
                 ]),
-                _cache[54] || (_cache[54] = vue.createElementVNode("div", { class: "fqa-set-license" }, [
+                _cache[52] || (_cache[52] = vue.createElementVNode("div", { class: "fqa-set-license" }, [
                   vue.createElementVNode("p", null, " 本脚本基于 GNU General Public License 3.0 授权，完全开源且免费，修改/二次开发请注意遵守开源协议。 "),
                   vue.createElementVNode("p", null, "本脚本使用 TypeScript + Vue 开发，请避免直接修改编译产物。")
                 ], -1))
@@ -3246,10 +3251,10 @@
   let previousDocumentOverflow = null;
   function syncWideReader(snapshot) {
     lastSnapshot = snapshot;
-    if (!settings$1.wideReaderEnabled || !settings$1.wideReaderActive || snapshot.comic) {
+    if (!settings$1.wideReaderActive || snapshot.comic) {
       removeWideReaderEntry();
       unmountWideReader();
-      if (settings$1.wideReaderEnabled && !snapshot.comic) showWideReaderEntry();
+      if (!snapshot.comic) showWideReaderEntry();
       return;
     }
     mountWideReader(snapshot);
@@ -3964,7 +3969,7 @@
     else console.warn(`[fqa:分页菜单] 未找到原站“${label}”入口`);
   }
   function showWideReaderEntry() {
-    if (document.getElementById(ENTRY_ID) || !settings$1.wideReaderEnabled || !lastSnapshot || lastSnapshot.comic) return;
+    if (document.getElementById(ENTRY_ID) || !lastSnapshot || lastSnapshot.comic) return;
     ensureWideReaderStyle();
     const button = createButton("分页阅读", "重新进入沉浸式分页阅读");
     button.id = ENTRY_ID;
@@ -3983,22 +3988,12 @@
     return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target instanceof HTMLElement && target.isContentEditable;
   }
   vue.watch(
-    () => settings$1.wideReaderEnabled,
-    (enabled) => {
-      if (!enabled) {
-        removeWideReaderEntry();
-        unmountWideReader();
-      } else if (settings$1.wideReaderActive && lastSnapshot && !lastSnapshot.comic) mountWideReader(lastSnapshot);
-      else showWideReaderEntry();
-    }
-  );
-  vue.watch(
     () => settings$1.wideReaderActive,
     (active) => {
       if (!active) {
         unmountWideReader();
         showWideReaderEntry();
-      } else if (settings$1.wideReaderEnabled && lastSnapshot && !lastSnapshot.comic) {
+      } else if (lastSnapshot && !lastSnapshot.comic) {
         mountWideReader(lastSnapshot);
       }
     }
@@ -5421,26 +5416,27 @@
   const _hoisted_2$3 = { class: "fqa-bs-header" };
   const _hoisted_3$3 = { class: "fqa-bs-actions" };
   const _hoisted_4$3 = { key: 0 };
-  const _hoisted_5$3 = ["disabled"];
-  const _hoisted_6$3 = ["aria-selected", "onClick", "onKeydown"];
-  const _hoisted_7$3 = { class: "fqa-tab-count" };
-  const _hoisted_8$3 = {
+  const _hoisted_5$3 = { class: "fqa-bs-columns" };
+  const _hoisted_6$3 = ["value"];
+  const _hoisted_7$3 = ["disabled"];
+  const _hoisted_8$3 = ["aria-selected", "onClick", "onKeydown"];
+  const _hoisted_9$3 = { class: "fqa-tab-count" };
+  const _hoisted_10$3 = {
     key: 0,
     class: "fqa-groupbar"
   };
-  const _hoisted_9$3 = { class: "fqa-groupbar-name" };
-  const _hoisted_10$3 = { class: "fqa-groupbar-count" };
-  const _hoisted_11$3 = {
+  const _hoisted_11$3 = { class: "fqa-groupbar-name" };
+  const _hoisted_12$3 = { class: "fqa-groupbar-count" };
+  const _hoisted_13$3 = {
     key: 1,
     class: "fqa-status"
   };
-  const _hoisted_12$3 = {
+  const _hoisted_14$3 = {
     key: 2,
     class: "fqa-status"
   };
-  const _hoisted_13$3 = { class: "fqa-status-title" };
-  const _hoisted_14$3 = { class: "fqa-grid" };
-  const _hoisted_15$1 = {
+  const _hoisted_15$1 = { class: "fqa-status-title" };
+  const _hoisted_16$1 = {
     key: 0,
     class: "fqa-toast"
   };
@@ -5453,6 +5449,13 @@
   const _sfc_main$3 = /* @__PURE__ */ vue.defineComponent({
     __name: "BookshelfView",
     setup(__props) {
+      const bookshelfColumnOptions = Array.from(
+        { length: MAX_BOOKSHELF_COLUMNS - MIN_BOOKSHELF_COLUMNS + 1 },
+        (_, index) => MIN_BOOKSHELF_COLUMNS + index
+      );
+      const bookshelfGridStyle = vue.computed(() => ({
+        "--fqa-bookshelf-columns": String(settings$1.bookshelfColumns)
+      }));
       const { loading, detailLoading, error, counts, groups, load: load2, ensureDetails, cellsOf, findGroup, PAGE_SIZE: PAGE_SIZE2 } = useBookshelf();
       const activeTab = vue.ref("all");
       const openedGroupName = vue.ref(null);
@@ -5746,14 +5749,37 @@
       return (_ctx, _cache) => {
         return vue.openBlock(), vue.createElementBlock("div", _hoisted_1$3, [
           vue.createElementVNode("div", _hoisted_2$3, [
-            _cache[1] || (_cache[1] = vue.createElementVNode("div", { class: "fqa-bs-title" }, "我的书架", -1)),
+            _cache[4] || (_cache[4] = vue.createElementVNode("div", { class: "fqa-bs-title" }, "我的书架", -1)),
             vue.createElementVNode("div", _hoisted_3$3, [
               vue.unref(detailLoading) ? (vue.openBlock(), vue.createElementBlock("span", _hoisted_4$3, "正在补全详情…")) : vue.createCommentVNode("", true),
+              vue.createElementVNode("label", _hoisted_5$3, [
+                _cache[3] || (_cache[3] = vue.createElementVNode("span", null, "每行", -1)),
+                vue.withDirectives(vue.createElementVNode("select", {
+                  "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => vue.unref(settings$1).bookshelfColumns = $event),
+                  "aria-label": "书架每行显示数量",
+                  onChange: _cache[1] || (_cache[1] = //@ts-ignore
+                  (...args) => vue.unref(flushSettings) && vue.unref(flushSettings)(...args))
+                }, [
+                  (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(vue.unref(bookshelfColumnOptions), (count) => {
+                    return vue.openBlock(), vue.createElementBlock("option", {
+                      key: count,
+                      value: count
+                    }, vue.toDisplayString(count) + " 本 ", 9, _hoisted_6$3);
+                  }), 128))
+                ], 544), [
+                  [
+                    vue.vModelSelect,
+                    vue.unref(settings$1).bookshelfColumns,
+                    void 0,
+                    { number: true }
+                  ]
+                ])
+              ]),
               vue.createElementVNode("button", {
                 class: "fqa-btn",
                 disabled: vue.unref(loading),
                 onClick: refresh
-              }, vue.toDisplayString(vue.unref(loading) ? "刷新中…" : "刷新"), 9, _hoisted_5$3)
+              }, vue.toDisplayString(vue.unref(loading) ? "刷新中…" : "刷新"), 9, _hoisted_7$3)
             ])
           ]),
           vue.createElementVNode("div", {
@@ -5773,38 +5799,41 @@
                 onKeydown: vue.withKeys(vue.withModifiers(($event) => selectTab(tab.key), ["prevent"]), ["enter"])
               }, [
                 vue.createTextVNode(vue.toDisplayString(tab.label), 1),
-                vue.createElementVNode("span", _hoisted_7$3, vue.toDisplayString(vue.unref(counts)[tab.key]), 1)
-              ], 42, _hoisted_6$3);
+                vue.createElementVNode("span", _hoisted_9$3, vue.toDisplayString(vue.unref(counts)[tab.key]), 1)
+              ], 42, _hoisted_8$3);
             }), 128)),
             vue.createElementVNode("span", {
               class: "fqa-tab-ink",
               style: vue.normalizeStyle(inkStyle.value)
             }, null, 4)
           ], 512),
-          openedGroup.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_8$3, [
+          openedGroup.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_10$3, [
             vue.createElementVNode("button", {
               class: "fqa-btn",
               onClick: backToList
             }, "← 返回"),
-            vue.createElementVNode("span", _hoisted_9$3, vue.toDisplayString(openedGroup.value.name), 1),
-            vue.createElementVNode("span", _hoisted_10$3, "共" + vue.toDisplayString(openedGroup.value.books.length) + "本书", 1)
+            vue.createElementVNode("span", _hoisted_11$3, vue.toDisplayString(openedGroup.value.name), 1),
+            vue.createElementVNode("span", _hoisted_12$3, "共" + vue.toDisplayString(openedGroup.value.books.length) + "本书", 1)
           ])) : vue.createCommentVNode("", true),
-          vue.unref(error) ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_11$3, [
-            _cache[2] || (_cache[2] = vue.createElementVNode("div", { class: "fqa-status-title" }, "书架加载失败", -1)),
+          vue.unref(error) ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_13$3, [
+            _cache[5] || (_cache[5] = vue.createElementVNode("div", { class: "fqa-status-title" }, "书架加载失败", -1)),
             vue.createElementVNode("div", null, vue.toDisplayString(vue.unref(error)), 1),
             vue.createElementVNode("button", {
               class: "fqa-btn",
               onClick: refresh
             }, "重试")
-          ])) : isEmpty.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_12$3, [
-            vue.createElementVNode("div", _hoisted_13$3, vue.toDisplayString(emptyText.value), 1)
+          ])) : isEmpty.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_14$3, [
+            vue.createElementVNode("div", _hoisted_15$1, vue.toDisplayString(emptyText.value), 1)
           ])) : (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 3 }, [
-            vue.createElementVNode("div", _hoisted_14$3, [
+            vue.createElementVNode("div", {
+              class: "fqa-grid",
+              style: vue.normalizeStyle(bookshelfGridStyle.value)
+            }, [
               vue.unref(loading) ? (vue.openBlock(), vue.createElementBlock(vue.Fragment, { key: 0 }, vue.renderList(8, (n) => {
                 return vue.createElementVNode("div", {
                   key: `sk-${n}`,
                   class: "fqa-card"
-                }, [..._cache[3] || (_cache[3] = [
+                }, [..._cache[6] || (_cache[6] = [
                   vue.createElementVNode("div", { class: "fqa-sk-cover fqa-sk-anim" }, null, -1),
                   vue.createElementVNode("div", {
                     class: "fqa-sk-line fqa-sk-anim",
@@ -5835,7 +5864,7 @@
                   }, null, 8, ["group"]))
                 ], 64);
               }), 128))
-            ]),
+            ], 4),
             !vue.unref(loading) && hasMore.value ? (vue.openBlock(), vue.createElementBlock("div", {
               key: 0,
               ref_key: "sentinel",
@@ -5859,15 +5888,15 @@
               y: menuPos.value.y,
               items: menuItems.value,
               onSelect: onMenuSelect,
-              onClose: _cache[0] || (_cache[0] = ($event) => menuVisible.value = false)
+              onClose: _cache[2] || (_cache[2] = ($event) => menuVisible.value = false)
             }, null, 8, ["visible", "x", "y", "items"]),
-            toast.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_15$1, vue.toDisplayString(toast.value), 1)) : vue.createCommentVNode("", true)
+            toast.value ? (vue.openBlock(), vue.createElementBlock("div", _hoisted_16$1, vue.toDisplayString(toast.value), 1)) : vue.createCommentVNode("", true)
           ]))
         ]);
       };
     }
   });
-  const bookshelfcss = "#fqa-bookshelf {\r\n    --fqa-text: #1f2329;\r\n    --fqa-text-sub: #646a73;\r\n    --fqa-text-weak: #8f959e;\r\n    --fqa-border: rgba(31, 35, 41, 0.08);\r\n    --fqa-hover: rgba(31, 35, 41, 0.04);\r\n    --fqa-accent: #ff6f3d;\r\n    --fqa-skeleton: rgba(31, 35, 41, 0.06);\r\n    --fqa-skeleton-hl: rgba(31, 35, 41, 0.12);\r\n    --fqa-shadow: 0 4px 16px rgba(31, 35, 41, 0.08);\r\n\r\n    display: block;\r\n    box-sizing: border-box;\r\n    width: 100%;\r\n    max-width: 1100px;\r\n    margin: 0 auto;\r\n    /* 顶部留出原站 fixed 顶栏（80px）的高度，否则标题和 tab 会被压在下面 */\r\n    padding: calc(80px + 24px) 16px 64px;\r\n    color: var(--fqa-text);\r\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\r\n        sans-serif;\r\n}\r\n\r\n#fqa-bookshelf *,\r\n#fqa-bookshelf *::before,\r\n#fqa-bookshelf *::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n#fqa-bookshelf div,\r\n#fqa-bookshelf span,\r\n#fqa-bookshelf h1,\r\n#fqa-bookshelf ul,\r\n#fqa-bookshelf li {\r\n    margin: 0;\r\n    padding: 0;\r\n    border: 0;\r\n    list-style: none;\r\n    float: none;\r\n    position: static;\r\n}\r\n\r\n/* ------------------------------ 顶部 / Tabs ------------------------------ */\r\n\r\n#fqa-bookshelf .fqa-bs-header {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    gap: 16px;\r\n    margin-bottom: 8px;\r\n}\r\n\r\n#fqa-bookshelf .fqa-bs-title {\r\n    font-size: 24px;\r\n    font-weight: 600;\r\n    line-height: 1.4;\r\n}\r\n\r\n#fqa-bookshelf .fqa-bs-actions {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 12px;\r\n    font-size: 13px;\r\n    color: var(--fqa-text-weak);\r\n}\r\n\r\n#fqa-bookshelf .fqa-btn {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    gap: 4px;\r\n    padding: 6px 14px;\r\n    border: 1px solid var(--fqa-border);\r\n    border-radius: 999px;\r\n    background: transparent;\r\n    color: var(--fqa-text-sub);\r\n    font-size: 13px;\r\n    font-family: inherit;\r\n    line-height: 1.4;\r\n    cursor: pointer;\r\n    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;\r\n}\r\n\r\n#fqa-bookshelf .fqa-btn:hover:not(:disabled) {\r\n    border-color: var(--fqa-accent);\r\n    color: var(--fqa-accent);\r\n    background: rgba(255, 111, 61, 0.06);\r\n}\r\n\r\n#fqa-bookshelf .fqa-btn:disabled {\r\n    opacity: 0.5;\r\n    cursor: default;\r\n}\r\n\r\n#fqa-bookshelf .fqa-tabs {\r\n    position: relative;\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 4px;\r\n    margin-bottom: 24px;\r\n    border-bottom: 1px solid var(--fqa-border);\r\n}\r\n\r\n#fqa-bookshelf .fqa-tab {\r\n    padding: 10px 16px;\r\n    color: var(--fqa-text-sub);\r\n    font-size: 15px;\r\n    line-height: 22px;\r\n    cursor: pointer;\r\n    user-select: none;\r\n    transition: color 0.15s ease;\r\n}\r\n\r\n#fqa-bookshelf .fqa-tab:hover {\r\n    color: var(--fqa-text);\r\n}\r\n\r\n#fqa-bookshelf .fqa-tab-active {\r\n    color: var(--fqa-accent);\r\n    font-weight: 600;\r\n}\r\n\r\n#fqa-bookshelf .fqa-tab-count {\r\n    margin-left: 4px;\r\n    font-size: 12px;\r\n    font-weight: 400;\r\n    color: var(--fqa-text-weak);\r\n}\r\n\r\n#fqa-bookshelf .fqa-tab-ink {\r\n    position: absolute;\r\n    bottom: -1px;\r\n    left: 0;\r\n    width: 0;\r\n    height: 2px;\r\n    border-radius: 2px;\r\n    background: var(--fqa-accent);\r\n    transition: left 0.25s ease, width 0.25s ease;\r\n}\r\n\r\n/* ------------------------------- 书架网格 ------------------------------- */\r\n\r\n/* 原站一排最多 4 本；窄屏逐级降到 3 / 2 */\r\n#fqa-bookshelf .fqa-grid {\r\n    display: grid;\r\n    grid-template-columns: repeat(4, minmax(0, 1fr));\r\n    gap: 28px 24px;\r\n    align-items: start;\r\n}\r\n\r\n@media (max-width: 900px) {\r\n    #fqa-bookshelf .fqa-grid {\r\n        grid-template-columns: repeat(3, minmax(0, 1fr));\r\n    }\r\n}\r\n\r\n@media (max-width: 600px) {\r\n    #fqa-bookshelf .fqa-grid {\r\n        grid-template-columns: repeat(2, minmax(0, 1fr));\r\n    }\r\n}\r\n\r\n#fqa-bookshelf .fqa-card {\r\n    display: block;\r\n    border-radius: 8px;\r\n    cursor: pointer;\r\n    outline: none;\r\n}\r\n\r\n#fqa-bookshelf .fqa-card:focus-visible {\r\n    box-shadow: 0 0 0 2px var(--fqa-accent);\r\n}\r\n\r\n/* 封面：3:4，靠 aspect-ratio 定高，内部元素绝对定位 */\r\n#fqa-bookshelf .fqa-cover {\r\n    position: relative;\r\n    display: block;\r\n    width: 100%;\r\n    aspect-ratio: 3 / 4;\r\n    border-radius: 6px;\r\n    overflow: hidden;\r\n    background: var(--fqa-skeleton);\r\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\r\n}\r\n\r\n#fqa-bookshelf .fqa-card:hover .fqa-cover {\r\n    transform: translateY(-4px);\r\n    box-shadow: var(--fqa-shadow);\r\n}\r\n\r\n#fqa-bookshelf .fqa-cover-img {\r\n    position: absolute;\r\n    inset: 0;\r\n    display: block;\r\n    width: 100%;\r\n    height: 100%;\r\n    object-fit: cover;\r\n    transition: opacity 0.25s ease;\r\n}\r\n\r\n#fqa-bookshelf .fqa-cover-img-loading {\r\n    opacity: 0;\r\n}\r\n\r\n#fqa-bookshelf .fqa-cover-tag {\r\n    position: absolute;\r\n    top: 0;\r\n    right: 0;\r\n    z-index: 2;\r\n    padding: 2px 6px;\r\n    border-radius: 0 6px 0 6px;\r\n    background: var(--fqa-accent);\r\n    color: #fff;\r\n    font-size: 11px;\r\n    line-height: 16px;\r\n    font-weight: 500;\r\n    white-space: nowrap;\r\n}\r\n\r\n/* 连载 / 完结 / 断更共用：灰底，弱化于“更新”角标 */\r\n#fqa-bookshelf .fqa-cover-tag-gray {\r\n    background: rgba(31, 35, 41, 0.55);\r\n}\r\n\r\n@media (prefers-color-scheme: dark) {\r\n    #fqa-bookshelf .fqa-cover-tag-gray {\r\n        background: rgba(0, 0, 0, 0.6);\r\n    }\r\n}\r\n\r\n#fqa-bookshelf .fqa-cover-progress {\r\n    position: absolute;\r\n    left: 0;\r\n    right: 0;\r\n    bottom: 0;\r\n    z-index: 2;\r\n    height: 3px;\r\n    background: rgba(255, 255, 255, 0.35);\r\n}\r\n\r\n#fqa-bookshelf .fqa-cover-progress-bar {\r\n    display: block;\r\n    height: 100%;\r\n    background: var(--fqa-accent);\r\n    transition: width 0.3s ease;\r\n}\r\n\r\n/* 文字区：与封面同为普通流元素，不会重叠 */\r\n#fqa-bookshelf .fqa-card-title {\r\n    display: -webkit-box;\r\n    margin-top: 8px;\r\n    color: var(--fqa-text);\r\n    font-size: 14px;\r\n    line-height: 20px;\r\n    font-weight: 500;\r\n    -webkit-line-clamp: 2;\r\n    line-clamp: 2;\r\n    -webkit-box-orient: vertical;\r\n    overflow: hidden;\r\n    word-break: break-all;\r\n}\r\n\r\n#fqa-bookshelf .fqa-card-sub {\r\n    margin-top: 4px;\r\n    color: var(--fqa-text-weak);\r\n    font-size: 12px;\r\n    line-height: 18px;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n/* ------------------------------- 分组卡片 ------------------------------- */\r\n\r\n#fqa-bookshelf .fqa-group-cover {\r\n    position: relative;\r\n    display: block;\r\n    width: 100%;\r\n    aspect-ratio: 3 / 4;\r\n    border-radius: 6px;\r\n    overflow: hidden;\r\n    background: linear-gradient(135deg, rgba(255, 111, 61, 0.12), rgba(78, 131, 253, 0.12));\r\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\r\n}\r\n\r\n#fqa-bookshelf .fqa-card:hover .fqa-group-cover {\r\n    transform: translateY(-4px);\r\n    box-shadow: var(--fqa-shadow);\r\n}\r\n\r\n#fqa-bookshelf .fqa-group-grid {\r\n    position: absolute;\r\n    inset: 0;\r\n    display: grid;\r\n    grid-template-columns: 1fr 1fr;\r\n    grid-template-rows: 1fr 1fr;\r\n    gap: 4px;\r\n    padding: 6px;\r\n}\r\n\r\n#fqa-bookshelf .fqa-group-cell {\r\n    position: relative;\r\n    border-radius: 3px;\r\n    overflow: hidden;\r\n    background: rgba(31, 35, 41, 0.06);\r\n}\r\n\r\n#fqa-bookshelf .fqa-group-cell img {\r\n    display: block;\r\n    width: 100%;\r\n    height: 100%;\r\n    object-fit: cover;\r\n}\r\n\r\n/* 分组详情返回条 */\r\n\r\n#fqa-bookshelf .fqa-groupbar {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 10px;\r\n    margin-bottom: 16px;\r\n}\r\n\r\n#fqa-bookshelf .fqa-groupbar-name {\r\n    font-size: 16px;\r\n    font-weight: 600;\r\n}\r\n\r\n#fqa-bookshelf .fqa-groupbar-count {\r\n    color: var(--fqa-text-weak);\r\n    font-size: 13px;\r\n}\r\n\r\n/* --------------------------- hover 详情浮层 --------------------------- */\r\n\r\n/*\r\n * 用 popover 进入浏览器顶层，不参与页面 z-index 竞争，\r\n * 因此不会被相邻卡片或原站的层叠上下文盖住。z-index 仅作降级保险。\r\n */\r\n#fqa-bookshelf-hover {\r\n    position: fixed;\r\n    z-index: 2147483000;\r\n    /* 容器本身透传，只有内部卡片接收事件，避免空白区挡住下层 */\r\n    pointer-events: none;\r\n    opacity: 0;\r\n    transform: translateY(4px);\r\n    /* allow-discrete：顶层元素从 display:none 切入时也能播放淡入 */\r\n    transition: opacity 0.16s ease, transform 0.16s ease, display 0.16s allow-discrete;\r\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\r\n        sans-serif;\r\n}\r\n\r\n/* popover 默认带边框/内边距/居中定位，全部清掉，改由 left/top 控制 */\r\n#fqa-bookshelf-hover:popover-open,\r\n#fqa-bookshelf-hover[popover] {\r\n    margin: 0;\r\n    padding: 0;\r\n    border: 0;\r\n    background: transparent;\r\n    overflow: visible;\r\n    inset: auto;\r\n    width: auto;\r\n    height: auto;\r\n    max-width: none;\r\n    max-height: none;\r\n    color: inherit;\r\n}\r\n\r\n#fqa-bookshelf-hover::backdrop {\r\n    background: transparent;\r\n}\r\n\r\n#fqa-bookshelf-hover.fqa-visible {\r\n    opacity: 1;\r\n    transform: translateY(0);\r\n}\r\n\r\n@starting-style {\r\n    #fqa-bookshelf-hover.fqa-visible {\r\n        opacity: 0;\r\n        transform: translateY(4px);\r\n    }\r\n}\r\n\r\n/* 高度由 JS 按封面尺寸设定；纵向 flex 让简介吃掉剩余空间 */\r\n#fqa-bookshelf-hover .fqa-hover-inner {\r\n    display: flex;\r\n    flex-direction: column;\r\n    box-sizing: border-box;\r\n    width: 280px;\r\n    padding: 12px 14px;\r\n    border-radius: 10px;\r\n    background: #fff;\r\n    box-shadow: 0 8px 32px rgba(31, 35, 41, 0.16);\r\n    color: #1f2329;\r\n    overflow: hidden;\r\n    /* 卡片可交互：鼠标可以移进来而不触发收起 */\r\n    pointer-events: auto;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-title {\r\n    flex: none;\r\n    margin: 0;\r\n    font-size: 14px;\r\n    line-height: 20px;\r\n    font-weight: 600;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-author {\r\n    flex: none;\r\n    margin-top: 2px;\r\n    color: #8f959e;\r\n    font-size: 12px;\r\n    line-height: 17px;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stats {\r\n    display: flex;\r\n    flex: none;\r\n    margin-top: 10px;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat {\r\n    flex: 1 1 0;\r\n    min-width: 0;\r\n    padding: 0 6px;\r\n    text-align: center;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat:first-child {\r\n    padding-left: 0;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat:last-child {\r\n    padding-right: 0;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat + .fqa-hover-stat {\r\n    border-left: 1px solid rgba(31, 35, 41, 0.08);\r\n}\r\n\r\n/* 第一栏可悬停切换为更新时间，给个可交互提示 */\r\n#fqa-bookshelf-hover .fqa-hover-stat:first-child {\r\n    border-radius: 4px;\r\n    cursor: default;\r\n    transition: background 0.15s ease;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat:first-child:hover {\r\n    background: rgba(31, 35, 41, 0.05);\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat-v {\r\n    font-size: 13px;\r\n    line-height: 18px;\r\n    font-weight: 600;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat-k {\r\n    margin-top: 1px;\r\n    color: #8f959e;\r\n    font-size: 11px;\r\n    line-height: 16px;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n/* 梗概 / 简介 双栏切换 */\r\n#fqa-bookshelf-hover .fqa-hover-seg {\r\n    display: flex;\r\n    flex: none;\r\n    gap: 4px;\r\n    margin-top: 10px;\r\n    padding-top: 10px;\r\n    border-top: 1px solid rgba(31, 35, 41, 0.08);\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-seg-btn {\r\n    flex: 1 1 0;\r\n    padding: 4px 0;\r\n    border: 0;\r\n    border-radius: 5px;\r\n    background: rgba(31, 35, 41, 0.05);\r\n    color: #646a73;\r\n    font-family: inherit;\r\n    font-size: 12px;\r\n    line-height: 18px;\r\n    cursor: pointer;\r\n    transition: background 0.15s ease, color 0.15s ease;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-seg-btn:hover {\r\n    color: #1f2329;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-seg-active {\r\n    background: rgba(255, 111, 61, 0.12);\r\n    color: #ff6f3d;\r\n    font-weight: 500;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-seg-active:hover {\r\n    color: #ff6f3d;\r\n}\r\n\r\n/*\r\n * 撑满剩余高度。行数不再写死，由容器高度自然裁切；\r\n * min-height:0 让 flex 子项允许被压缩，否则 overflow 不生效。\r\n */\r\n#fqa-bookshelf-hover .fqa-hover-abstract {\r\n    flex: 1 1 auto;\r\n    min-height: 0;\r\n    margin-top: 8px;\r\n    color: #646a73;\r\n    font-size: 12px;\r\n    line-height: 18px;\r\n    overflow-y: auto;\r\n    overscroll-behavior: contain;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-abstract::-webkit-scrollbar {\r\n    width: 4px;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-abstract::-webkit-scrollbar-thumb {\r\n    border-radius: 2px;\r\n    background: rgba(31, 35, 41, 0.18);\r\n}\r\n\r\n\r\n#fqa-bookshelf-hover .fqa-hover-chapter {\r\n    display: block;\r\n    margin-bottom: 1px;\r\n    color: #1f2329;\r\n    font-weight: 500;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n/* ------------------------------- 骨架屏 ------------------------------- */\r\n\r\n#fqa-bookshelf .fqa-sk-cover {\r\n    display: block;\r\n    width: 100%;\r\n    aspect-ratio: 3 / 4;\r\n    border-radius: 6px;\r\n    background: var(--fqa-skeleton);\r\n}\r\n\r\n#fqa-bookshelf .fqa-sk-line {\r\n    height: 12px;\r\n    margin-top: 8px;\r\n    border-radius: 4px;\r\n    background: var(--fqa-skeleton);\r\n}\r\n\r\n#fqa-bookshelf .fqa-sk-anim {\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n/* keyframes fqa-shimmer 在 script.css 里全局声明 */\r\n#fqa-bookshelf .fqa-sk-anim::after {\r\n    content: '';\r\n    position: absolute;\r\n    inset: 0;\r\n    transform: translateX(-100%);\r\n    background: linear-gradient(90deg, transparent, var(--fqa-skeleton-hl), transparent);\r\n    animation: fqa-shimmer 1.4s infinite;\r\n}\r\n\r\n/* --------------------------- 空态 / 错误态 --------------------------- */\r\n\r\n#fqa-bookshelf .fqa-loadmore {\r\n    padding: 24px 0;\r\n    text-align: center;\r\n    color: var(--fqa-text-weak);\r\n    font-size: 13px;\r\n}\r\n\r\n#fqa-bookshelf .fqa-status {\r\n    padding: 80px 16px;\r\n    text-align: center;\r\n    color: var(--fqa-text-weak);\r\n    font-size: 14px;\r\n    line-height: 22px;\r\n}\r\n\r\n#fqa-bookshelf .fqa-status-title {\r\n    margin-bottom: 8px;\r\n    color: var(--fqa-text);\r\n    font-size: 16px;\r\n    font-weight: 500;\r\n}\r\n\r\n#fqa-bookshelf .fqa-status .fqa-btn {\r\n    margin-top: 16px;\r\n}\r\n\r\n/* ------------------------------- 深色模式 ------------------------------- */\r\n\r\n@media (prefers-color-scheme: dark) {\r\n    #fqa-bookshelf {\r\n        --fqa-text: #e6e6e6;\r\n        --fqa-text-sub: #a6a6a6;\r\n        --fqa-text-weak: #7a7a7a;\r\n        --fqa-border: rgba(255, 255, 255, 0.1);\r\n        --fqa-hover: rgba(255, 255, 255, 0.06);\r\n        --fqa-skeleton: rgba(255, 255, 255, 0.08);\r\n        --fqa-skeleton-hl: rgba(255, 255, 255, 0.14);\r\n        --fqa-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);\r\n    }\r\n\r\n    #fqa-bookshelf-hover .fqa-hover-inner {\r\n        background: #212125;\r\n        color: #e6e6e6;\r\n        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);\r\n    }\r\n\r\n    #fqa-bookshelf-hover .fqa-hover-chapter {\r\n        color: #e6e6e6;\r\n    }\r\n\r\n    #fqa-bookshelf-hover .fqa-hover-abstract {\r\n        color: #a6a6a6;\r\n        border-top-color: rgba(255, 255, 255, 0.1);\r\n    }\r\n\r\n    #fqa-bookshelf-hover .fqa-hover-stat + .fqa-hover-stat {\r\n        border-left-color: rgba(255, 255, 255, 0.1);\r\n    }\r\n}\r\n\r\n/* 右键菜单与 toast 样式已移到 script.css，书架和搜索共用 */\r\n";
+  const bookshelfcss = "#fqa-bookshelf {\r\n    --fqa-text: #1f2329;\r\n    --fqa-text-sub: #646a73;\r\n    --fqa-text-weak: #8f959e;\r\n    --fqa-border: rgba(31, 35, 41, 0.08);\r\n    --fqa-hover: rgba(31, 35, 41, 0.04);\r\n    --fqa-accent: #ff6f3d;\r\n    --fqa-skeleton: rgba(31, 35, 41, 0.06);\r\n    --fqa-skeleton-hl: rgba(31, 35, 41, 0.12);\r\n    --fqa-shadow: 0 4px 16px rgba(31, 35, 41, 0.08);\r\n\r\n    display: block;\r\n    box-sizing: border-box;\r\n    width: 100%;\r\n    max-width: 1100px;\r\n    margin: 0 auto;\r\n    /* 顶部留出原站 fixed 顶栏（80px）的高度，否则标题和 tab 会被压在下面 */\r\n    padding: calc(80px + 24px) 16px 64px;\r\n    color: var(--fqa-text);\r\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\r\n        sans-serif;\r\n}\r\n\r\n#fqa-bookshelf *,\r\n#fqa-bookshelf *::before,\r\n#fqa-bookshelf *::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n#fqa-bookshelf div,\r\n#fqa-bookshelf span,\r\n#fqa-bookshelf h1,\r\n#fqa-bookshelf ul,\r\n#fqa-bookshelf li {\r\n    margin: 0;\r\n    padding: 0;\r\n    border: 0;\r\n    list-style: none;\r\n    float: none;\r\n    position: static;\r\n}\r\n\r\n/* ------------------------------ 顶部 / Tabs ------------------------------ */\r\n\r\n#fqa-bookshelf .fqa-bs-header {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    gap: 16px;\r\n    margin-bottom: 8px;\r\n}\r\n\r\n#fqa-bookshelf .fqa-bs-title {\r\n    font-size: 24px;\r\n    font-weight: 600;\r\n    line-height: 1.4;\r\n}\r\n\r\n#fqa-bookshelf .fqa-bs-actions {\n    display: flex;\r\n    align-items: center;\r\n    gap: 12px;\r\n    font-size: 13px;\r\n    color: var(--fqa-text-weak);\r\n}\n\n#fqa-bookshelf .fqa-bs-columns {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    color: var(--fqa-text-sub);\n    white-space: nowrap;\n}\n\n#fqa-bookshelf .fqa-bs-columns select {\n    height: 32px;\n    padding: 0 28px 0 10px;\n    border: 1px solid var(--fqa-border);\n    border-radius: 999px;\n    background: transparent;\n    color: var(--fqa-text-sub);\n    font: inherit;\n    cursor: pointer;\n    outline: none;\n}\n\n#fqa-bookshelf .fqa-bs-columns select:hover,\n#fqa-bookshelf .fqa-bs-columns select:focus-visible {\n    border-color: var(--fqa-accent);\n    color: var(--fqa-accent);\n}\n\r\n#fqa-bookshelf .fqa-btn {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    gap: 4px;\r\n    padding: 6px 14px;\r\n    border: 1px solid var(--fqa-border);\r\n    border-radius: 999px;\r\n    background: transparent;\r\n    color: var(--fqa-text-sub);\r\n    font-size: 13px;\r\n    font-family: inherit;\r\n    line-height: 1.4;\r\n    cursor: pointer;\r\n    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;\r\n}\r\n\r\n#fqa-bookshelf .fqa-btn:hover:not(:disabled) {\r\n    border-color: var(--fqa-accent);\r\n    color: var(--fqa-accent);\r\n    background: rgba(255, 111, 61, 0.06);\r\n}\r\n\r\n#fqa-bookshelf .fqa-btn:disabled {\r\n    opacity: 0.5;\r\n    cursor: default;\r\n}\r\n\r\n#fqa-bookshelf .fqa-tabs {\r\n    position: relative;\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 4px;\r\n    margin-bottom: 24px;\r\n    border-bottom: 1px solid var(--fqa-border);\r\n}\r\n\r\n#fqa-bookshelf .fqa-tab {\r\n    padding: 10px 16px;\r\n    color: var(--fqa-text-sub);\r\n    font-size: 15px;\r\n    line-height: 22px;\r\n    cursor: pointer;\r\n    user-select: none;\r\n    transition: color 0.15s ease;\r\n}\r\n\r\n#fqa-bookshelf .fqa-tab:hover {\r\n    color: var(--fqa-text);\r\n}\r\n\r\n#fqa-bookshelf .fqa-tab-active {\r\n    color: var(--fqa-accent);\r\n    font-weight: 600;\r\n}\r\n\r\n#fqa-bookshelf .fqa-tab-count {\r\n    margin-left: 4px;\r\n    font-size: 12px;\r\n    font-weight: 400;\r\n    color: var(--fqa-text-weak);\r\n}\r\n\r\n#fqa-bookshelf .fqa-tab-ink {\r\n    position: absolute;\r\n    bottom: -1px;\r\n    left: 0;\r\n    width: 0;\r\n    height: 2px;\r\n    border-radius: 2px;\r\n    background: var(--fqa-accent);\r\n    transition: left 0.25s ease, width 0.25s ease;\r\n}\r\n\r\n/* ------------------------------- 书架网格 ------------------------------- */\r\n\r\n/* 桌面端使用用户选择的 4～10 列；窄屏仍逐级降到 3 / 2，保证封面可读。 */\n#fqa-bookshelf .fqa-grid {\n    display: grid;\n    grid-template-columns: repeat(var(--fqa-bookshelf-columns, 5), minmax(0, 1fr));\n    gap: 28px clamp(12px, 2vw, 24px);\n    align-items: start;\r\n}\r\n\r\n@media (max-width: 900px) {\r\n    #fqa-bookshelf .fqa-grid {\r\n        grid-template-columns: repeat(3, minmax(0, 1fr));\r\n    }\r\n}\r\n\r\n@media (max-width: 600px) {\r\n    #fqa-bookshelf .fqa-grid {\r\n        grid-template-columns: repeat(2, minmax(0, 1fr));\r\n    }\r\n}\r\n\r\n#fqa-bookshelf .fqa-card {\r\n    display: block;\r\n    border-radius: 8px;\r\n    cursor: pointer;\r\n    outline: none;\r\n}\r\n\r\n#fqa-bookshelf .fqa-card:focus-visible {\r\n    box-shadow: 0 0 0 2px var(--fqa-accent);\r\n}\r\n\r\n/* 封面：3:4，靠 aspect-ratio 定高，内部元素绝对定位 */\r\n#fqa-bookshelf .fqa-cover {\r\n    position: relative;\r\n    display: block;\r\n    width: 100%;\r\n    aspect-ratio: 3 / 4;\r\n    border-radius: 6px;\r\n    overflow: hidden;\r\n    background: var(--fqa-skeleton);\r\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\r\n}\r\n\r\n#fqa-bookshelf .fqa-card:hover .fqa-cover {\r\n    transform: translateY(-4px);\r\n    box-shadow: var(--fqa-shadow);\r\n}\r\n\r\n#fqa-bookshelf .fqa-cover-img {\r\n    position: absolute;\r\n    inset: 0;\r\n    display: block;\r\n    width: 100%;\r\n    height: 100%;\r\n    object-fit: cover;\r\n    transition: opacity 0.25s ease;\r\n}\r\n\r\n#fqa-bookshelf .fqa-cover-img-loading {\r\n    opacity: 0;\r\n}\r\n\r\n#fqa-bookshelf .fqa-cover-tag {\r\n    position: absolute;\r\n    top: 0;\r\n    right: 0;\r\n    z-index: 2;\r\n    padding: 2px 6px;\r\n    border-radius: 0 6px 0 6px;\r\n    background: var(--fqa-accent);\r\n    color: #fff;\r\n    font-size: 11px;\r\n    line-height: 16px;\r\n    font-weight: 500;\r\n    white-space: nowrap;\r\n}\r\n\r\n/* 连载 / 完结 / 断更共用：灰底，弱化于“更新”角标 */\r\n#fqa-bookshelf .fqa-cover-tag-gray {\r\n    background: rgba(31, 35, 41, 0.55);\r\n}\r\n\r\n@media (prefers-color-scheme: dark) {\r\n    #fqa-bookshelf .fqa-cover-tag-gray {\r\n        background: rgba(0, 0, 0, 0.6);\r\n    }\r\n}\r\n\r\n#fqa-bookshelf .fqa-cover-progress {\r\n    position: absolute;\r\n    left: 0;\r\n    right: 0;\r\n    bottom: 0;\r\n    z-index: 2;\r\n    height: 3px;\r\n    background: rgba(255, 255, 255, 0.35);\r\n}\r\n\r\n#fqa-bookshelf .fqa-cover-progress-bar {\r\n    display: block;\r\n    height: 100%;\r\n    background: var(--fqa-accent);\r\n    transition: width 0.3s ease;\r\n}\r\n\r\n/* 文字区：与封面同为普通流元素，不会重叠 */\r\n#fqa-bookshelf .fqa-card-title {\r\n    display: -webkit-box;\r\n    margin-top: 8px;\r\n    color: var(--fqa-text);\r\n    font-size: 14px;\r\n    line-height: 20px;\r\n    font-weight: 500;\r\n    -webkit-line-clamp: 2;\r\n    line-clamp: 2;\r\n    -webkit-box-orient: vertical;\r\n    overflow: hidden;\r\n    word-break: break-all;\r\n}\r\n\r\n#fqa-bookshelf .fqa-card-sub {\r\n    margin-top: 4px;\r\n    color: var(--fqa-text-weak);\r\n    font-size: 12px;\r\n    line-height: 18px;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n/* ------------------------------- 分组卡片 ------------------------------- */\r\n\r\n#fqa-bookshelf .fqa-group-cover {\r\n    position: relative;\r\n    display: block;\r\n    width: 100%;\r\n    aspect-ratio: 3 / 4;\r\n    border-radius: 6px;\r\n    overflow: hidden;\r\n    background: linear-gradient(135deg, rgba(255, 111, 61, 0.12), rgba(78, 131, 253, 0.12));\r\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\r\n}\r\n\r\n#fqa-bookshelf .fqa-card:hover .fqa-group-cover {\r\n    transform: translateY(-4px);\r\n    box-shadow: var(--fqa-shadow);\r\n}\r\n\r\n#fqa-bookshelf .fqa-group-grid {\r\n    position: absolute;\r\n    inset: 0;\r\n    display: grid;\r\n    grid-template-columns: 1fr 1fr;\r\n    grid-template-rows: 1fr 1fr;\r\n    gap: 4px;\r\n    padding: 6px;\r\n}\r\n\r\n#fqa-bookshelf .fqa-group-cell {\r\n    position: relative;\r\n    border-radius: 3px;\r\n    overflow: hidden;\r\n    background: rgba(31, 35, 41, 0.06);\r\n}\r\n\r\n#fqa-bookshelf .fqa-group-cell img {\r\n    display: block;\r\n    width: 100%;\r\n    height: 100%;\r\n    object-fit: cover;\r\n}\r\n\r\n/* 分组详情返回条 */\r\n\r\n#fqa-bookshelf .fqa-groupbar {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 10px;\r\n    margin-bottom: 16px;\r\n}\r\n\r\n#fqa-bookshelf .fqa-groupbar-name {\r\n    font-size: 16px;\r\n    font-weight: 600;\r\n}\r\n\r\n#fqa-bookshelf .fqa-groupbar-count {\r\n    color: var(--fqa-text-weak);\r\n    font-size: 13px;\r\n}\r\n\r\n/* --------------------------- hover 详情浮层 --------------------------- */\r\n\r\n/*\r\n * 用 popover 进入浏览器顶层，不参与页面 z-index 竞争，\r\n * 因此不会被相邻卡片或原站的层叠上下文盖住。z-index 仅作降级保险。\r\n */\r\n#fqa-bookshelf-hover {\r\n    position: fixed;\r\n    z-index: 2147483000;\r\n    /* 容器本身透传，只有内部卡片接收事件，避免空白区挡住下层 */\r\n    pointer-events: none;\r\n    opacity: 0;\r\n    transform: translateY(4px);\r\n    /* allow-discrete：顶层元素从 display:none 切入时也能播放淡入 */\r\n    transition: opacity 0.16s ease, transform 0.16s ease, display 0.16s allow-discrete;\r\n    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial,\r\n        sans-serif;\r\n}\r\n\r\n/* popover 默认带边框/内边距/居中定位，全部清掉，改由 left/top 控制 */\r\n#fqa-bookshelf-hover:popover-open,\r\n#fqa-bookshelf-hover[popover] {\r\n    margin: 0;\r\n    padding: 0;\r\n    border: 0;\r\n    background: transparent;\r\n    overflow: visible;\r\n    inset: auto;\r\n    width: auto;\r\n    height: auto;\r\n    max-width: none;\r\n    max-height: none;\r\n    color: inherit;\r\n}\r\n\r\n#fqa-bookshelf-hover::backdrop {\r\n    background: transparent;\r\n}\r\n\r\n#fqa-bookshelf-hover.fqa-visible {\r\n    opacity: 1;\r\n    transform: translateY(0);\r\n}\r\n\r\n@starting-style {\r\n    #fqa-bookshelf-hover.fqa-visible {\r\n        opacity: 0;\r\n        transform: translateY(4px);\r\n    }\r\n}\r\n\r\n/* 高度由 JS 按封面尺寸设定；纵向 flex 让简介吃掉剩余空间 */\r\n#fqa-bookshelf-hover .fqa-hover-inner {\r\n    display: flex;\r\n    flex-direction: column;\r\n    box-sizing: border-box;\r\n    width: 280px;\r\n    padding: 12px 14px;\r\n    border-radius: 10px;\r\n    background: #fff;\r\n    box-shadow: 0 8px 32px rgba(31, 35, 41, 0.16);\r\n    color: #1f2329;\r\n    overflow: hidden;\r\n    /* 卡片可交互：鼠标可以移进来而不触发收起 */\r\n    pointer-events: auto;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-title {\r\n    flex: none;\r\n    margin: 0;\r\n    font-size: 14px;\r\n    line-height: 20px;\r\n    font-weight: 600;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-author {\r\n    flex: none;\r\n    margin-top: 2px;\r\n    color: #8f959e;\r\n    font-size: 12px;\r\n    line-height: 17px;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stats {\r\n    display: flex;\r\n    flex: none;\r\n    margin-top: 10px;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat {\r\n    flex: 1 1 0;\r\n    min-width: 0;\r\n    padding: 0 6px;\r\n    text-align: center;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat:first-child {\r\n    padding-left: 0;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat:last-child {\r\n    padding-right: 0;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat + .fqa-hover-stat {\r\n    border-left: 1px solid rgba(31, 35, 41, 0.08);\r\n}\r\n\r\n/* 第一栏可悬停切换为更新时间，给个可交互提示 */\r\n#fqa-bookshelf-hover .fqa-hover-stat:first-child {\r\n    border-radius: 4px;\r\n    cursor: default;\r\n    transition: background 0.15s ease;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat:first-child:hover {\r\n    background: rgba(31, 35, 41, 0.05);\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat-v {\r\n    font-size: 13px;\r\n    line-height: 18px;\r\n    font-weight: 600;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-stat-k {\r\n    margin-top: 1px;\r\n    color: #8f959e;\r\n    font-size: 11px;\r\n    line-height: 16px;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n/* 梗概 / 简介 双栏切换 */\r\n#fqa-bookshelf-hover .fqa-hover-seg {\r\n    display: flex;\r\n    flex: none;\r\n    gap: 4px;\r\n    margin-top: 10px;\r\n    padding-top: 10px;\r\n    border-top: 1px solid rgba(31, 35, 41, 0.08);\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-seg-btn {\r\n    flex: 1 1 0;\r\n    padding: 4px 0;\r\n    border: 0;\r\n    border-radius: 5px;\r\n    background: rgba(31, 35, 41, 0.05);\r\n    color: #646a73;\r\n    font-family: inherit;\r\n    font-size: 12px;\r\n    line-height: 18px;\r\n    cursor: pointer;\r\n    transition: background 0.15s ease, color 0.15s ease;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-seg-btn:hover {\r\n    color: #1f2329;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-seg-active {\r\n    background: rgba(255, 111, 61, 0.12);\r\n    color: #ff6f3d;\r\n    font-weight: 500;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-seg-active:hover {\r\n    color: #ff6f3d;\r\n}\r\n\r\n/*\r\n * 撑满剩余高度。行数不再写死，由容器高度自然裁切；\r\n * min-height:0 让 flex 子项允许被压缩，否则 overflow 不生效。\r\n */\r\n#fqa-bookshelf-hover .fqa-hover-abstract {\r\n    flex: 1 1 auto;\r\n    min-height: 0;\r\n    margin-top: 8px;\r\n    color: #646a73;\r\n    font-size: 12px;\r\n    line-height: 18px;\r\n    overflow-y: auto;\r\n    overscroll-behavior: contain;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-abstract::-webkit-scrollbar {\r\n    width: 4px;\r\n}\r\n\r\n#fqa-bookshelf-hover .fqa-hover-abstract::-webkit-scrollbar-thumb {\r\n    border-radius: 2px;\r\n    background: rgba(31, 35, 41, 0.18);\r\n}\r\n\r\n\r\n#fqa-bookshelf-hover .fqa-hover-chapter {\r\n    display: block;\r\n    margin-bottom: 1px;\r\n    color: #1f2329;\r\n    font-weight: 500;\r\n    white-space: nowrap;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n/* ------------------------------- 骨架屏 ------------------------------- */\r\n\r\n#fqa-bookshelf .fqa-sk-cover {\r\n    display: block;\r\n    width: 100%;\r\n    aspect-ratio: 3 / 4;\r\n    border-radius: 6px;\r\n    background: var(--fqa-skeleton);\r\n}\r\n\r\n#fqa-bookshelf .fqa-sk-line {\r\n    height: 12px;\r\n    margin-top: 8px;\r\n    border-radius: 4px;\r\n    background: var(--fqa-skeleton);\r\n}\r\n\r\n#fqa-bookshelf .fqa-sk-anim {\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n/* keyframes fqa-shimmer 在 script.css 里全局声明 */\r\n#fqa-bookshelf .fqa-sk-anim::after {\r\n    content: '';\r\n    position: absolute;\r\n    inset: 0;\r\n    transform: translateX(-100%);\r\n    background: linear-gradient(90deg, transparent, var(--fqa-skeleton-hl), transparent);\r\n    animation: fqa-shimmer 1.4s infinite;\r\n}\r\n\r\n/* --------------------------- 空态 / 错误态 --------------------------- */\r\n\r\n#fqa-bookshelf .fqa-loadmore {\r\n    padding: 24px 0;\r\n    text-align: center;\r\n    color: var(--fqa-text-weak);\r\n    font-size: 13px;\r\n}\r\n\r\n#fqa-bookshelf .fqa-status {\r\n    padding: 80px 16px;\r\n    text-align: center;\r\n    color: var(--fqa-text-weak);\r\n    font-size: 14px;\r\n    line-height: 22px;\r\n}\r\n\r\n#fqa-bookshelf .fqa-status-title {\r\n    margin-bottom: 8px;\r\n    color: var(--fqa-text);\r\n    font-size: 16px;\r\n    font-weight: 500;\r\n}\r\n\r\n#fqa-bookshelf .fqa-status .fqa-btn {\r\n    margin-top: 16px;\r\n}\r\n\r\n/* ------------------------------- 深色模式 ------------------------------- */\r\n\r\n@media (prefers-color-scheme: dark) {\r\n    #fqa-bookshelf {\r\n        --fqa-text: #e6e6e6;\r\n        --fqa-text-sub: #a6a6a6;\r\n        --fqa-text-weak: #7a7a7a;\r\n        --fqa-border: rgba(255, 255, 255, 0.1);\r\n        --fqa-hover: rgba(255, 255, 255, 0.06);\r\n        --fqa-skeleton: rgba(255, 255, 255, 0.08);\r\n        --fqa-skeleton-hl: rgba(255, 255, 255, 0.14);\r\n        --fqa-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);\r\n    }\r\n\r\n    #fqa-bookshelf-hover .fqa-hover-inner {\r\n        background: #212125;\r\n        color: #e6e6e6;\r\n        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);\r\n    }\r\n\r\n    #fqa-bookshelf-hover .fqa-hover-chapter {\r\n        color: #e6e6e6;\r\n    }\r\n\r\n    #fqa-bookshelf-hover .fqa-hover-abstract {\r\n        color: #a6a6a6;\r\n        border-top-color: rgba(255, 255, 255, 0.1);\r\n    }\r\n\r\n    #fqa-bookshelf-hover .fqa-hover-stat + .fqa-hover-stat {\r\n        border-left-color: rgba(255, 255, 255, 0.1);\r\n    }\r\n}\r\n\r\n/* 右键菜单与 toast 样式已移到 script.css，书架和搜索共用 */\r\n";
   const CONTAINER_ID$1 = "fqa-bookshelf-root";
   const STYLE_ID$1 = "fqa-bookshelf-style";
   const ORIGIN_SELECTOR$1 = ".muye-bookshelf, .muye-bookshelf-home-page, .bookshelf-tabs";
