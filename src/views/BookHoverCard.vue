@@ -8,7 +8,7 @@ const props = defineProps<{
     /** 视口坐标，由父组件按封面位置算好 */
     x: number
     y: number
-    /** 与封面等高；0 表示尚未测量，退回自适应高度 */
+    /** 固定目标高度；视口不足时由父组件压缩，0 表示尚未测量 */
     height: number
     visible: boolean
 }>()

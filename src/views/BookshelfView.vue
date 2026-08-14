@@ -9,14 +9,12 @@ import { moveToGroup, removeFromBookshelf } from '../api/bookshelf'
 import type { BookShelfEntry, BookShelfGroup, BookShelfTabKey, MenuItem } from '../types'
 import { flushSettings, settings } from '../settings'
 import { MAX_BOOKSHELF_COLUMNS, MIN_BOOKSHELF_COLUMNS } from '../settingsNormalization'
+import { computeBookshelfHoverLayout } from '../bookshelfHoverLayout'
 
 /** 持续悬停多久后展示详情 */
 const HOVER_DELAY = 300
 /** 移出封面后给用户留出移进浮层的时间 */
 const HIDE_DELAY = 160
-const HOVER_WIDTH = 280
-const HOVER_GAP = 12
-const VIEWPORT_MARGIN = 8
 
 /** 书架桌面网格可选列数，选项变化会由全局设置自动持久化。 */
 const bookshelfColumnOptions = Array.from(
@@ -42,7 +40,7 @@ const inkStyle = ref<Record<string, string>>({ left: '0px', width: '0px' })
 const hoverEntry = ref<BookShelfEntry | null>(null)
 const hoverVisible = ref(false)
 const hoverPos = ref({ x: 0, y: 0 })
-/** 浮层高度跟随封面，保证与封面顶/底对齐 */
+/** 浮层采用固定目标高度，仅在浏览器视口不足时缩短。 */
 const hoverHeight = ref(0)
 let hoverTimer: ReturnType<typeof setTimeout> | undefined
 let hideTimer: ReturnType<typeof setTimeout> | undefined
@@ -127,22 +125,12 @@ function computePosition(el: HTMLElement) {
     const cover = el.querySelector<HTMLElement>('.fqa-cover') ?? el
     const rect = cover.getBoundingClientRect()
 
-    // 默认贴封面右侧，放不下时翻到左侧
-    let x = rect.right + HOVER_GAP
-    if (x + HOVER_WIDTH > window.innerWidth - VIEWPORT_MARGIN) {
-        x = rect.left - HOVER_WIDTH - HOVER_GAP
-    }
-    x = Math.max(VIEWPORT_MARGIN, Math.min(x, window.innerWidth - HOVER_WIDTH - VIEWPORT_MARGIN))
-
-    // 浮层允许盖住顶栏，只夹取视口上下边缘
-    const topLimit = VIEWPORT_MARGIN
-    const bottomLimit = window.innerHeight - VIEWPORT_MARGIN
-    // 可用高度不足时压缩浮层，避免溢出
-    const height = Math.min(rect.height, bottomLimit - topLimit)
-    const y = Math.max(topLimit, Math.min(rect.top, bottomLimit - height))
-
-    hoverHeight.value = height
-    hoverPos.value = { x, y }
+    const layout = computeBookshelfHoverLayout(rect, {
+        width: window.innerWidth,
+        height: window.innerHeight,
+    })
+    hoverHeight.value = layout.height
+    hoverPos.value = { x: layout.x, y: layout.y }
 }
 
 function onCardHover({ entry, el }: { entry: BookShelfEntry; el: HTMLElement }) {

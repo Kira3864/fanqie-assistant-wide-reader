@@ -407,7 +407,7 @@
     }
 }
 
-/* 高度由 JS 按封面尺寸设定；纵向 flex 让简介吃掉剩余空间 */
+/* 高度由 JS 固定为目标尺寸；纵向 flex 让简介吃掉剩余空间并在内容过多时滚动。 */
 #fqa-bookshelf-hover .fqa-hover-inner {
     display: flex;
     flex-direction: column;
