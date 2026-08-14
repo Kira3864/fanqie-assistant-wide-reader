@@ -103,7 +103,7 @@ const GITHUB = 'https://github.com/Kira3864/fanqie-assistant-wide-reader'
                     </label>
 
                     <label class="fqa-set-row">
-                        <span class="fqa-set-label">拦截网页事件上报</span>
+                        <span class="fqa-set-label">拦截网页统计上报（不影响阅读进度同步）</span>
                         <input v-model="settings.blockReport" type="checkbox" class="fqa-set-switch" />
                     </label>
 

@@ -10,6 +10,7 @@ import { cloneElement } from '../utils';
 import { fetchArrayBuffer } from '../utils/request';
 import { type Book } from '../types'
 import { decryptComicImage } from '../crypto/content';
+import { syncReadingProgress } from '../api/readingProgress'
 import {
     beginWideReaderTransition,
     failWideReaderTransition,
@@ -134,7 +135,15 @@ async function insertContent() {
     console.log('Chapter:', chapter)
 
     const pageState: any = (unsafeWindow as typeof unsafeWindow & {
-        __INITIAL_STATE__?: { reader?: { chapterData?: { title?: string } } }
+        __INITIAL_STATE__?: { reader?: { chapterData?: {
+            title?: string
+            itemId?: string
+            bookId?: string
+            bookName?: string
+            author?: string
+            order?: string | number
+            genre?: string | number
+        } } }
     }).__INITIAL_STATE__
     const chapterTitle = chapter.novel_data?.title || pageState?.reader?.chapterData?.title
     if (typeof chapter.content === 'string') {
@@ -405,12 +414,29 @@ async function insertContent() {
         if (currentBook && typeof chapter.content === 'string') {
             void preloadWideReaderContinuation(itemId, currentBook)
         }
+
+        // 只在当前章节正文真正挂载后同步；下一章预取不会走到这里，避免提前推进手机端进度。
+        const chapterList = currentBook?.chapter_list ?? []
+        const chapterIndex = chapterList.findIndex((item) => item.item_id === itemId)
+        const initialChapter = pageState?.reader?.chapterData
+        const initialStateMatches = String(initialChapter?.itemId ?? '') === itemId
+        if (chapterBookId) {
+            void syncReadingProgress({
+                bookId: String(chapterBookId),
+                itemId,
+                chapterIndex,
+                chapterOrder: chapter.novel_data?.order
+                    ?? chapter.novel_data?.chapter_order
+                    ?? chapter.novel_data?.real_chapter_order
+                    ?? (initialStateMatches ? initialChapter?.order : undefined),
+                genre: chapter.novel_data?.genre ?? chapter.novel_data?.gender ?? initialChapter?.genre ?? 0,
+            })
+        }
     }
 }
 
 // let currentBook: Book | null = null
 async function onUrlChange(_previous?: string): Promise<void> {
-    // TODO: 记录并上报阅读历史和记录
     await insertContent()
 }
 
