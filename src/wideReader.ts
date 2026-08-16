@@ -3,11 +3,19 @@ import type { Book, ChapterItem } from './types'
 import { flushSettings, settings } from './settings'
 import wideReaderCss from './assets/wideReader.css?raw'
 import { bindFootnoteInteraction } from './utils/footnote'
-import { createReaderChapterUrl, replaceReaderChapter } from './wideReaderNavigation'
+import {
+    ChapterEndNavigationIntent,
+    createReaderChapterUrl,
+    replaceReaderChapter,
+} from './wideReaderNavigation'
 import { getDetailedUserInfo, userState } from './api/user'
 import { openSettings } from './settingsPanel'
 import type { WideReaderFont, WideReaderTheme } from './wideReaderPreferences'
-import { shouldTurnPageForWheel } from './wideReaderInteraction'
+import {
+    WheelPageTurnController,
+    shouldHandlePageTurnKey,
+    shouldTurnPageForWheel,
+} from './wideReaderInteraction'
 import {
     buildColumnPageMap,
     calculateChapterBreakFill,
@@ -86,6 +94,10 @@ let runtime: WideReaderRuntime | null = null
 let lastSnapshot: WideReaderSnapshot | null = null
 let styleInjected = false
 let previousDocumentOverflow: string | null = null
+/** 跨章节复用同一滚轮控制器，避免切章后将惯性尾部识别成第二次翻页。 */
+const wheelPageTurnController = new WheelPageTurnController()
+/** 跨重复挂载保存反向切章目标，避免页面二次初始化消费一次性标记。 */
+const chapterEndNavigationIntent = new ChapterEndNavigationIntent()
 
 /**
  * 将助手已经解锁并净化的正文同步到沉浸式分页层。
@@ -120,8 +132,6 @@ export function syncWideReaderContinuation(
     bindFootnoteInteraction(runtime.article)
     // 追加内容不会改变当前章已有栏位，直接保持屏序号可避免重复块编号造成整屏回退。
     measureAndRestore(runtime, undefined, 'spread')
-    // 当前章与下一章的最终布局已经确定，此后用户可自由翻页，不再强制锁定末屏。
-    runtime.openAtEnd = false
 }
 
 /** 在异步获取新章节期间保留当前分页层，避免短暂露出原网页排版。 */
@@ -144,6 +154,7 @@ export function failWideReaderTransition(): void {
 /** 离开阅读页时清理分页层、恢复入口和章节快照。 */
 export function leaveWideReaderPage(): void {
     lastSnapshot = null
+    chapterEndNavigationIntent.clear()
     removeWideReaderEntry()
     unmountWideReader()
 }
@@ -231,8 +242,12 @@ function mountWideReader(snapshot: WideReaderSnapshot): void {
     previousDocumentOverflow = document.documentElement.style.overflow || null
     document.documentElement.style.overflow = 'hidden'
 
-    const openAtEnd = sessionStorage.getItem('fqa-wide-reader-open-at-end') === snapshot.itemId
-    if (openAtEnd) sessionStorage.removeItem('fqa-wide-reader-open-at-end')
+    // 兼容从旧版本更新后尚未完成的反向切章标记，并迁移到可跨重复挂载的运行时意图。
+    if (sessionStorage.getItem('fqa-wide-reader-open-at-end') === snapshot.itemId) {
+        chapterEndNavigationIntent.begin(snapshot.itemId)
+        sessionStorage.removeItem('fqa-wide-reader-open-at-end')
+    }
+    const openAtEnd = chapterEndNavigationIntent.matches(snapshot.itemId)
     const nextRuntime: WideReaderRuntime = {
         root,
         frame,
@@ -350,31 +365,25 @@ function bindReaderEvents(
         showWideReaderEntry()
     })
 
-    let wheelTotal = 0
-    let wheelLockedUntil = 0
     const onWheel = (event: WheelEvent) => {
         if (!shouldTurnPageForWheel(event.target)) return
         event.preventDefault()
         const dominantDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
-        wheelTotal += dominantDelta
-        const now = performance.now()
-        if (now < wheelLockedUntil || Math.abs(wheelTotal) < 80) return
-        wheelLockedUntil = now + 420
-        const direction = wheelTotal > 0 ? 'next' : 'previous'
-        wheelTotal = 0
+        const direction = wheelPageTurnController.consume(dominantDelta, performance.now())
+        if (!direction) return
         turnPage(current, direction)
     }
     current.root.addEventListener('wheel', onWheel, { passive: false })
 
     const onKeyDown = (event: KeyboardEvent) => {
         if (event.defaultPrevented || isEditableTarget(event.target)) return
+        if (!shouldHandlePageTurnKey(event.key, false)) return
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        if (!shouldHandlePageTurnKey(event.key, event.repeat)) return
         if (event.key === 'ArrowRight' || event.key === 'PageDown') {
-            event.preventDefault()
-            event.stopImmediatePropagation()
             turnPage(current, 'next')
         } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
-            event.preventDefault()
-            event.stopImmediatePropagation()
             turnPage(current, 'previous')
         }
     }
@@ -497,6 +506,7 @@ function turnPage(current: WideReaderRuntime, direction: 'previous' | 'next'): v
     if (runtime !== current || current.root.querySelector('.fqa-wide-scrim')) return
     // 用户已经主动翻页，后续 ResizeObserver 重排不得再把位置强制拉回章节末尾。
     current.openAtEnd = false
+    chapterEndNavigationIntent.clear(current.snapshot.itemId)
     const delta = direction === 'next' ? 1 : -1
     const candidate = current.spread + delta
     if (candidate < 0 || candidate >= current.layout.totalSpreads) {
@@ -544,11 +554,12 @@ function animatePage(current: WideReaderRuntime, direction: 'previous' | 'next')
 
 /** 使用原助手取得的完整目录定位并打开相邻章节。 */
 function navigateChapter(current: WideReaderRuntime, direction: 'previous' | 'next'): void {
+    chapterEndNavigationIntent.clear(current.snapshot.itemId)
     const chapters = current.snapshot.book?.chapter_list ?? []
     const index = chapters.findIndex((chapter) => chapter.item_id === current.snapshot.itemId)
     const target = index >= 0 ? chapters[index + (direction === 'next' ? 1 : -1)] : undefined
     if (!target) return
-    if (direction === 'previous') sessionStorage.setItem('fqa-wide-reader-open-at-end', target.item_id)
+    if (direction === 'previous') chapterEndNavigationIntent.begin(target.item_id)
     if (direction === 'next') {
         const firstColumn = current.columnOffset + current.spread * current.layout.columnsPerSpread
         const previewedPages = countVisibleChapterPages(
@@ -567,6 +578,7 @@ function navigateChapter(current: WideReaderRuntime, direction: 'previous' | 'ne
 /** 使用 replaceState 原地切章，保留书架历史项并让现有导航钩子加载正文。 */
 function navigateToChapter(current: WideReaderRuntime, itemId: string): void {
     if (runtime !== current || itemId === current.snapshot.itemId) return
+    chapterEndNavigationIntent.clear(current.snapshot.itemId)
     beginWideReaderTransition()
     replaceReaderChapter(unsafeWindow.history, itemId)
 }

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         番茄小说助手・宽屏阅读版
 // @namespace    https://github.com/Kira3864/fanqie-assistant-wide-reader
-// @version      0.3.9
+// @version      0.3.10
 // @author       naiyQAQ, Kira3864
 // @description  参考 GreasyFork 与开源项目实现的番茄小说 Userscript，提供正文增强和沉浸式宽屏分页阅读。
 // @license      GPLv3
@@ -2281,6 +2281,23 @@
   function createReaderChapterUrl(itemId) {
     return `/reader/${encodeURIComponent(itemId)}?enter_from=reader`;
   }
+  class ChapterEndNavigationIntent {
+    constructor() {
+      __publicField(this, "targetItemId", null);
+    }
+    /** 记录需要从末屏打开的目标章节。 */
+    begin(itemId) {
+      this.targetItemId = itemId || null;
+    }
+    /** 判断当前挂载章节是否仍应固定在末屏，本方法不会消费意图。 */
+    matches(itemId) {
+      return this.targetItemId !== null && this.targetItemId === itemId;
+    }
+    /** 清除指定章节的意图；不传章节时清除全部状态。 */
+    clear(itemId) {
+      if (itemId === void 0 || this.targetItemId === itemId) this.targetItemId = null;
+    }
+  }
   function replaceReaderChapter(history, itemId) {
     history.replaceState(history.state, "", createReaderChapterUrl(itemId));
   }
@@ -2730,7 +2747,7 @@
     }
   }
   const name = "fanqie-assistant-wide-reader";
-  const version = "0.3.9";
+  const version = "0.3.10";
   const _hoisted_1$8 = {
     class: "fqa-set-dialog",
     role: "dialog",
@@ -3187,6 +3204,40 @@
     };
     app$2.mount(container$2);
   }
+  const PAGE_TURN_KEYS = /* @__PURE__ */ new Set(["ArrowLeft", "ArrowRight", "PageUp", "PageDown"]);
+  const WHEEL_TURN_THRESHOLD = 80;
+  const WHEEL_TURN_COOLDOWN = 420;
+  const WHEEL_IDLE_EXTENSION = 180;
+  class WheelPageTurnController {
+    constructor() {
+      __publicField(this, "accumulatedDelta", 0);
+      __publicField(this, "lockedUntil", 0);
+    }
+    /**
+     * 接收一次滚轮位移并判断是否应翻页。
+     *
+     * @param delta 当前事件的主方向位移。
+     * @param now 单调递增的当前时间，单位为毫秒。
+     * @returns 达到阈值时返回翻页方向，否则返回 null。
+     */
+    consume(delta, now) {
+      if (!Number.isFinite(delta) || !Number.isFinite(now)) return null;
+      if (now < this.lockedUntil) {
+        this.accumulatedDelta = 0;
+        this.lockedUntil = Math.max(this.lockedUntil, now + WHEEL_IDLE_EXTENSION);
+        return null;
+      }
+      this.accumulatedDelta += delta;
+      if (Math.abs(this.accumulatedDelta) < WHEEL_TURN_THRESHOLD) return null;
+      const direction = this.accumulatedDelta > 0 ? "next" : "previous";
+      this.accumulatedDelta = 0;
+      this.lockedUntil = now + WHEEL_TURN_COOLDOWN;
+      return direction;
+    }
+  }
+  function shouldHandlePageTurnKey(key, repeat) {
+    return PAGE_TURN_KEYS.has(key) && !repeat;
+  }
   function shouldTurnPageForWheel(target) {
     var _a;
     const candidate = target;
@@ -3250,6 +3301,8 @@
   let lastSnapshot = null;
   let styleInjected = false;
   let previousDocumentOverflow = null;
+  const wheelPageTurnController = new WheelPageTurnController();
+  const chapterEndNavigationIntent = new ChapterEndNavigationIntent();
   function syncWideReader(snapshot) {
     lastSnapshot = snapshot;
     if (!settings$1.wideReaderActive || snapshot.comic) {
@@ -3270,7 +3323,6 @@
     }
     bindFootnoteInteraction(runtime.article);
     measureAndRestore(runtime, void 0, "spread");
-    runtime.openAtEnd = false;
   }
   function beginWideReaderTransition() {
     if (!runtime) return;
@@ -3287,6 +3339,7 @@
   }
   function leaveWideReaderPage() {
     lastSnapshot = null;
+    chapterEndNavigationIntent.clear();
     removeWideReaderEntry();
     unmountWideReader();
   }
@@ -3359,8 +3412,11 @@
     document.body.append(root);
     previousDocumentOverflow = document.documentElement.style.overflow || null;
     document.documentElement.style.overflow = "hidden";
-    const openAtEnd = sessionStorage.getItem("fqa-wide-reader-open-at-end") === snapshot.itemId;
-    if (openAtEnd) sessionStorage.removeItem("fqa-wide-reader-open-at-end");
+    if (sessionStorage.getItem("fqa-wide-reader-open-at-end") === snapshot.itemId) {
+      chapterEndNavigationIntent.begin(snapshot.itemId);
+      sessionStorage.removeItem("fqa-wide-reader-open-at-end");
+    }
+    const openAtEnd = chapterEndNavigationIntent.matches(snapshot.itemId);
     const nextRuntime = {
       root,
       frame,
@@ -3457,30 +3513,24 @@
       unmountWideReader();
       showWideReaderEntry();
     });
-    let wheelTotal = 0;
-    let wheelLockedUntil = 0;
     const onWheel = (event) => {
       if (!shouldTurnPageForWheel(event.target)) return;
       event.preventDefault();
       const dominantDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-      wheelTotal += dominantDelta;
-      const now = performance.now();
-      if (now < wheelLockedUntil || Math.abs(wheelTotal) < 80) return;
-      wheelLockedUntil = now + 420;
-      const direction = wheelTotal > 0 ? "next" : "previous";
-      wheelTotal = 0;
+      const direction = wheelPageTurnController.consume(dominantDelta, performance.now());
+      if (!direction) return;
       turnPage(current, direction);
     };
     current.root.addEventListener("wheel", onWheel, { passive: false });
     const onKeyDown = (event) => {
       if (event.defaultPrevented || isEditableTarget(event.target)) return;
+      if (!shouldHandlePageTurnKey(event.key, false)) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (!shouldHandlePageTurnKey(event.key, event.repeat)) return;
       if (event.key === "ArrowRight" || event.key === "PageDown") {
-        event.preventDefault();
-        event.stopImmediatePropagation();
         turnPage(current, "next");
       } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
-        event.preventDefault();
-        event.stopImmediatePropagation();
         turnPage(current, "previous");
       }
     };
@@ -3579,6 +3629,7 @@
   function turnPage(current, direction) {
     if (runtime !== current || current.root.querySelector(".fqa-wide-scrim")) return;
     current.openAtEnd = false;
+    chapterEndNavigationIntent.clear(current.snapshot.itemId);
     const delta = direction === "next" ? 1 : -1;
     const candidate = current.spread + delta;
     if (candidate < 0 || candidate >= current.layout.totalSpreads) {
@@ -3620,11 +3671,12 @@
   }
   function navigateChapter(current, direction) {
     var _a;
+    chapterEndNavigationIntent.clear(current.snapshot.itemId);
     const chapters = ((_a = current.snapshot.book) == null ? void 0 : _a.chapter_list) ?? [];
     const index = chapters.findIndex((chapter) => chapter.item_id === current.snapshot.itemId);
     const target = index >= 0 ? chapters[index + (direction === "next" ? 1 : -1)] : void 0;
     if (!target) return;
-    if (direction === "previous") sessionStorage.setItem("fqa-wide-reader-open-at-end", target.item_id);
+    if (direction === "previous") chapterEndNavigationIntent.begin(target.item_id);
     if (direction === "next") {
       const firstColumn = current.columnOffset + current.spread * current.layout.columnsPerSpread;
       const previewedPages = countVisibleChapterPages(
@@ -3641,6 +3693,7 @@
   }
   function navigateToChapter(current, itemId) {
     if (runtime !== current || itemId === current.snapshot.itemId) return;
+    chapterEndNavigationIntent.clear(current.snapshot.itemId);
     beginWideReaderTransition();
     replaceReaderChapter(unsafeWindow.history, itemId);
   }

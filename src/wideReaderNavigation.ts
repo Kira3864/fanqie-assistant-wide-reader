@@ -9,6 +9,31 @@ export function createReaderChapterUrl(itemId: string): string {
 }
 
 /**
+ * 跨阅读器重复挂载保存“打开目标章节末屏”的导航意图。
+ *
+ * 匹配操作不会消费状态；只有用户真正主动翻页或离开阅读器时才清除，
+ * 避免同一章节被页面脚本重复挂载后退回旧的保存位置。
+ */
+export class ChapterEndNavigationIntent {
+    private targetItemId: string | null = null
+
+    /** 记录需要从末屏打开的目标章节。 */
+    begin(itemId: string): void {
+        this.targetItemId = itemId || null
+    }
+
+    /** 判断当前挂载章节是否仍应固定在末屏，本方法不会消费意图。 */
+    matches(itemId: string): boolean {
+        return this.targetItemId !== null && this.targetItemId === itemId
+    }
+
+    /** 清除指定章节的意图；不传章节时清除全部状态。 */
+    clear(itemId?: string): void {
+        if (itemId === undefined || this.targetItemId === itemId) this.targetItemId = null
+    }
+}
+
+/**
  * 在当前历史项内切换章节。
  * replaceState 不会增加历史深度，因此原站返回按钮仍可返回进入阅读器前的页面。
  */
