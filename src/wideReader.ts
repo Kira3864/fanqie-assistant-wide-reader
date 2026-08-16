@@ -55,6 +55,8 @@ interface WideReaderRuntime {
     snapshot: WideReaderSnapshot
     spread: number
     columnOffset: number
+    /** 反向切章期间持续锁定上一章末屏，直到预取内容完成最终测量。 */
+    openAtEnd: boolean
     layout: WideReaderLayout
     cleanup: Array<() => void>
 }
@@ -118,6 +120,8 @@ export function syncWideReaderContinuation(
     bindFootnoteInteraction(runtime.article)
     // 追加内容不会改变当前章已有栏位，直接保持屏序号可避免重复块编号造成整屏回退。
     measureAndRestore(runtime, undefined, 'spread')
+    // 当前章与下一章的最终布局已经确定，此后用户可自由翻页，不再强制锁定末屏。
+    runtime.openAtEnd = false
 }
 
 /** 在异步获取新章节期间保留当前分页层，避免短暂露出原网页排版。 */
@@ -227,6 +231,8 @@ function mountWideReader(snapshot: WideReaderSnapshot): void {
     previousDocumentOverflow = document.documentElement.style.overflow || null
     document.documentElement.style.overflow = 'hidden'
 
+    const openAtEnd = sessionStorage.getItem('fqa-wide-reader-open-at-end') === snapshot.itemId
+    if (openAtEnd) sessionStorage.removeItem('fqa-wide-reader-open-at-end')
     const nextRuntime: WideReaderRuntime = {
         root,
         frame,
@@ -235,6 +241,7 @@ function mountWideReader(snapshot: WideReaderSnapshot): void {
         snapshot,
         spread: 0,
         columnOffset: 0,
+        openAtEnd,
         layout: {
             columnsPerSpread: 2,
             totalSpreads: 1,
@@ -415,13 +422,6 @@ function measureAndRestore(
             layout.columnsPerSpread,
         )
     }
-    const openAtEnd = sessionStorage.getItem('fqa-wide-reader-open-at-end') === current.snapshot.itemId
-    if (openAtEnd) {
-        current.spread = layout.totalSpreads - 1
-        sessionStorage.removeItem('fqa-wide-reader-open-at-end')
-        paintSpread(current)
-        return
-    }
     const saved = position ?? loadPosition(current.snapshot.itemId)
     const target = saved
         ? current.article.querySelector<HTMLElement>(`[data-block-index="${saved.blockIndex}"]`)
@@ -434,6 +434,7 @@ function measureAndRestore(
         layout.totalSpreads,
         restoreMode,
         targetSpread,
+        current.openAtEnd,
     )
     paintSpread(current)
 }
@@ -494,6 +495,8 @@ function alignContinuationChapters(frame: HTMLElement, article: HTMLElement): vo
 /** 翻到上一页或下一页；到达章节边界时自动切章。 */
 function turnPage(current: WideReaderRuntime, direction: 'previous' | 'next'): void {
     if (runtime !== current || current.root.querySelector('.fqa-wide-scrim')) return
+    // 用户已经主动翻页，后续 ResizeObserver 重排不得再把位置强制拉回章节末尾。
+    current.openAtEnd = false
     const delta = direction === 'next' ? 1 : -1
     const candidate = current.spread + delta
     if (candidate < 0 || candidate >= current.layout.totalSpreads) {

@@ -46,6 +46,15 @@ describe('逐栏页码', () => {
         expect(resolveMeasuredSpread(openedAtEnd, 4, 'semantic', staleSemanticResult)).toBe(2)
     })
 
+    /** 从新章第一页回翻时，连续两次测量都必须锁定上一章末屏。 */
+    it('反向切章完成前持续保持上一章末屏意图', () => {
+        const firstMeasurement = resolveMeasuredSpread(0, 4, 'semantic', 2, true)
+        const observerMeasurement = resolveMeasuredSpread(firstMeasurement, 4, 'semantic', 2, true)
+
+        expect(firstMeasurement).toBe(3)
+        expect(observerMeasurement).toBe(3)
+    })
+
     /** 浏览器忽略强制换栏时，应补齐当前栏剩余高度让新章从页首开始。 */
     it('计算新章节另起一页所需补白', () => {
         expect(calculateChapterBreakFill(760, 900)).toBe(140)

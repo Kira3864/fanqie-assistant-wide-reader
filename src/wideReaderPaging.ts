@@ -63,14 +63,17 @@ export type SpreadRestoreMode = 'semantic' | 'spread'
 /**
  * 决定重新测量后的屏位置。
  * 异步追加预载章节时保留屏序号，避免语义块重新定位导致一次跳过整整两栏。
+ * 反向切章尚未完成时可锁定最后一屏，防止连续测量回退到旧保存位置。
  */
 export function resolveMeasuredSpread(
     currentSpread: number,
     totalSpreads: number,
     mode: SpreadRestoreMode,
     semanticSpread?: number,
+    pinToEnd: boolean = false,
 ): number {
     const maximum = Math.max(0, totalSpreads - 1)
+    if (pinToEnd) return maximum
     const target = mode === 'semantic' && semanticSpread !== undefined
         ? semanticSpread
         : currentSpread

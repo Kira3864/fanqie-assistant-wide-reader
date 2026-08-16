@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         番茄小说助手・宽屏阅读版
 // @namespace    https://github.com/Kira3864/fanqie-assistant-wide-reader
-// @version      0.3.8
+// @version      0.3.9
 // @author       naiyQAQ, Kira3864
 // @description  参考 GreasyFork 与开源项目实现的番茄小说 Userscript，提供正文增强和沉浸式宽屏分页阅读。
 // @license      GPLv3
@@ -2730,7 +2730,7 @@
     }
   }
   const name = "fanqie-assistant-wide-reader";
-  const version = "0.3.8";
+  const version = "0.3.9";
   const _hoisted_1$8 = {
     class: "fqa-set-dialog",
     role: "dialog",
@@ -3219,8 +3219,9 @@
   function calculateCurrentSpreads(currentPages, columnsPerSpread) {
     return Math.max(1, Math.ceil(Math.max(1, currentPages) / columnsPerSpread));
   }
-  function resolveMeasuredSpread(currentSpread, totalSpreads, mode, semanticSpread) {
+  function resolveMeasuredSpread(currentSpread, totalSpreads, mode, semanticSpread, pinToEnd = false) {
     const maximum = Math.max(0, totalSpreads - 1);
+    if (pinToEnd) return maximum;
     const target = mode === "semantic" && semanticSpread !== void 0 ? semanticSpread : currentSpread;
     return Math.max(0, Math.min(maximum, target));
   }
@@ -3269,6 +3270,7 @@
     }
     bindFootnoteInteraction(runtime.article);
     measureAndRestore(runtime, void 0, "spread");
+    runtime.openAtEnd = false;
   }
   function beginWideReaderTransition() {
     if (!runtime) return;
@@ -3357,6 +3359,8 @@
     document.body.append(root);
     previousDocumentOverflow = document.documentElement.style.overflow || null;
     document.documentElement.style.overflow = "hidden";
+    const openAtEnd = sessionStorage.getItem("fqa-wide-reader-open-at-end") === snapshot.itemId;
+    if (openAtEnd) sessionStorage.removeItem("fqa-wide-reader-open-at-end");
     const nextRuntime = {
       root,
       frame,
@@ -3365,6 +3369,7 @@
       snapshot,
       spread: 0,
       columnOffset: 0,
+      openAtEnd,
       layout: {
         columnsPerSpread: 2,
         totalSpreads: 1,
@@ -3515,13 +3520,6 @@
         layout.columnsPerSpread
       );
     }
-    const openAtEnd = sessionStorage.getItem("fqa-wide-reader-open-at-end") === current.snapshot.itemId;
-    if (openAtEnd) {
-      current.spread = layout.totalSpreads - 1;
-      sessionStorage.removeItem("fqa-wide-reader-open-at-end");
-      paintSpread(current);
-      return;
-    }
     const saved = position ?? loadPosition(current.snapshot.itemId);
     const target = saved ? current.article.querySelector(`[data-block-index="${saved.blockIndex}"]`) : null;
     const targetSpread = target ? Math.floor(Math.max(0, target.offsetLeft) / Math.max(1, layout.spreadStep)) : current.spread;
@@ -3529,7 +3527,8 @@
       current.spread,
       layout.totalSpreads,
       restoreMode,
-      targetSpread
+      targetSpread,
+      current.openAtEnd
     );
     paintSpread(current);
   }
@@ -3579,6 +3578,7 @@
   }
   function turnPage(current, direction) {
     if (runtime !== current || current.root.querySelector(".fqa-wide-scrim")) return;
+    current.openAtEnd = false;
     const delta = direction === "next" ? 1 : -1;
     const candidate = current.spread + delta;
     if (candidate < 0 || candidate >= current.layout.totalSpreads) {
